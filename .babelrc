@@ -1,0 +1,17 @@
+{
+  "presets": ["airbnb"],
+  "plugins": [
+    "transform-decorators-legacy",
+    "transform-class-properties",
+    "add-module-exports"
+  ],
+  "env": {
+    "development": {
+    },
+    "production": {
+      "plugins": [
+        "transform-react-remove-prop-types"
+      ]
+    }
+  }
+}
