@@ -1,6 +1,6 @@
 import hoistStatic from 'hoist-non-react-statics';
 import React from 'react';
-import {collectorManager} from '../server';
+import collectorManager from '../server/singletonCollectorManager';
 import shortid from 'shortid';
 
 export default function() {

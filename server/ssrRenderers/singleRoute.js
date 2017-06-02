@@ -10,35 +10,48 @@ class SingleRouteRenderer {
     this.bundles = bundles;
   }
 
+  // import => prepare => construct => render => html
   renderToString() {
     const app = this.collectorManager.importApp();
     const context = {};
-    // ssr
-    // trigger componentDidConstruct in collectors
-    const markup = renderToString(
-      react.createElement(StaticRouter, {location: this.route, context},
-        react.createElement(app))
-    );
+    let appElement = react.createElement(StaticRouter, {location: this.route, context},
+        react.createElement(app));
 
-    const template = createTemplate();
-    const $ = cheerio.load(template, {decodeEntities: false});
-    // insert bundles
-    this.bundles.forEach(bundle => $('head').append(`<script src="${bundle}"></script>`));
+    return this.collectorManager.prepare()
+    .then(() => {
+      // wrapApp
+      this.collectorManager.collectors.forEach(collector => {
+        if (collector.wrapApp) {
+          appElement = collector.wrapApp(appElement);
+        }
+      });
 
-    // insert rendered html
-    $('#root').html(markup);
+      // ssr
+      // trigger componentDidConstruct in collectors
+      const markup = renderToString(
+        appElement
+      );
 
-    // insert collectors' head and body
-    this.collectorManager.collectors.forEach(collector => {
-      if (collector.appendToHead) {
-        collector.appendToHead($('head'));
-      }
+      const template = createTemplate();
+      const $ = cheerio.load(template, {decodeEntities: false});
+      // insert bundles
+      this.bundles.forEach(bundle => $('head').append(`<script src="${bundle}"></script>`));
 
-      if (collector.appendToBody) {
-        collector.appendToBody($('body'));
-      }
+      // insert rendered html
+      $('#root').html(markup);
+
+      // insert collectors' head and body
+      this.collectorManager.collectors.forEach(collector => {
+        if (collector.appendToHead) {
+          collector.appendToHead($('head'));
+        }
+
+        if (collector.appendToBody) {
+          collector.appendToBody($('body'));
+        }
+      });
+      return $.html();
     });
-    return $.html();
   }
 }
 

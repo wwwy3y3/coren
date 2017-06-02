@@ -34,6 +34,7 @@
     "eslint-config-google": "^0.4.0",
     "eslint-plugin-react": "^6.2.0",
     "express": "^4.15.3",
+    "faker": "^4.1.0",
     "hoist-non-react-statics": "^1.2.0",
     "karma": "^1.2.0",
     "karma-chrome-launcher": "^2.0.0",
@@ -78,9 +79,13 @@
   "license": "Apache-2.0",
   "dependencies": {
     "cheerio": "^1.0.0-rc.1",
+    "co": "^4.6.0",
+    "lodash": "^4.17.4",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
+    "react-redux": "^5.0.5",
     "react-router-dom": "^4.1.1",
+    "redux": "^3.6.0",
     "shortid": "^2.2.8"
   }
 }

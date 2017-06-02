@@ -2,8 +2,12 @@ const path = require('path');
 const {
   collectorManager,
   SingleRouteRenderer,
-  HeadCollector
+  HeadCollector,
+  ReduxCollector
 } = require('../server');
+
+const DummyDB = require('./dummyDB');
+const dummyDB = new DummyDB();
 
 describe("ssr", function() {
   it('should render head', function() {
@@ -12,8 +16,24 @@ describe("ssr", function() {
     });
     collectorManager.registerCollector("head", new HeadCollector());
     const ssr = new SingleRouteRenderer({route: '/about', collectorManager});
-    const str = ssr.renderToString();
-    console.log(str);
+    ssr.renderToString()
+    .then(str => console.log(str));
+  });
+
+  it('should render redux', function() {
+    collectorManager.init({
+      appPath: path.resolve(__dirname, '../examples-dist/redux')
+    });
+    collectorManager.registerCollector("redux", new ReduxCollector({
+      componentProps: {
+        db: dummyDB
+      },
+      reducers: state => state
+    }));
+    const ssr = new SingleRouteRenderer({route: '/about', collectorManager});
+    ssr.renderToString()
+    .then(str => console.log(str))
+    .catch(err => console.log(err));
   });
 });
 

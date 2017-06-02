@@ -45,6 +45,11 @@ class CollectorManager {
   importApp() {
     return require(this.appPath);
   }
+
+  prepare() {
+    return Promise.all(this.collectors.map(collector =>
+      collector.prepare ? collector.prepare() : Promise.resolve()));
+  }
 }
 
 module.exports = CollectorManager;
