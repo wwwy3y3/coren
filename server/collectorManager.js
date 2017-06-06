@@ -1,4 +1,4 @@
-const hook = require('./componentHook');
+const hook = require('../shared/componentHook');
 
 class CollectorManager {
   constructor({appPath}) {

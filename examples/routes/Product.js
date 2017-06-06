@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import collector from '../../lib/collectorHoc';
+import collector from '../../lib/client/collectorHoc';
 
 @collector()
 export default class Product extends Component {

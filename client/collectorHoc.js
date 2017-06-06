@@ -1,6 +1,6 @@
 import hoistStatic from 'hoist-non-react-statics';
 import React from 'react';
-import hook from '../server/componentHook';
+import hook from '../shared/componentHook';
 import shortid from 'shortid';
 
 export default function() {

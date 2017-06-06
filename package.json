@@ -1,6 +1,6 @@
 {
   "name": "@canner/render",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "",
   "homepage": "",
   "author": {
@@ -9,10 +9,9 @@
     "url": ""
   },
   "files": [
-    "server",
     "lib"
   ],
-  "main": "server/index.js",
+  "main": "lib/server/index.js",
   "keywords": [
     ""
   ],
@@ -57,16 +56,14 @@
   "scripts": {
     "lint": "eslint client server test",
     "clean": "rimraf lib",
-    "build:commonjs": "cross-env BABEL_ENV=commonjs babel client --out-dir lib",
-    "build": "npm run build:commonjs",
-    "prepublish": "npm run clean && npm run check:client && npm run build",
+    "build:shared": "cross-env BABEL_ENV=commonjs babel shared --out-dir lib/shared",
+    "build:client": "cross-env BABEL_ENV=commonjs babel client --out-dir lib/client",
+    "copy:server": "cp -r ./server ./lib/server",
+    "build": "npm run build:shared && npm run build:client && npm run copy:server",
+    "prepublish": "npm run clean && npm run build && npm run check:src",
     "check:src": "npm run lint && npm run test",
-    "test": "cross-env BABEL_ENV=test karma start --single-run",
-    "test:watch": "cross-env BABEL_ENV=test karma start",
-    "validate": "npm ls",
-    "start": "node devServer.js",
     "build:examples": "rimraf examples-dist && cross-env BABEL_ENV=commonjs babel examples --out-dir examples-dist",
-    "test:server": "npm run build && npm run build:examples && mocha"
+    "test": "npm run build:examples && mocha"
   },
   "pre-commit": [
     "lint"
