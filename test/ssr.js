@@ -6,7 +6,7 @@ const {
   HeadCollector,
   ReduxCollector,
   RoutesCollector
-} = require('../server');
+} = require('../');
 
 const DummyDB = require('./dummyDB');
 const dummyDB = new DummyDB();

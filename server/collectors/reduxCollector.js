@@ -1,13 +1,12 @@
-const co = require('co');
-const mapValues = require('lodash/mapValues');
 const {createStore} = require('redux');
 const {Provider} = require('react-redux');
 const react = require('react');
+const Promise = require('bluebird');
 
 class ReduxCollector {
   constructor({componentProps, reducers}) {
-    this.queries = {};
-    this.states = {};
+    this.queries = [];
+    this.initialState = {};
     this.componentProps = componentProps;
     this.reducers = reducers;
   }
@@ -17,26 +16,25 @@ class ReduxCollector {
   }
 
   componentDidImport(component) {
-    Object.assign(this.queries, component.definePreloadedState(this.componentProps));
+    const promise = component.definePreloadedState(this.componentProps);
+    this.queries.push(promise);
   }
 
   prepare() {
-    const self = this;
-    return co(function * () {
-      self.states = yield mapValues(self.queries, query => query.exec());
-    });
+    return Promise.map(this.queries,
+      state => Object.assign(this.initialState, state));
   }
 
   appendToHead($head) {
     $head.append(`<script>
-      window.__PRELOADED_STATE__ = ${JSON.stringify(this.finalState)}
+      window.__PRELOADED_STATE__ = ${JSON.stringify(this.state)}
       </script>`);
   }
 
   wrapApp(appElement) {
-    const store = createStore(this.reducers, this.states);
+    const store = createStore(this.reducers, this.initialState);
     const wrapedElements = react.createElement(Provider, {store}, appElement);
-    this.finalState = store.getState();
+    this.state = store.getState();
     return wrapedElements;
   }
 }

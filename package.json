@@ -1,6 +1,6 @@
 {
   "name": "@canner/render",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "homepage": "",
   "author": {
@@ -61,9 +61,9 @@
     "copy:server": "cp -r ./server ./lib/server",
     "build": "npm run build:shared && npm run build:client && npm run copy:server",
     "prepublish": "npm run clean && npm run build && npm run check:src",
-    "check:src": "npm run lint && npm run test",
+    "check:src": "npm run lint",
     "build:examples": "rimraf examples-dist && cross-env BABEL_ENV=commonjs babel examples --out-dir examples-dist",
-    "test": "npm run build:examples && mocha"
+    "test:server": "npm run clean && npm run build && npm run build:examples && mocha"
   },
   "pre-commit": [
     "lint"
@@ -75,6 +75,7 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
+    "bluebird": "^3.5.0",
     "cheerio": "^1.0.0-rc.1",
     "co": "^4.6.0",
     "lodash": "^4.17.4",

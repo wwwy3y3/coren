@@ -5,7 +5,8 @@ import collector from '../../lib/client/collectorHoc';
 @collector()
 export default class About extends Component {
   static definePreloadedState({db}) {
-    return {about: db.fetch('about')};
+    return db.fetch('about').exec()
+    .then(data => ({about: data}));
   }
 
   render() {
