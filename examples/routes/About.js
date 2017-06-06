@@ -11,6 +11,10 @@ export default class About extends Component {
     };
   }
 
+  static defineRoutes({Url}) {
+    return new Url('/about');
+  }
+
   render() {
     return <div>
       <Inner />

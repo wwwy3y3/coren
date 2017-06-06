@@ -5,6 +5,7 @@ import {
 } from 'react-router-dom';
 import Home from './Home';
 import About from './About';
+import Product from './Product';
 
 class Root extends React.Component {
   render() {
@@ -19,6 +20,7 @@ class Root extends React.Component {
 
           <Route exact path="/" component={Home}/>
           <Route path="/about" component={About}/>
+          <Route path="/products/:id" component={Product}/>
         </div>
     );
   }

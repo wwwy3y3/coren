@@ -1,15 +1,13 @@
+const hook = require('./componentHook');
 
 class CollectorManager {
-  constructor() {
+  constructor({appPath}) {
     this.componentIds = [];
     this.collectors = [];
     this.collectorsMap = {};
-  }
-
-  init({appPath}) {
     this.appPath = appPath;
-    this.collectors = [];
-    this.collectorsMap = {};
+    hook.bindComponentDidImport(this.componentDidImport.bind(this));
+    hook.bindComponentDidConstruct(this.componentDidConstruct.bind(this));
   }
 
   componentDidImport(id, component) {
@@ -31,6 +29,15 @@ class CollectorManager {
       }
     });
     this.componentIds.push(id);
+  }
+
+  componentWillRender() {
+    this.componentIds = [];
+    this.collectors.forEach(collector => {
+      if (collector.componentWillRender) {
+        collector.componentWillRender();
+      }
+    });
   }
 
   registerCollector(key, collector) {

@@ -1,20 +1,20 @@
 import hoistStatic from 'hoist-non-react-statics';
 import React from 'react';
-import collectorManager from '../server/singletonCollectorManager';
+import hook from '../server/componentHook';
 import shortid from 'shortid';
 
 export default function() {
   return WrappedComponent => {
     const uniqId = shortid.generate();
-    collectorManager.componentDidImport(uniqId, WrappedComponent);
+    hook.componentDidImport(uniqId, WrappedComponent);
     class Hoc extends React.Component {
       constructor(props) {
         super(props);
-        collectorManager.componentDidConstruct(uniqId, WrappedComponent);
+        hook.componentDidConstruct(uniqId, WrappedComponent);
       }
 
       render() {
-        return <WrappedComponent />;
+        return <WrappedComponent {...this.props} />;
       }
     }
     return hoistStatic(Hoc, WrappedComponent);

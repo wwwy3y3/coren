@@ -3,8 +3,8 @@ import {
   Route,
   Link
 } from 'react-router-dom';
-import Home from './home';
-import About from './about';
+import Home from './Home';
+import About from './About';
 
 class Root extends React.Component {
   render() {

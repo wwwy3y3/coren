@@ -5,6 +5,12 @@ const fakePost = () => ({
   content: faker.lorem.sentence()
 });
 
+const fakeProduct = () => ({
+  id: faker.random.number(),
+  title: faker.lorem.slug(),
+  content: faker.lorem.sentence()
+});
+
 class Collection {
   constructor(data) {
     this.data = data;
@@ -35,6 +41,7 @@ class DummyDB {
   constructor() {
     this.db = {
       posts: new Collection(times(20, fakePost)),
+      products: new Collection(times(5, fakeProduct)),
       about: new DBMap({content: faker.lorem.sentence()})
     };
   }

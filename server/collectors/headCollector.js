@@ -9,11 +9,17 @@ class HeadCollector {
   }
 
   componentDidConstruct(component) {
+    console.log("componentDidConstruct");
     this.heads.push(component.defineHead());
   }
 
+  componentWillRender() {
+    console.log("reset");
+    this.heads = [];
+  }
+
   getFirstHead() {
-    return this.heads[0];
+    return this.heads[0] || {};
   }
 
   appendToHead($head) {
