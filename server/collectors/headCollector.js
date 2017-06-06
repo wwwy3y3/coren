@@ -9,12 +9,10 @@ class HeadCollector {
   }
 
   componentDidConstruct(component) {
-    console.log("componentDidConstruct");
     this.heads.push(component.defineHead());
   }
 
   componentWillRender() {
-    console.log("reset");
     this.heads = [];
   }
 
