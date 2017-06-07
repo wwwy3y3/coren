@@ -15,7 +15,7 @@ class ReduxCollector {
     return component.definePreloadedState;
   }
 
-  componentDidImport(component) {
+  componentDidImport(id, component) {
     const promise = component.definePreloadedState(this.componentProps);
     this.queries.push(promise);
   }

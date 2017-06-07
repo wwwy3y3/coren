@@ -10,7 +10,7 @@ export default function() {
     class Hoc extends React.Component {
       constructor(props) {
         super(props);
-        hook.componentDidConstruct(uniqId, WrappedComponent);
+        hook.componentDidConstruct(uniqId, WrappedComponent, props);
       }
 
       render() {

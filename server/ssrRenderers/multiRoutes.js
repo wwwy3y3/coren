@@ -27,7 +27,7 @@ class MultiRoutesRenderer {
     return this.collectorManager.prepare()
     .then(() => {
       return this.getRoutes().map(route => {
-        this.collectorManager.componentWillRender();
+        this.collectorManager.appWillRender();
         const context = {};
         let appElement = react.createElement(StaticRouter, {location: route, context},
           react.createElement(app));

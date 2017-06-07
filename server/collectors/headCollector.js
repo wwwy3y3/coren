@@ -8,11 +8,11 @@ class HeadCollector {
     return component.defineHead;
   }
 
-  componentDidConstruct(component) {
-    this.heads.push(component.defineHead());
+  componentDidConstruct(id, component, props) {
+    this.heads.push(component.defineHead(props));
   }
 
-  componentWillRender() {
+  appWillRender() {
     this.heads = [];
   }
 

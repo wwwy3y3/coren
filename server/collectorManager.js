@@ -2,7 +2,6 @@ const hook = require('../shared/componentHook');
 
 class CollectorManager {
   constructor({appPath}) {
-    this.componentIds = [];
     this.collectors = [];
     this.collectorsMap = {};
     this.appPath = appPath;
@@ -13,29 +12,23 @@ class CollectorManager {
   componentDidImport(id, component) {
     this.collectors.forEach(collector => {
       if (collector.ifEnter(component) && collector.componentDidImport) {
-        collector.componentDidImport(component);
+        collector.componentDidImport(id, component);
       }
     });
   }
 
-  componentDidConstruct(id, component) {
-    if (this.componentIds.find(_id => _id === id)) {
-      return;
-    }
-
+  componentDidConstruct(id, component, props) {
     this.collectors.forEach(collector => {
       if (collector.ifEnter(component) && collector.componentDidConstruct) {
-        collector.componentDidConstruct(component);
+        collector.componentDidConstruct(id, component, props);
       }
     });
-    this.componentIds.push(id);
   }
 
-  componentWillRender() {
-    this.componentIds = [];
+  appWillRender() {
     this.collectors.forEach(collector => {
-      if (collector.componentWillRender) {
-        collector.componentWillRender();
+      if (collector.appWillRender) {
+        collector.appWillRender();
       }
     });
   }

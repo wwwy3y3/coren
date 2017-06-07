@@ -58,7 +58,7 @@ class RoutesCollector {
     return component.defineRoutes;
   }
 
-  componentDidImport(component) {
+  componentDidImport(id, component) {
     const props = Object.assign({}, this.componentProps, {Url: RouterUrl, ParamUrl: RouterParamUrl});
     this.urlPromises.push(component.defineRoutes(props).getUrls());
   }
