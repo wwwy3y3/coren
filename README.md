@@ -3,7 +3,9 @@
 
 Is serverside render a big headache for your Single Page App?
 
-I need head title, description, jsonld, og..., and fetch data from db, render redux preloadedState...
+say you need head title, description, jsonld, og...
+
+perhaps fetch data from db, then render redux preloadedState
 
 so many things need to be rendered in HTML
 
@@ -11,36 +13,60 @@ so many things need to be rendered in HTML
 
 **What if we let component `define` what they need in static method?**
 
-**What if we could call db query in component?**
+**What if we could fetch database in component?**
 
 `render` provide you pluggable, flexible way to render your html
 
-## requirements
-* react router v4
+## Table Of Content
+- [Features](#features)
+- [Installation](#installation)
+- [Simple Example](#simple-example)
+- [Concepts](#concepts)
+    * [Define](#define)
+    * [Lifecycle Hook](#lifecycle-hook)
+    * [Collector](#collector)
+    * [Collector Manager](#collector-manager)
+    * [Serverside Renderer](#serverside-renderer)
+- [API](#api)
+    * [Collector Manager](#collector-manager-1)
+    * [Collector](#collector-1)
+- [Usage](#usage)
+    * [Getting Started](#getting-started)
+    * [How to create own Collector](#how-to-create-own-collector)
+    * [Example](#example)
 
-## example
-https://github.com/Canner/render-example
+# Features
+- **:electric_plug:Pluggable:** You can customize your own [collector](#collector) for your own need
+- **Access to Component Props:** in [componentDidConstruct](#componentDidConstruct) method from [Lifecycle Hook](#lifecycle-hook) you can access to component props
+- **Pass Variables To Component:** [Collector](#collector) can pass anything you want(`DB Query`, `Server API`) to [Define](#define) method
 
-## usage
-### 1. Component using `define` method
+# Installation
+``` sh
+$ npm install @canner/render --save
+```
+
+# Simple Example
+Here's a simple example component using collector
 ``` js
 @collector()
 export default class Product extends Component {
 
-  // I want to fetch data and render to PRELOADED_STATE in redux
+  // Fetch data first
+  // then, during serverside render, put `window.__PRELOADED_STATE__=${state}` to HTML
   static definePreloadedState({db}) {
     return db.fetch('products').exec()
     .then(data => ({about: data}));
   }
 
-  // I want to define my title with userId prop from component
+  // Put `user ${props.userId}` title tag to HTML
   static defineHead(props) {
     return {
       title: `user ${props.userId}`
     }
   }
 
-  // I want to render routes /product/:id with data I fetch from DB
+  // There are multiple routes I want to render with data from DB
+  // [{id: 1}, {id: 2}] should render routes `/product/1` and `/product/2`
   static defineRoutes({ParamUrl, db}) {
     return new ParamUrl({
       url: '/products/:id',
@@ -56,72 +82,16 @@ export default class Product extends Component {
 }
 ```
 
-### 2. Collector collect
-every collector will go through same phases:
-* `componentDidImport(id, component)`: when component imported
-* `prepare`: do some async work here if you want to make some api call before render
-* `appWillRender`: when rendering multiple routes, appWillRender will be called every time the route match with your component and trigger render, so is every method below
-* `wrapApp`: you can wrap your app reactElement if you need a provider outside
-* (app renderToString) => ssrRenderer will call ReactDom.renderToString
-* `componentDidConstruct(id, component, props)`: called when component was constructed
-* `appendToHead($cheerio('head'))`: append any html to head
-* `appendToBody($cheerio('body'))`: append any html to body
-#### take redux colllector for example
-``` js
-class ReduxCollector {
-  constructor({componentProps, reducers}) {
-    this.queries = [];
-    this.initialState = {};
-    this.componentProps = componentProps;
-    this.reducers = reducers;
-  }
-
-  // if component have `definePreloadedState` method, continue
-  ifEnter(component) {
-    return component.definePreloadedState;
-  }
-
-  // if component was imported, this method will be called
-  // every component import, will be assigned with a unique id
-  componentDidImport(id, component) {
-    const promise = component.definePreloadedState(this.componentProps);
-    this.queries.push(promise);
-  }
-
-  // waiting queries done
-  prepare() {
-    return Promise.map(this.queries,
-      state => Object.assign(this.initialState, state));
-  }
-
-  // redux serverside render need appElement wrapped with redux provider
-  // get state from store
-  wrapApp(appElement) {
-    const store = createStore(this.reducers, this.initialState);
-    const wrapedElements = react.createElement(Provider, {store}, appElement);
-    this.state = store.getState();
-    return wrapedElements;
-  }
-
-  // append state to window.__PRELOADED_STATE__ in head
-  appendToHead($head) {
-    $head.append(`<script>
-      window.__PRELOADED_STATE__ = ${JSON.stringify(this.state)}
-      </script>`);
-  }
-}
-```
-
-### 3. Serverside render
+On Serverside
 ``` js
 const collectorManager = new CollectorManager({
   appPath: path.resolve(__dirname, 'path/to/app')
 });
 
-// HeadCollector will collect data from `defineHead()`
+// HeadCollector get data from `defineHead()`
 collectorManager.registerCollector("head", new HeadCollector());
 
-// RoutesCollector will collect routes from `defineRoutes()`
+// RoutesCollector get routes from `defineRoutes()`
 collectorManager.registerCollector("routes", new RoutesCollector({
   componentProps: {
     // pass your db instance to component method
@@ -129,7 +99,7 @@ collectorManager.registerCollector("routes", new RoutesCollector({
   }
 }));
 
-// ReduxCollector will collect initialState from `definePreloadedState()`
+// ReduxCollector get initialState from `definePreloadedState()`
 collectorManager.registerCollector("redux", new ReduxCollector({
   componentProps: {
     db
@@ -147,3 +117,300 @@ ssr.renderToString()
 .then(result => {...})
 .catch(err => console.log(err));
 ```
+
+# Concepts
+## Define
+`Render` render html base on data gotten from Component.
+
+so, where do Component write what they could provide for Serverside rener?
+
+Component should use `@collector` decorator outside, and use static method, prefixed with `define`. In this case, `@collector` could return data back to server during right lifecycle.
+
+
+## Lifecycle Hook
+We metioned lifecycle above. How does this work?
+
+let us take a look at `collector` decorator
+``` js
+export default function() {
+  return WrappedComponent => {
+    const uniqId = shortid.generate();
+    /*
+      trigger componentDidImport lifecycle here
+      notify collectors
+    */
+    hook.componentDidImport(uniqId, WrappedComponent);
+    class Hoc extends React.Component {
+      constructor(props) {
+        super(props);
+        /*
+          trigger componentDidConstruct lifecycle here
+          pass props to collectors 
+        */
+        hook.componentDidConstruct(uniqId, WrappedComponent, props);
+      }
+
+      render() {
+        return <WrappedComponent {...this.props} />;
+      }
+    }
+    return hoistStatic(Hoc, WrappedComponent);
+  };
+}
+```
+
+During serverside render, two lifecycle will be triggered
+* `componentDidImport(id, component)`: called when component imported
+* `componentDidConstruct(id, component, props)`: called when component constructed
+
+### **Why these two methods?**
+In `React-router`, only component matched with route will be rendered. So, component rendered will trigger both methods, on the other hand,  component *not* rendered will trigger only `componentDidImport`. It will help you put right data in your HTML.
+
+For Example, we should only put the `head` tags return from first constructed component. Components that didn't trigger `componentDidConstruct` should not be considered.
+
+## Collector
+**What is a `Collector`?**
+
+`Collector` collect data from `define` methods, collector can choose which lifecycle it want to call `define` method.
+
+For example, we take a look at `HeadCollector`, `HeadCollector` call `defineHead(props)` in `componentDidConstruct`, it get `{title, description}`, then push to heads array.
+
+when `serverside renderer` call `appendToHead`, `HeadCollector` push the first head it got from component to `$head`
+
+``` js
+class HeadCollector {
+  constructor() {
+    this.heads = [];
+  }
+
+  // ...
+
+  componentDidConstruct(id, component, props) {
+    this.heads.push(component.defineHead(props));
+  }
+
+  getFirstHead() {
+    return this.heads[0] || {};
+  }
+
+  // ...
+
+  appendToHead($head) {
+    const {title, description} = this.getFirstHead();
+    $head.append(`<title>${title}</title>`);
+    $head.append(`<meta name="description" content="${description}">`);
+  }
+}
+```
+
+## Collector Manager
+Developer use `CollectorManager` to register collector
+``` js
+// create CollectorManager with path to your React App entry file
+const collectorManager = new CollectorManager({
+  appPath: path.resolve(__dirname, 'path/to/app')
+});
+
+// register collector
+collectorManager.registerCollector("head", new HeadCollector());
+```
+
+`CollectorManager` controlls lifecycle of all registered collectors.
+
+Serverside renderer will call `CollectorManager`'s lifecycle method at certain time, to get the desired result it want.
+
+
+## Serverside Renderer
+The main purpose of Serverside Renderer is to create HTML. By calling `CollectorManager` to controll lifecycle of collectors, make sure collectors get the result they want.
+
+### Collector Lifecycle
+In `MultiRoutesRenderer`, every collector will go through same phases:
+1. `componentDidImport(id, component)`: when component imported
+2. `prepare`: do some async work here if you want to make some api call before render
+3. `appWillRender`: when rendering multiple routes, appWillRender will be called every time the route match with your component and trigger render, so is every method below
+4. `wrapApp`: you can wrap your app reactElement if you need a provider outside
+5. (app renderToString) => ssrRenderer will call ReactDom.renderToString
+6. `componentDidConstruct(id, component, props)`: called when component was constructed
+7. `appendToHead($cheerio('head'))`: append any html to head
+8. `appendToBody($cheerio('body'))`: append any html to body
+
+
+# API
+## Collector Manager
+### constructor({appPath: String})
+* appPath: path to your React app entry file
+``` js
+const collectorManager = new CollectorManager({
+  appPath: path.resolve(__dirname, 'path/to/app')
+});
+```
+
+### registerCollector(key: String, collector: Collector)
+* key: you can directly access to collector by key
+``` js
+collectorManager.getCollector("head")
+// return headCollector
+```
+* collector: the collector you want to register
+
+``` js
+collectorManager.registerCollector("head", new HeadCollector());
+```
+
+## Collector
+### ifEnter(component): Boolean
+`collectorManager` will use `ifEnter` to determine whether call this collector or not
+
+### componentDidImport(id, component): void
+called when component imported, when component imported, a unique id attached to it, so you'll know where this component appeared before or not in `componentDidConstruct`.
+
+### componentDidConstruct(id: String, component: ReactComponent, props: Object): void
+called when component was constructed
+
+### prepare(): Promise
+Because we react wont wait for your async code during `import`. So a better way to use async related task is to push your promise to an array, wait for them in `prepare`.
+
+Take reduxCollector for example:
+``` js
+// /src/reduxCollector
+componentDidImport(id, component) {
+  const promise = component.definePreloadedState(this.componentProps);
+  this.queries.push(promise);
+}
+
+prepare() {
+  return Promise.map(this.queries,
+    state => Object.assign(this.initialState, state));
+}
+```
+
+### appWillRender(): void
+In `MultiRoutesRenderer`, you'll have multiple routes to be rendered, so you need a hook to tell your collector when app is going to be rendered. You can do some reset variable things here.
+
+Take `HeadCollector` for example, we make sure we collect fresh head from component constructed.
+``` js
+componentDidConstruct(id, component, props) {
+  this.heads.push(component.defineHead(props));
+}
+
+appWillRender() {
+  // empty heads
+  this.heads = [];
+}
+```
+
+### wrapApp(ReactElement): ReactElement
+Some module require developer wrap ReactElement with provider in serverside render.
+
+Take `reduxCollector` for example, we wrap ReactElement with react-redux provider.
+``` js
+wrapApp(appElement) {
+  const store = createStore(this.reducers, this.initialState);
+  const wrapedElements = react.createElement(Provider, {store}, appElement);
+  this.state = store.getState();
+  return wrapedElements;
+}
+```
+
+### appendToHead($head: cheerio)
+append any html to head
+
+### appendToBody($body: cheerio)
+append any html to body
+
+# Usage
+## Getting Started
+1. npm install @canner/render
+2. use @collector in your component
+``` js
+import collector from '@canner/render/lib/client/collectorHoc';
+
+@collector()
+export default class UserList extends Component {
+  // ...
+  render() {
+    ...
+  }
+}
+```
+
+3. write `define` method.
+``` js
+@collector()
+export default class UserList extends Component {
+  static defineHead() {
+    return {
+      title: "user list",
+      description: "user list"
+    };
+  }
+
+  static defineRoutes({Url}) {
+    return new Url('/users');
+  }
+
+  static definePreloadedState({db}) {
+    return db.users.find().execAsync()
+    .then(list => ({
+      users: {
+        list,
+        fetched: true,
+        isFetching: false,
+        error: false
+      }
+    }));
+  }
+}
+```
+
+4. serverside render
+serverside render with `collectorManager` and `multiRoutesRenderer`
+``` js
+const db = mongodb;
+const collectorManager = new CollectorManager({
+  appPath: path.resolve(__dirname, 'path/to/app')
+});
+
+// register collectors
+collectorManager.registerCollector("head", new HeadCollector());
+collectorManager.registerCollector("routes", new RoutesCollector({
+  componentProps: {
+    db
+  }
+}));
+collectorManager.registerCollector("redux", new ImmutableReduxCollector({
+  componentProps: {
+    db
+  },
+  reducers: reducer
+}));
+
+// ssr
+const ssr = new MultiRoutesRenderer({
+  collectorManager,
+  // bundle path will be append to html body
+  js: ["/bundle.js"]
+});
+
+// get the array of html result
+ssr.renderToString()
+.then(results => {
+  return Promise.all(results.map(result => {
+    // throw HTML to anywhere you want
+    // cached to web server, cache server
+    // write to s3, cdn
+  }));
+})
+.catch(err => console.log(err));
+```
+
+## How to create own Collector
+Write your own class, implement methods in [Collector](#Collector).
+
+Take a look at built-in collector for reference.
+
+https://github.com/Canner/render/tree/master/server/collectors
+
+
+## Example
+Here's a example repo using this module. https://github.com/Canner/render-example
