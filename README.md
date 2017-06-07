@@ -1,9 +1,19 @@
 # render
-React Pluggable Serverside Render
+## React Pluggable Serverside Render
 
-use Collectors to collect data from `define` methods in component
+Is serverside render a big headache for your Single Page App?
 
-head title, description, jsonld, og, redux preloadedState... anything you want, and render them to your html
+I need head title, description, jsonld, og..., and fetch data from db, render redux preloadedState...
+
+so many things need to be rendered in HTML
+
+### How about we use more flexible way to solve it?
+
+**What if we let component `define` what they need in static method?**
+
+**What if we could call db query in component?**
+
+`render` provide you pluggable, flexible way to render your html
 
 ## requirements
 * react router v4
