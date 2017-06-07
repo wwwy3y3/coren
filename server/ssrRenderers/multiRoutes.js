@@ -47,7 +47,7 @@ class MultiRoutesRenderer {
         const $ = cheerio.load(template, {decodeEntities: false});
 
         // insert bundles
-        this.js.forEach(bundle => $('head').append(`<script src="${bundle}"></script>`));
+        this.js.forEach(bundle => $('body').append(`<script src="${bundle}"></script>`));
 
         // insert css
         this.css.forEach(link => $('head').append(`<link rel="stylesheet" href="${link}">`));

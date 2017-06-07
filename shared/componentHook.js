@@ -10,9 +10,9 @@ class Hook {
     this.didImportCallback = fn;
   }
 
-  componentDidConstruct(id, component) {
+  componentDidConstruct(id, component, props) {
     if (this.didConstructCallback) {
-      this.didConstructCallback(id, component);
+      this.didConstructCallback(id, component, props);
     }
   }
 
