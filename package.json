@@ -64,7 +64,7 @@
     "prepublish": "npm run clean && npm run build && npm run check:src",
     "check:src": "npm run lint",
     "build:examples": "rimraf examples-dist && cross-env BABEL_ENV=commonjs babel examples --out-dir examples-dist",
-    "test:server": "npm run clean && npm run build && npm run build:examples && mocha"
+    "test": "npm run clean && npm run build && npm run build:examples && mocha"
   },
   "pre-commit": [
     "lint"

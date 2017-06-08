@@ -1,0 +1,13 @@
+language: node_js
+
+node_js:
+  - 'node'
+  - 6
+
+install:
+  - npm i -g npm@latest
+  - npm install
+
+cache:
+  directories:
+    - node_modules
