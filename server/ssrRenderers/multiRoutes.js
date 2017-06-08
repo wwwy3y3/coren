@@ -4,14 +4,14 @@ const react = require('react');
 const cheerio = require('cheerio');
 
 class MultiRoutesRenderer {
-  constructor({collectorManager, js = [], css = []}) {
-    this.collectorManager = collectorManager;
+  constructor({app, js = [], css = []}) {
+    this.app = app;
     this.js = js;
     this.css = css;
   }
 
   getRoutes() {
-    const routesCollector = this.collectorManager.getCollector("routes");
+    const routesCollector = this.app.getCollector("routes");
     if (!routesCollector) {
       console.log(`no RoutesCollector found, use "/" to render`);
     }
@@ -22,20 +22,20 @@ class MultiRoutesRenderer {
   // import => prepare => construct => render => html
   renderToString() {
     // import
-    const app = this.collectorManager.importApp();
+    const app = this.app.import();
 
-    return this.collectorManager.prepare()
+    return this.app.appWillRender()
     .then(() => {
       return this.getRoutes().map(route => {
-        this.collectorManager.appWillRender();
+        this.app.routeWillRender();
         const context = {};
         let appElement = react.createElement(StaticRouter, {location: route, context},
           react.createElement(app));
 
-        // wrapApp
-        this.collectorManager.collectors.forEach(collector => {
-          if (collector.wrapApp) {
-            appElement = collector.wrapApp(appElement);
+        // wrapElement
+        this.app.collectors.forEach(collector => {
+          if (collector.wrapElement) {
+            appElement = collector.wrapElement(appElement);
           }
         });
 
@@ -56,7 +56,7 @@ class MultiRoutesRenderer {
         $('#root').html(markup);
 
         // insert collectors' head and body
-        this.collectorManager.collectors.forEach(collector => {
+        this.app.collectors.forEach(collector => {
           if (collector.appendToHead) {
             collector.appendToHead($('head'));
           }

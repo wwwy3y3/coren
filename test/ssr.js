@@ -1,6 +1,7 @@
+require('should');
 const path = require('path');
 const {
-  CollectorManager,
+  App,
   SingleRouteRenderer,
   MultiRoutesRenderer,
   HeadCollector,
@@ -13,44 +14,44 @@ const dummyDB = new DummyDB();
 
 describe("ssr", function() {
   it('should render head', function() {
-    const collectorManager = new CollectorManager({
-      appPath: path.resolve(__dirname, '../examples-dist/header')
+    const app = new App({
+      path: path.resolve(__dirname, '../examples-dist/header')
     });
-    collectorManager.registerCollector("head", new HeadCollector());
-    const ssr = new SingleRouteRenderer({route: '/about', collectorManager});
+    app.registerCollector("head", new HeadCollector());
+    const ssr = new SingleRouteRenderer({route: '/about', app});
     ssr.renderToString()
-    .then(str => console.log(str));
+    .then(str => str.should.be.ok());
   });
 
   it('should render redux', function() {
-    const collectorManager = new CollectorManager({
-      appPath: path.resolve(__dirname, '../examples-dist/redux')
+    const app = new App({
+      path: path.resolve(__dirname, '../examples-dist/redux')
     });
-    collectorManager.registerCollector("redux", new ReduxCollector({
+    app.registerCollector("redux", new ReduxCollector({
       componentProps: {
         db: dummyDB
       },
       reducers: state => state
     }));
-    const ssr = new SingleRouteRenderer({route: '/about', collectorManager});
+    const ssr = new SingleRouteRenderer({route: '/about', app});
     ssr.renderToString()
-    .then(str => console.log(str))
+    .then(str => str.should.be.ok())
     .catch(err => console.log(err));
   });
 
   it('should render multi', function() {
-    const collectorManager = new CollectorManager({
-      appPath: path.resolve(__dirname, '../examples-dist/routes')
+    const app = new App({
+      path: path.resolve(__dirname, '../examples-dist/routes')
     });
-    collectorManager.registerCollector("head", new HeadCollector());
-    collectorManager.registerCollector("routes", new RoutesCollector({
+    app.registerCollector("head", new HeadCollector());
+    app.registerCollector("routes", new RoutesCollector({
       componentProps: {
         db: dummyDB
       }
     }));
-    const ssr = new MultiRoutesRenderer({collectorManager});
+    const ssr = new MultiRoutesRenderer({app});
     ssr.renderToString()
-    .then(str => console.log(str))
+    .then(str => str.should.be.ok())
     .catch(err => console.log(err));
   });
 });

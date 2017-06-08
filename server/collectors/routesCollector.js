@@ -63,7 +63,7 @@ class RoutesCollector {
     this.urlPromises.push(component.defineRoutes(props).getUrls());
   }
 
-  prepare() {
+  appWillRender() {
     const self = this;
     return co(function * () {
       const urls = yield self.urlPromises;

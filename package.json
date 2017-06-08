@@ -50,6 +50,7 @@
     "react-router": "^4.1.1",
     "react-router-dom": "^4.1.1",
     "rimraf": "^2.5.4",
+    "should": "^11.2.1",
     "webpack": "2.2.0-rc.3",
     "webpack-hot-middleware": "^2.18.0"
   },

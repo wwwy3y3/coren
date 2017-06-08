@@ -20,7 +20,7 @@ class ReduxCollector {
     this.queries.push(promise);
   }
 
-  prepare() {
+  appWillRender() {
     return Promise.map(this.queries,
       state => Object.assign(this.initialState, state));
   }
@@ -31,7 +31,7 @@ class ReduxCollector {
       </script>`);
   }
 
-  wrapApp(appElement) {
+  wrapElement(appElement) {
     const store = createStore(this.reducers, this.initialState);
     const wrapedElements = react.createElement(Provider, {store}, appElement);
     this.state = store.getState();

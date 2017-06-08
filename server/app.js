@@ -1,10 +1,10 @@
 const hook = require('../shared/componentHook');
 
-class CollectorManager {
-  constructor({appPath}) {
+class App {
+  constructor({path}) {
     this.collectors = [];
     this.collectorsMap = {};
-    this.appPath = appPath;
+    this.path = path;
     hook.bindComponentDidImport(this.componentDidImport.bind(this));
     hook.bindComponentDidConstruct(this.componentDidConstruct.bind(this));
   }
@@ -25,10 +25,10 @@ class CollectorManager {
     });
   }
 
-  appWillRender() {
+  routeWillRender() {
     this.collectors.forEach(collector => {
-      if (collector.appWillRender) {
-        collector.appWillRender();
+      if (collector.routeWillRender) {
+        collector.routeWillRender();
       }
     });
   }
@@ -42,14 +42,14 @@ class CollectorManager {
     return this.collectorsMap[key];
   }
 
-  importApp() {
-    return require(this.appPath);
+  import() {
+    return require(this.path);
   }
 
-  prepare() {
+  appWillRender() {
     return Promise.all(this.collectors.map(collector =>
-      collector.prepare ? collector.prepare() : Promise.resolve()));
+      collector.appWillRender ? collector.appWillRender() : Promise.resolve()));
   }
 }
 
-module.exports = CollectorManager;
+module.exports = App;

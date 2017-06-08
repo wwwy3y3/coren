@@ -12,7 +12,7 @@ class HeadCollector {
     this.heads.push(component.defineHead(props));
   }
 
-  appWillRender() {
+  routeWillRender() {
     this.heads = [];
   }
 

@@ -4,26 +4,28 @@ const react = require('react');
 const cheerio = require('cheerio');
 
 class SingleRouteRenderer {
-  constructor({route = '/', collectorManager, js = [], css = []}) {
+  constructor({route = '/', app, js = [], css = []}) {
     this.route = route;
-    this.collectorManager = collectorManager;
+    this.app = app;
     this.js = js;
     this.css = css;
   }
 
-  // import => prepare => construct => render => html
+  // import => appWillRender => routeWillRender => wrapElement => (render) => construct => html
   renderToString() {
-    const app = this.collectorManager.importApp();
+    const app = this.app.import();
     const context = {};
     let appElement = react.createElement(StaticRouter, {location: this.route, context},
         react.createElement(app));
 
-    return this.collectorManager.prepare()
+    return this.app.appWillRender()
     .then(() => {
-      // wrapApp
-      this.collectorManager.collectors.forEach(collector => {
-        if (collector.wrapApp) {
-          appElement = collector.wrapApp(appElement);
+      // route will render
+      this.app.routeWillRender();
+      // wrapElement
+      this.app.collectors.forEach(collector => {
+        if (collector.wrapElement) {
+          appElement = collector.wrapElement(appElement);
         }
       });
 
@@ -36,7 +38,7 @@ class SingleRouteRenderer {
       const template = createTemplate();
       const $ = cheerio.load(template, {decodeEntities: false});
       // insert js
-      this.js.forEach(bundle => $('head').append(`<script src="${bundle}"></script>`));
+      this.js.forEach(bundle => $('body').append(`<script src="${bundle}"></script>`));
 
       // insert css
       this.css.forEach(link => $('head').append(`<link rel="stylesheet" href="${link}">`));
@@ -45,7 +47,7 @@ class SingleRouteRenderer {
       $('#root').html(markup);
 
       // insert collectors' head and body
-      this.collectorManager.collectors.forEach(collector => {
+      this.app.collectors.forEach(collector => {
         if (collector.appendToHead) {
           collector.appendToHead($('head'));
         }

@@ -1,6 +1,6 @@
 
-// collectorManager
-exports.CollectorManager = require('./collectorManager');
+// Application
+exports.App = require('./app');
 
 // ssr renderer
 exports.SingleRouteRenderer = require('./ssrRenderers/singleRoute');
