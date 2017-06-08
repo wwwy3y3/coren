@@ -205,7 +205,7 @@ ssr.renderToString()
 ## Define
 `Coren` render html base on data gotten from Component.
 
-so, where do Component write what they could provide for Serverside rener?
+so, where do Component write what they could provide for Serverside render?
 
 Component should use `@collector` decorator outside, and use static method, prefixed with `define`. In this case, `@collector` could return data back to server during right lifecycle.
 
