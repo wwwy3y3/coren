@@ -48,32 +48,19 @@ $ npm install coren --save
 ```
 
 # Simple Example
-Here's a simple example component using collector
+Here's some simple example components using collector
+## Head
+we'll insert what component want as <title> to HTML
+### React
 ``` js
 @collector()
-export default class Product extends Component {
-
-  // Fetch data first
-  // then, during serverside render, put `window.__PRELOADED_STATE__=${state}` to HTML
-  static definePreloadedState({db}) {
-    return db.fetch('products').exec()
-    .then(data => ({about: data}));
-  }
+export default class User extends Component {
 
   // Put `user ${props.userId}` title tag to HTML
   static defineHead(props) {
     return {
       title: `user ${props.userId}`
     }
-  }
-
-  // There are multiple routes I want to render with data from DB
-  // [{id: 1}, {id: 2}] should render routes `/product/1` and `/product/2`
-  static defineRoutes({ParamUrl, db}) {
-    return new ParamUrl({
-      url: '/products/:id',
-      dataProvider: () => db.fetch('products').exec()
-    });
   }
 
   render() {
@@ -84,7 +71,35 @@ export default class Product extends Component {
 }
 ```
 
-On Serverside
+### How HeadCollector insert head
+In MultiRoutesRenderer, HeadCollector insert head using `appendToHead`
+``` js
+class HeadCollector {
+  constructor() {
+    this.heads = [];
+  }
+
+  // ...
+
+  componentDidConstruct(id, component, props) {
+    this.heads.push(component.defineHead(props));
+  }
+
+  getFirstHead() {
+    return this.heads[0] || {};
+  }
+
+  // ...
+
+  appendToHead($head) {
+    const {title, description} = this.getFirstHead();
+    $head.append(`<title>${title}</title>`);
+    $head.append(`<meta name="description" content="${description}">`);
+  }
+}
+```
+
+### Serverside
 ``` js
 const app = new App({
   path: path.resolve(__dirname, 'path/to/app')
@@ -93,16 +108,82 @@ const app = new App({
 // HeadCollector get data from `defineHead()`
 app.registerCollector("head", new HeadCollector());
 
-// RoutesCollector get routes from `defineRoutes()`
-app.registerCollector("routes", new RoutesCollector({
-  componentProps: {
-    // pass your db instance to component method
-    db: mongodb
+// ssr
+const ssr = new MultiRoutesRenderer({app});
+ssr.renderToString()
+.then(result => {
+  console.log(result);
+  // [{route: "/", html: "<html><head>user 1</head>...</html>"}]
+})
+.catch(err => console.log(err));
+```
+
+## Redux preloaded state
+How `Coren` render `__PRELOADED_STATE__`
+### React
+``` js
+@collector()
+export default class Product extends Component {
+
+  // Fetch data first
+  // then, during serverside render, put `window.__PRELOADED_STATE__=${state}` to HTML
+  static definePreloadedState({db}) {
+    return db.fetch('products').exec()
+    .then(data => ({products: data}));
   }
-}));
+
+  render() {
+    return <div>
+      ...
+    </div>;
+  }
+}
+```
+
+### Collector
+In ReduxCollector, we push promise we got from `definePreloadedState`
+
+then, we wait all promises done at `appWillRender`
+
+Last, we wrap your app with react-redux provider, and get state from `store.getState()`, append the state to `head`
+``` js
+class ReduxCollector {
+  // ...
+  componentDidImport(id, component) {
+    const promise = component.definePreloadedState(this.componentProps);
+    this.queries.push(promise);
+  }
+
+  appWillRender() {
+    return Promise.map(this.queries,
+      state => Object.assign(this.initialState, state));
+  }
+
+  wrapElement(appElement) {
+    const store = createStore(this.reducers, this.initialState);
+    const wrapedElements = react.createElement(Provider, {store}, appElement);
+    this.state = store.getState();
+    return wrapedElements;
+  }
+
+  appendToHead($head) {
+    $head.append(`<script>
+      window.__PRELOADED_STATE__ = ${JSON.stringify(this.state)}
+      </script>`);
+  }
+}
+```
+
+
+### Serverside
+``` js
+const app = new App({
+  path: path.resolve(__dirname, 'path/to/app')
+});
 
 // ReduxCollector get initialState from `definePreloadedState()`
 app.registerCollector("redux", new ReduxCollector({
+  // componentProps will be passed to 
   componentProps: {
     db
   },
@@ -113,10 +194,10 @@ app.registerCollector("redux", new ReduxCollector({
 // ssr
 const ssr = new MultiRoutesRenderer({app});
 ssr.renderToString()
-// result: Array<Object({route, html})>
-// ex: [{route: "/", html: "..."}, {route: "/users", html: "..."}]
-// output html to anywhere you want, filesystem, s3 ...
-.then(result => {...})
+.then(result => {
+  console.log(result);
+  // [{route: "/", html: "<html><body>window.__PRELOADED_STATE__={...}</body>></html>"}]
+})
 .catch(err => console.log(err));
 ```
 
