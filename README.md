@@ -122,7 +122,7 @@ ssr.renderToString()
 
 # Concepts
 ## Define
-`Render` render html base on data gotten from Component.
+`Coren` render html base on data gotten from Component.
 
 so, where do Component write what they could provide for Serverside rener?
 
