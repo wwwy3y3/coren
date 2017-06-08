@@ -1,5 +1,6 @@
 # Coren
 [![npm Version](https://img.shields.io/npm/v/coren.svg?style=flat-square)](https://www.npmjs.org/package/coren)
+[![Build Status](https://travis-ci.org/Canner/coren.svg?branch=master)](https://travis-ci.org/Canner/coren)
 ## React Pluggable Serverside Render
 
 Is serverside render a big headache for your Single Page App?
