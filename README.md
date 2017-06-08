@@ -1,5 +1,5 @@
 # Coren
-[![npm Version](https://img.shields.io/npm/v/react-helmet.svg?style=flat-square)](https://www.npmjs.org/package/coren)
+[![npm Version](https://img.shields.io/npm/v/coren.svg?style=flat-square)](https://www.npmjs.org/package/coren)
 ## React Pluggable Serverside Render
 
 Is serverside render a big headache for your Single Page App?
@@ -365,21 +365,21 @@ export default class UserList extends Component {
 ```
 
 4. serverside render
-serverside render with `collectorManager` and `multiRoutesRenderer`
+serverside render with `app` and `multiRoutesRenderer`
 ``` js
 const db = mongodb;
-const collectorManager = new CollectorManager({
-  appPath: path.resolve(__dirname, 'path/to/app')
+const app = new App({
+  path: path.resolve(__dirname, 'path/to/app')
 });
 
 // register collectors
-collectorManager.registerCollector("head", new HeadCollector());
-collectorManager.registerCollector("routes", new RoutesCollector({
+app.registerCollector("head", new HeadCollector());
+app.registerCollector("routes", new RoutesCollector({
   componentProps: {
     db
   }
 }));
-collectorManager.registerCollector("redux", new ImmutableReduxCollector({
+app.registerCollector("redux", new ImmutableReduxCollector({
   componentProps: {
     db
   },
@@ -388,7 +388,7 @@ collectorManager.registerCollector("redux", new ImmutableReduxCollector({
 
 // ssr
 const ssr = new MultiRoutesRenderer({
-  collectorManager,
+  app,
   // bundle path will be append to html body
   js: ["/bundle.js"]
 });
@@ -414,4 +414,5 @@ https://github.com/Canner/coren/tree/master/server/collectors
 
 
 ## Example
-Here's a example repo using this module. https://github.com/Canner/coren-example
+Here's a example repo using this module.
+https://github.com/Canner/coren-example
