@@ -498,3 +498,7 @@ https://github.com/Canner/coren/tree/master/server/collectors
 ## Example
 Here's a example repo using this module.
 https://github.com/Canner/coren-example
+
+## 中文簡介
+
+[Meduim 文章：Coren: React Composite Server-side Render](https://medium.com/canner-io-%E6%98%93%E9%96%8B%E7%A7%91%E6%8A%80/react-composite-server-side-render-a85a90f841f5)
