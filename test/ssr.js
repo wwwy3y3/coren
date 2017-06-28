@@ -6,7 +6,9 @@ const {
   MultiRoutesRenderer,
   HeadCollector,
   ReduxCollector,
-  RoutesCollector
+  RoutesCollector,
+  ScriptCollector,
+  StyleCollector
 } = require('../');
 
 const DummyDB = require('./dummyDB');
@@ -44,6 +46,8 @@ describe("ssr", function() {
       path: path.resolve(__dirname, '../examples-dist/routes')
     });
     app.registerCollector("head", new HeadCollector());
+    app.registerCollector("script", new ScriptCollector());
+    app.registerCollector("style", new StyleCollector());
     app.registerCollector("routes", new RoutesCollector({
       componentProps: {
         db: dummyDB

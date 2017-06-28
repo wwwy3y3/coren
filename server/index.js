@@ -10,3 +10,5 @@ exports.MultiRoutesRenderer = require('./ssrRenderers/multiRoutes');
 exports.HeadCollector = require('./collectors/headCollector');
 exports.ReduxCollector = require('./collectors/reduxCollector');
 exports.RoutesCollector = require('./collectors/routesCollector');
+exports.ScriptCollector = require('./collectors/scriptCollector');
+exports.StyleCollector = require('./collectors/styleCollector');
