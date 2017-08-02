@@ -1,15 +1,10 @@
 const webpack = require('webpack');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const Datastore = require('nedb');
 const bluebird = require('bluebird');
 const rp = require('request-promise');
 const ImmutableReduxCollector = require('./immutableReduxCollector');
 const reducer = require('./reducer');
 
-const extractCSS = new ExtractTextPlugin({
-  filename: 'css/[name].css',
-  allChunks: true
-});
 module.exports = {
   entry: {
     index: './index.js'
@@ -18,8 +13,7 @@ module.exports = {
   reduxStore: './configureStore.js',
   webpack: {
     plugins: [
-      new webpack.BannerPlugin('This file is created by coren. Built time: ' + new Date()),
-      extractCSS
+      new webpack.BannerPlugin('This file is created by coren. Built time: ' + new Date())
     ],
     // issue: https://github.com/matthew-andrews/isomorphic-fetch/issues/98
     externals: [
@@ -30,12 +24,6 @@ module.exports = {
           commonjs: 'isomorphic-fetch',
           amd: 'isomorphic-fetch'
         }
-      }
-    ],
-    rules: [
-      {
-        test: /\.css$/,
-        use: extractCSS.extract(["css-loader?minimize"])
       }
     ]
   },
