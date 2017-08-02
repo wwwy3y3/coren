@@ -1,0 +1,21 @@
+{
+  "dependencies": {
+    "babel-loader": "^7.1.1",
+    "bluebird": "^3.5.0",
+    "css-loader": "^0.28.4",
+    "extract-text-webpack-plugin": "^3.0.0",
+    "immutable": "^3.8.1",
+    "lodash": "^4.17.4",
+    "nedb": "^1.8.0",
+    "react-redux": "^5.0.5",
+    "redux": "^3.7.2",
+    "redux-api-middleware": "^1.0.3",
+    "redux-logger": "^3.0.6",
+    "request-promise": "^4.2.1",
+    "style-loader": "^0.18.2"
+  },
+  "devDependencies": {
+    "babel": "^6.23.0",
+    "babel-cli": "^6.24.1"
+  }
+}

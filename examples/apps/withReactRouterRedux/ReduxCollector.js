@@ -26,7 +26,7 @@ class ReduxCollector {
   }
 
   appendToHead($head) {
-    $head.append(`<script data-coren>
+    $head.append(`<script>
       window.__PRELOADED_STATE__ = ${JSON.stringify(this.state)}
       </script>`);
   }

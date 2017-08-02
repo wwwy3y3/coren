@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "babel-loader": "^6.2.3",
+    "coren": "^1.1.0",
+    "mkdirp": "^0.5.1",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1"
+  }
+}
