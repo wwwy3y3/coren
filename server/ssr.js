@@ -1,10 +1,8 @@
 import {resolve, join, relative} from 'path';
-import {
-  App,
-  MultiRoutesRenderer,
-  HeadCollector,
-  RoutesCollector
-} from 'coren';
+import App from './app';
+import MultiRoutesRenderer from './ssrRenderers/multiRoutes';
+import HeadCollector from './collectors/headCollector';
+import RoutesCollector from './collectors/routesCollector';
 import mkdirp from 'mkdirp';
 import Promise from 'bluebird';
 import loadCorenConfig from './loadCorenConfig';

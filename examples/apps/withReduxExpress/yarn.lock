@@ -815,9 +815,9 @@ core-util-is@1.0.2, core-util-is@~1.0.0:
   version "1.0.2"
   resolved "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
 
-coren@^1.1.2-5:
-  version "1.1.2-5"
-  resolved "https://registry.npmjs.org/coren/-/coren-1.1.2-5.tgz#79a77120c101a3f2f4c79176628e35d62a6be2db"
+coren@^1.1.2-8:
+  version "1.1.2-8"
+  resolved "https://registry.npmjs.org/coren/-/coren-1.1.2-8.tgz#51fb8e8845fc237c6d8a2aebf6d1bcf8903e26c3"
   dependencies:
     babel-load-config "^1.0.0"
     babel-preset-es2015 "^6.24.1"

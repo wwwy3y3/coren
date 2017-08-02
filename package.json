@@ -1,6 +1,6 @@
 {
   "name": "coren",
-  "version": "1.2.0",
+  "version": "1.1.2-8",
   "description": "",
   "homepage": "",
   "author": {
@@ -24,9 +24,9 @@
   "scripts": {
     "lint": "eslint client server test",
     "clean": "rimraf lib",
-    "build": "npm run clean && gulp build",
-    "build:watch": "gulp build:watch",
-    "prepublish": "npm run clean && npm run build && check:src",
+    "build": "gulp build",
+    "build:watch": "npm run clean && gulp build:watch",
+    "prepublish": "npm run clean && npm run build && npm run check:src",
     "check:src": "npm run lint",
     "build:examples": "rimraf examples-dist && cross-env BABEL_ENV=commonjs babel examples --out-dir examples-dist",
     "test": "cross-env NODE_ENV=test jest --coverage",
