@@ -24,7 +24,8 @@ export default class UserList extends Component {
     return new Url('/users');
   }
 
-  static definePreloadedState({db}) {
+  static definePreloadedState({context}) {
+    const {db} = context;
     return db.users.find().execAsync()
     .then(list => ({
       users: {
