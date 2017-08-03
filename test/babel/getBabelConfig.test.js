@@ -1,15 +1,15 @@
-import {resolve} from 'path';
-import getBabelConfig from '../../src/babel/getBabelConfig';
-import defaultBabelrc from '../../src/babel/defaultBabelrc';
+import {join} from 'path';
+import getBabelConfig from '../../server/babel/getBabelConfig';
+import defaultBabelrc from '../../server/babel/defaultBabelrc';
 
 describe('getBabelConfig', () => {
   it('withBabelrc', () => {
-    const re = getBabelConfig(resolve('./test/examples/withBabelrc'));
+    const re = getBabelConfig(join(__dirname, '../testExample/withBabelrc'));
     expect(re).toEqual({babelrc: true});
   });
 
   it('withoutBabelrc', () => {
-    const re = getBabelConfig(resolve('./test/examples/withoutBabelrc'));
+    const re = getBabelConfig(join(__dirname, '../testExample/withoutBabelrc'));
     expect(re).toEqual({
       babelrc: false,
       ...defaultBabelrc

@@ -1,5 +1,5 @@
 import {resolve} from 'path';
-import loadCorenConfig, {defaultConfig} from '../src/loadCorenConfig';
+import loadCorenConfig, {defaultConfig} from '../server/loadCorenConfig';
 
 it('loadCorenConfig', () => {
   const corenConfig = require('./testExample/coren.config');

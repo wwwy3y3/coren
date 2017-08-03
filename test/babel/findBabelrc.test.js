@@ -1,6 +1,14 @@
-import getBabelrc from '../../src/babel/getBabelrc';
+import findBabelrc from '../../server/babel/findBabelrc';
+import {join} from 'path';
 
-it('getBabelrc', () => {
-  const re = getBabelrc('./testExample/component');
-  console.log(re);
+describe('findBabelrc', () => {
+  it('with babel', () => {
+    const re = findBabelrc(join(__dirname, '../testExample/withBabelrc'));
+    expect(Boolean(re)).toBe(true);
+  });
+
+  it('without babelrc', () => {
+    const re = findBabelrc(join(__dirname, '../testExample/withoutBabelrc'));
+    expect(Boolean(re)).toBe(false);
+  });
 });

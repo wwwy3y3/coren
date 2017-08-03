@@ -3,11 +3,8 @@ import webpack from 'webpack';
 import nodeExternals from 'webpack-node-externals';
 
 export default function serverClientWebpackConfig({dir, shareConfig, corenConfig}) {
-  let config = {
-    ...shareConfig
-  };
-  config = {
-    ...config,
+  const config = {
+    ...shareConfig,
     entry: corenConfig.entry,
     target: 'node',
     output: {
@@ -18,7 +15,7 @@ export default function serverClientWebpackConfig({dir, shareConfig, corenConfig
     externals: [
       nodeExternals(),
       /^(coren|\$)$/i,
-      ...config.externals
+      ...shareConfig.externals
     ]
   };
   return webpack(config);
