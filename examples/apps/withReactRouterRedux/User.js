@@ -22,7 +22,8 @@ export default class UserList extends Component {
     };
   }
 
-  static defineRoutes({ParamUrl, db}) {
+  static defineRoutes({ParamUrl, context}) {
+    const {db} = context;
     return new ParamUrl({
       url: '/users/:id',
       dataProvider: () => db.users.find().execAsync()

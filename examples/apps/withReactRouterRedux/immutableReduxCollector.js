@@ -2,15 +2,14 @@ import {createStore} from 'redux';
 import {Provider} from 'react-redux';
 import react from 'react';
 import immutable from 'immutable';
-// import {ReduxCollector} from 'coren';
-import ReduxCollector from './ReduxCollector';
+import {ReduxCollector} from 'coren';
 import {isEmpty} from 'lodash';
 
 export default class ImmutableReduxCollector extends ReduxCollector {
 
   appendToHead($head) {
     $head.append(`<script src="https://cdnjs.cloudflare.com/ajax/libs/immutable/3.8.1/immutable.min.js"></script>`);
-    $head.append(`<script>
+    $head.append(`<script data-coren>
       window.__PRELOADED_STATE__ = Immutable.fromJS(${JSON.stringify(this.state ? this.state.toJS() : {})})
       </script>`);
   }

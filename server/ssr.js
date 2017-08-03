@@ -1,8 +1,6 @@
 import {resolve, join, relative} from 'path';
 import App from './app';
 import MultiRoutesRenderer from './ssrRenderers/multiRoutes';
-import HeadCollector from './collectors/headCollector';
-import RoutesCollector from './collectors/routesCollector';
 import mkdirp from 'mkdirp';
 import Promise from 'bluebird';
 import loadCorenConfig from './loadCorenConfig';
@@ -25,27 +23,19 @@ class SsrApp {
     this.config = config;
   }
 
-  registerCollector(db) {
-    this.app.registerCollector("head", new HeadCollector());
-    this.app.registerCollector("routes", new RoutesCollector({
-      componentProps: {db}
-    }));
-    this.registerCustomCollector(db);
-  }
-
-  registerCustomCollector(db) {
-    if (!this.config.customCollector) {
+  registerCollector(context) {
+    if (!this.config.registerCollector) {
       return;
     }
-    const returnApp = this.config.customCollector(this.app, {db});
+    const returnApp = this.config.registerCollector(this.app, {context});
     if (!returnApp instanceof App) {
       throw new Error('You need to return App instance');
     }
     this.app = returnApp;
   }
 
-  render(db) {
-    this.registerCollector(db);
+  render(context) {
+    this.registerCollector(context);
     const options = {app: this.app, js: [assetToRelativePath(this.assets['.js'], this.publicDir)]};
     if (this.assets['.css']) {
       options.css = [assetToRelativePath(this.assets['.css'], this.publicDir)];
@@ -84,20 +74,20 @@ export default class ssr {
     return JSON.parse(data);
   }
 
-  fetchDB() {
-    const {getDB} = this.config;
-    if (getDB) {
-      return getDB().then(db => {
-        this.db = db;
+  prepareContext() {
+    const {prepareContext} = this.config;
+    if (prepareContext) {
+      return prepareContext().then(context => {
+        this.context = context;
       });
     }
     return new Promise(resolve => resolve());
   }
 
   render() {
-    this.fetchDB().then(() => {
+    this.prepareContext().then(() => {
       this.apps.forEach(app => {
-        app.render(this.db);
+        app.render(this.context);
       });
     });
   }

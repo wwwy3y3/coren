@@ -2,6 +2,7 @@ const webpack = require('webpack');
 const Datastore = require('nedb');
 const bluebird = require('bluebird');
 const rp = require('request-promise');
+const {HeadCollector, RoutesCollector} = require('coren');
 const ImmutableReduxCollector = require('./immutableReduxCollector');
 const reducer = require('./reducer');
 
@@ -27,14 +28,18 @@ module.exports = {
       }
     ]
   },
-  customCollector: function(app, {db}) {
+  registerCollector: function(app, {context}) {
+    app.registerCollector("head", new HeadCollector());
+    app.registerCollector("routes", new RoutesCollector({
+      componentProps: {context}
+    }));
     app.registerCollector("redux", new ImmutableReduxCollector({
-      componentProps: {db},
+      componentProps: {context},
       reducers: reducer
     }));
     return app;
   },
-  getDB: function() {
+  prepareContext: function() {
     const db = new Datastore();
     const Cursor = db.find().constructor;
     bluebird.promisifyAll(Datastore.prototype);
@@ -45,7 +50,7 @@ module.exports = {
       return db.insertAsync(JSON.parse(json));
     })
     .then(() => {
-      return {users: db};
+      return {db: {users: db}};
     });
   }
 };
