@@ -10,8 +10,6 @@ module.exports = {
   entry: {
     index: './index.js'
   },
-  wrapper: ['router', 'redux'],
-  reduxStore: './configureStore.js',
   webpack: {
     plugins: [
       new webpack.BannerPlugin('This file is created by coren. Built time: ' + new Date())

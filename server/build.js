@@ -1,51 +1,66 @@
-import {join, relative} from 'path';
-import {wrappedEntryDir} from './CONFIG';
+import {join, relative, resolve} from 'path';
+import App from './app';
+import {clientTmpEntryDir} from './CONFIG';
 import webpack from './webpack';
 import loadCorenConfig from './loadCorenConfig';
 import fs from 'fs';
 import mkdirp from 'mkdirp';
 
-function getWrapper(config, tmpEntryDir, dir) {
-  if (config.wrapper.includes('redux')) {
-    if (!config.reduxStore) {
-      throw new Error('You need to provide `reduxStore` path in your coren.config.js when you use redux wrapper');
-    }
-    const wrapperPath = require.resolve('./components/RouterReduxWrapper');
-    const wrapper = fs.readFileSync(wrapperPath, 'utf8');
-    const configureStorePath = relative(tmpEntryDir, join(dir, config.reduxStore));
-    return `
-import configureStore from "${configureStorePath}";
-${wrapper}
-    `;
-  }
-  const wrapperPath = require.resolve('./components/NormalWrapper');
-  return fs.readFileSync(wrapperPath, 'utf8');
-}
-
-function createWrapEntry(dir, config) {
+function addClientEntry(dir, config) {
   const {entry} = config;
-  const tmpEntryDir = wrappedEntryDir(dir);
-  mkdirp.sync(tmpEntryDir);
-  // add tmpEntry to render xxxx.web.js
-  config.tmpEntry = {};
-  const wrapper = getWrapper(config, tmpEntryDir, dir);
+  const clientEntryDir = clientTmpEntryDir(dir);
+  mkdirp.sync(clientEntryDir);
+  config.clientEntry = {};
   for (let key in entry) {
-    const entryPath = entry[key];
-    const path = relative(tmpEntryDir, join(dir, entryPath));
-    const tmpJS = `
-import App from "${path}";
-${wrapper}
-    `;
-    const tmpPath = join(tmpEntryDir, entryPath);
-    config.tmpEntry[key] = tmpPath;
-    fs.writeFileSync(tmpPath, tmpJS, 'utf8');
+    const clientEntryPath = join(clientEntryDir, entry[key]);
+    config.clientEntry[key] = clientEntryPath;
   }
   return config;
 }
 
+function createClientTmpEntryFile(dir, config) {
+  let clientImport =
+    `import React from 'react';
+     import ReactDOM from 'react-dom';`;
+  let clientRender = '<App/>';
+  const {entry} = config;
+  // use first entry js to get collector's wrapClientRender & wrapClientImport
+  const firstKey = Object.keys(entry)[0];
+  let app = new App({path: resolve(dir, '.coren', 'dist', `${firstKey}.commonjs2.js`)});
+  if (config.registerCollector) {
+    app = config.registerCollector(app, {context: {}});
+  }
+  app.collectors.forEach(collector => {
+    // collect wrapClientImport & wrapClientRender content
+    if (collector.wrapClientImport) {
+      clientImport += collector.wrapClientImport();
+    }
+    if (collector.wrapClientRender) {
+      clientRender = collector.wrapClientRender(clientRender);
+    }
+  });
+  clientRender =
+    `ReactDOM.render(
+      <div>
+        ${clientRender}
+      </div>
+    , document.getElementById('root'));`;
+  for (let key in entry) {
+    const entryPath = entry[key];
+    const clientEntryDir = clientTmpEntryDir(dir);
+    const path = relative(clientEntryDir, join(dir, entryPath));
+    const tmpJS =
+      `${clientImport}
+       import App from "${path}";
+       ${clientRender}`;
+    const clientEntryPath = join(clientEntryDir, entryPath);
+    fs.writeFileSync(clientEntryPath, tmpJS, 'utf8');
+  }
+}
+
 export default function build(dir) {
   const config = loadCorenConfig(dir);
-  const updatedCorenConfig = createWrapEntry(dir, config);
+  const updatedCorenConfig = addClientEntry(dir, config);
   const {clientCompiler, serverCompiler} = webpack({dir, corenConfig: updatedCorenConfig});
   return new Promise((resolve, reject) => {
     // run server webpack & client webpack
@@ -62,6 +77,8 @@ export default function build(dir) {
         error.warnings = jsonStats.warnings;
         return reject(error);
       }
+      // after server webpack compiled, load commonjs2 to collect client needed information
+      createClientTmpEntryFile(dir, updatedCorenConfig);
       clientCompiler.run((err, stats) => {
         if (err) {
           return reject(err);

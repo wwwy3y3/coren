@@ -22,18 +22,15 @@ export default function createClientWebpackConfig({dir, dev = false, shareConfig
       })
     );
   }
-  let config = {
-    ...shareConfig
-  };
-  config = {
-    ...config,
-    entry: corenConfig.tmpEntry,
+  const config = {
+    ...shareConfig,
+    entry: corenConfig.clientEntry,
     output: {
       path: distDir,
       filename: '[name].web.js'
     },
     plugins: [
-      ...config.plugins,
+      ...shareConfig.plugins,
       ...plugins
     ]
   };

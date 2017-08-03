@@ -1,4 +1,4 @@
 import {join} from 'path';
-exports.wrappedEntryDir = dir => {
+exports.clientTmpEntryDir = dir => {
   return join(dir, '.coren', 'tmp');
 };

@@ -13,7 +13,11 @@ function assetToRelativePath(assets, publicDir) {
   return assets;
 }
 
-class SsrApp {
+function getPath(route, entryName) {
+  return `${route}/${entryName}.html`;
+}
+
+class Entry {
   constructor({entryName, assets, dir, path, config}) {
     this.entryName = entryName;
     this.assets = assets;
@@ -61,10 +65,10 @@ export default class ssr {
     this.dir = dir;
     this.config = loadCorenConfig(dir);
     const {entry} = this.config;
-    this.apps = [];
+    this.entries = [];
     const assets = this.getAssetsJson();
     for (let key in entry) {
-      this.apps.push(new SsrApp({entryName: key, assets: assets[key], dir, path: resolve(dir, '.coren', 'dist', `${key}.commonjs2.js`), config: this.config}));
+      this.entries.push(new Entry({entryName: key, assets: assets[key], dir, path: resolve(dir, '.coren', 'dist', `${key}.commonjs2.js`), config: this.config}));
     }
   }
 
@@ -86,13 +90,9 @@ export default class ssr {
 
   render() {
     this.prepareContext().then(() => {
-      this.apps.forEach(app => {
-        app.render(this.context);
+      this.entries.forEach(entry => {
+        entry.render(this.context);
       });
     });
   }
-}
-
-function getPath(route, entryName) {
-  return `${route}/${entryName}.html`;
 }

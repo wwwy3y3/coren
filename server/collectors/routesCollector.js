@@ -75,6 +75,20 @@ class RoutesCollector {
   getRoutes() {
     return isEmpty(this.routes) ? ["/"] : this.routes;
   }
+
+  wrapClientImport() {
+    return `
+      import {BrowserRouter as Router} from 'react-router-dom';
+    `;
+  }
+
+  wrapClientRender($children) {
+    return `
+      <Router>
+        ${$children}
+      </Router>
+    `;
+  }
 }
 
 module.exports = RoutesCollector;

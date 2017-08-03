@@ -39,7 +39,7 @@ gulp.task('build', ['index'], () => {
 
 gulp.task('build:watch', ['index'], () => {
   gulp.src(['server/*', 'server/**/*'])
-    .pipe(watch('server/*'))
+    .pipe(watch(['server/*', 'server/**/*']))
     .pipe(babel())
     .pipe(gulp.dest('lib/server'));
   gulp.src('bin/*')

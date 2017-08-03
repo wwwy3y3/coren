@@ -37,6 +37,22 @@ class ReduxCollector {
     this.state = store.getState();
     return wrapedElements;
   }
+
+  wrapClientImport() {
+    return `
+      import {Provider} from 'react-redux';
+      import configureStore from '../../configureStore';
+      const preloadedState = window.__PRELOADED_STATE__;
+      delete window.__PRELOADED_STATE__;
+      const store = configureStore(preloadedState);`;
+  }
+
+  wrapClientRender($children) {
+    return `
+      <Provider store={store}>
+        ${$children}
+      </Provider>`;
+  }
 }
 
 module.exports = ReduxCollector;
