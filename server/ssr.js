@@ -10,7 +10,7 @@ function assetToRelativePath(assets, publicDir) {
   assets = assets.map(asset => {
     return relative(publicDir, asset);
   });
-  return assets;
+  return `/${assets}`;
 }
 
 function getPath(route, entryName) {

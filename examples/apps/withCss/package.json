@@ -1,8 +1,11 @@
 {
+  "scripts": {
+    "coren": "coren"
+  },
   "dependencies": {
     "babel-loader": "^7.1.1",
     "babel-preset-es2015": "^6.24.1",
-    "coren": "1.1.2-3",
+    "coren": "^1.2.3",
     "css-loader": "^0.28.4",
     "extract-text-webpack-plugin": "^3.0.0",
     "style-loader": "^0.18.2"
