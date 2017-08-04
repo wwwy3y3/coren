@@ -1,7 +1,10 @@
 {
+  "scripts": {
+    "coren": "coren"
+  },
   "dependencies": {
     "babel-loader": "^7.1.1",
-    "coren": "^1.1.2-8",
+    "coren": "latest",
     "express": "^4.15.3",
     "react-redux": "^5.0.5",
     "redux": "^3.7.2"

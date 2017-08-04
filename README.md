@@ -72,7 +72,9 @@ then add coren script at package.json scripts setting
 
 ``` json
 {
-  coren: "coren"
+  "scripts": {
+    "coren": "coren"
+  }
 }
 ```
 
