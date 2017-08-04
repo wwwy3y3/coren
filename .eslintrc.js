@@ -23,5 +23,9 @@ module.exports = {
       pragma: "React",  // Pragma to use, default to "React"
       version: "15.3.1"
     }
+  },
+  "rules": {
+    "require-jsdoc": 0,
+    "guard-for-in": 0
   }
 };

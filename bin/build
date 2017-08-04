@@ -1,0 +1,20 @@
+#!/usr/bin/env node
+const path = require('path');
+const parseArgs = require('minimist');
+const Ssr = require('../server/ssr');
+const build = require('../server/build');
+
+const argv = parseArgs(process.argv.slice(2), {
+  alias: {
+    h: 'help'
+  },
+  boolean: ['h']
+});
+
+const dir = path.resolve(argv._[0] || '.');
+build(dir)
+.then(() => {
+  console.log('Build commonjs success');
+  const ssr = new Ssr(dir);
+  ssr.render();
+});
