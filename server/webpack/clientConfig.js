@@ -1,6 +1,6 @@
 import webpack from 'webpack';
 import {join} from 'path';
-import AssetsPath from '../plugins/assets-path-plugin';
+import AssetsPath from '../webpackPlugins/assets-path-plugin';
 
 export default function createClientWebpackConfig({dir, dev = false, shareConfig, corenConfig}) {
   const distDir = join(dir, '.coren', 'public', 'dist');
