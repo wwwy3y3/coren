@@ -56,7 +56,7 @@ so many things need to be rendered in HTML
 - [Limitation](#limitation)
 - [More Example](#more-example)
 - [中文簡介](#%E4%B8%AD%E6%96%87%E7%B0%A1%E4%BB%8B)
-  * [License](#license)
+- [License](#license)
 
 # How to use?
 
@@ -494,6 +494,6 @@ Then just run deploy method to deploy this project.
 [Meduim 文章：Coren: React Composite Server-side Render](https://medium.com/canner-io-%E6%98%93%E9%96%8B%E7%A7%91%E6%8A%80/react-composite-server-side-render-a85a90f841f5)
 
 
-## License
+# License
 
 Apache-2.0 [@Canner](https://github.com/canner)
