@@ -1,6 +1,19 @@
 # Coren
-[![npm Version](https://img.shields.io/npm/v/coren.svg?style=flat-square)](https://www.npmjs.org/package/coren)
-[![Build Status](https://travis-ci.org/Canner/coren.svg?branch=master)](https://travis-ci.org/Canner/coren)
+
+[![npm Version](https://img.shields.io/npm/v/coren.svg?style=flat-square)](https://www.npmjs.org/package/coren) [![Build Status](https://travis-ci.org/Canner/coren.svg?branch=master)](https://travis-ci.org/Canner/coren)
+
+React Pluggable Serverside Render
+
+# Features
+
+- **Offline** ssr solution: your server will not include any react related code but still can do ssr.
+- **:electric_plug: Pluggable:** You can customize your own [collector](#collector) for your own need
+- **Access to Component Props:** in [componentDidConstruct](#componentDidConstruct) method from [Lifecycle Hook](#lifecycle-hook) you can access to component props
+- **Pass Variables To Component:** [Collector](#collector) can pass anything you want(`DB Query`, `Server API`) to [Define](#define) method
+- **Production stage** ssr: just run coren before deploy code
+
+
+
 ## React Pluggable Serverside Render
 
 Is serverside render a big headache for your Single Page App?
@@ -19,475 +32,402 @@ so many things need to be rendered in HTML
 
 `Coren` provide you pluggable, flexible way to render your html
 
+
+
 ## Table Of Content
-- [Features](#features)
-- [Installation](#installation)
-- [Simple Example](#simple-example)
-- [Concepts](#concepts)
-    * [Define](#define)
-    * [Lifecycle Hook](#lifecycle-hook)
-    * [Collector](#collector)
-    * [App](#app)
-    * [Serverside Renderer](#serverside-renderer)
-- [API](#api)
-    * [App](#app-1)
-    * [Collector](#collector-1)
-- [Usage](#usage)
-    * [Getting Started](#getting-started)
-    * [How to create own Collector](#how-to-create-own-collector)
-    * [Example](#example)
 
-# Features
-- **:electric_plug:Pluggable:** You can customize your own [collector](#collector) for your own need
-- **Access to Component Props:** in [componentDidConstruct](#componentDidConstruct) method from [Lifecycle Hook](#lifecycle-hook) you can access to component props
-- **Pass Variables To Component:** [Collector](#collector) can pass anything you want(`DB Query`, `Server API`) to [Define](#define) method
+- [How to use?](#how-to-use)
+  * [Setup](#setup)
+  * [What coren do?](#what-coren-do)
+  * [coren.config.js](#corenconfigjs)
+      - [entry](#entry)
+      - [webpack](#webpack)
+      - [registerCollector](#registercollector)
+      - [prepareContext](#preparecontext)
+  * [Collector](#collector)
+      - [HeadCollector](#headcollector)
+      - [RouteCollector](#routecollector)
+      - [ReduxCollector](#reduxcollector)
+    + [How to create own Collector](#how-to-create-own-collector)
+  * [Express Integration - coren middleware](#express-integration---coren-middleware)
+    + [API](#api)
+      - [res.sendCoren(<entry>, {updatePreloadedState?: {}})](#ressendcorenentry-updatepreloadedstate-)
+  * [Integrate with current project](#integrate-with-current-project)
+- [Limitation](#limitation)
+- [More Example](#more-example)
+- [中文簡介](#%E4%B8%AD%E6%96%87%E7%B0%A1%E4%BB%8B)
+  * [License](#license)
 
-# Installation
-``` sh
-$ npm install coren --save
+# How to use?
+
+## Setup
+
+Install coren and needed package.
+
+``` bash
+npm install coren react react-dom express —save
 ```
 
-# Simple Example
-Here's some simple example components using collector
-## Head
-we'll insert what component want as <title> to HTML
-### React
-``` js
-@collector()
-export default class User extends Component {
+then add coren script at package.json scripts setting
 
-  // Put `user ${props.userId}` title tag to HTML
-  static defineHead(props) {
+``` json
+{
+  coren: "coren"
+}
+```
+
+after that you can start build your react app!
+
+Now add `index.js` & `style.css` file:
+
+**index.js**
+
+``` js
+import React, {Component} from 'react';
+import {collector} from 'coren';
+import './style.css';
+@collector()
+export default class Root extends Component {
+  static defineHead() {
     return {
-      title: `user ${props.userId}`
-    }
+      title: "home",
+      description: "home description"
+    };
   }
 
   render() {
-    return <div>
-      ...
-    </div>;
+    return (
+      <div className="hello">Hello Coren</div>
+    );
   }
 }
 ```
 
-### How HeadCollector insert head
-In MultiRoutesRenderer, HeadCollector insert head using `appendToHead`
-``` js
-class HeadCollector {
-  constructor() {
-    this.heads = [];
-  }
+**style.css**
 
-  // ...
-
-  componentDidConstruct(id, component, props) {
-    this.heads.push(component.defineHead(props));
-  }
-
-  getFirstHead() {
-    return this.heads[0] || {};
-  }
-
-  // ...
-
-  appendToHead($head) {
-    const {title, description} = this.getFirstHead();
-    $head.append(`<title>${title}</title>`);
-    $head.append(`<meta name="description" content="${description}">`);
-  }
+``` css
+.hello {
+  font-size: 50px;
+  color: orange;
 }
 ```
 
-### Serverside
-``` js
-const app = new App({
-  path: path.resolve(__dirname, 'path/to/app')
-});
+Then you need to add `coren.config.js`, that is the config file use to tell coren this repo's setting.
 
-// HeadCollector get data from `defineHead()`
-app.registerCollector("head", new HeadCollector());
+**coren.config.js**
 
-// ssr
-const ssr = new MultiRoutesRenderer({app});
-ssr.renderToString()
-.then(result => {
-  console.log(result);
-  // [{route: "/", html: "<html><head>user 1</head>...</html>"}]
-})
-.catch(err => console.log(err));
-```
+``` javascript
+const webpack = require('webpack');
+const {HeadCollector} = require('coren');
 
-## Redux preloaded state
-How `Coren` render `__PRELOADED_STATE__`
-### React
-``` js
-@collector()
-export default class Product extends Component {
-
-  // Fetch data first
-  // then, during serverside render, put `window.__PRELOADED_STATE__=${state}` to HTML
-  static definePreloadedState({db}) {
-    return db.fetch('products').exec()
-    .then(data => ({products: data}));
-  }
-
-  render() {
-    return <div>
-      ...
-    </div>;
-  }
-}
-```
-
-### Collector
-In ReduxCollector, we push promise we got from `definePreloadedState`
-
-then, we wait all promises done at `appWillRender`
-
-Last, we wrap your app with react-redux provider, and get state from `store.getState()`, append the state to `head`
-``` js
-class ReduxCollector {
-  // ...
-  componentDidImport(id, component) {
-    const promise = component.definePreloadedState(this.componentProps);
-    this.queries.push(promise);
-  }
-
-  appWillRender() {
-    return Promise.map(this.queries,
-      state => Object.assign(this.initialState, state));
-  }
-
-  wrapElement(appElement) {
-    const store = createStore(this.reducers, this.initialState);
-    const wrapedElements = react.createElement(Provider, {store}, appElement);
-    this.state = store.getState();
-    return wrapedElements;
-  }
-
-  appendToHead($head) {
-    $head.append(`<script>
-      window.__PRELOADED_STATE__ = ${JSON.stringify(this.state)}
-      </script>`);
-  }
-}
-```
-
-
-### Serverside
-``` js
-const app = new App({
-  path: path.resolve(__dirname, 'path/to/app')
-});
-
-// ReduxCollector get initialState from `definePreloadedState()`
-app.registerCollector("redux", new ReduxCollector({
-  // componentProps will be passed to 
-  componentProps: {
-    db
+module.exports = {
+  entry: {
+    index: './index.js'
   },
-  // reducer of your app
-  reducers: reducer
-}));
-
-// ssr
-const ssr = new MultiRoutesRenderer({app});
-ssr.renderToString()
-.then(result => {
-  console.log(result);
-  // [{route: "/", html: "<html><body>window.__PRELOADED_STATE__={...}</body>></html>"}]
-})
-.catch(err => console.log(err));
+  webpack: {
+    plugins: [
+      new webpack.BannerPlugin('This file is created by coren. Built time: ' + new Date())
+    ]
+  },
+  registerCollector: function(app) {
+    app.registerCollector("head", new HeadCollector());
+    return app;
+  }
+};
 ```
 
-# Concepts
-## Define
-`Coren` render html base on data gotten from Component.
+just run `npm run coren`, coren will build your app and do server side render.
 
-so, where do Component write what they could provide for Serverside render?
+Now, you finish building hello world app. It's time to use express to serve it!
 
-Component should use `@collector` decorator outside, and use static method, prefixed with `define`. In this case, `@collector` could return data back to server during right lifecycle.
+add **app.js**
 
+``` javascript
+var express = require('express');
+var app = express();
+var coren = require('coren/lib/server/coren-middleware');
+app.use(coren());
+app.use('/dist', express.static(__dirname + '/.coren/public/dist'));
 
-## Lifecycle Hook
-We metioned lifecycle above. How does this work?
+app.get('/', function(req, res) {
+  return res.sendCoren('index');
+});
 
-let us take a look at `collector` decorator
-``` js
-export default function() {
-  return WrappedComponent => {
-    const uniqId = shortid.generate();
-    /*
-      trigger componentDidImport lifecycle here
-      notify collectors
-    */
-    hook.componentDidImport(uniqId, WrappedComponent);
-    class Hoc extends React.Component {
-      constructor(props) {
-        super(props);
-        /*
-          trigger componentDidConstruct lifecycle here
-          pass props to collectors 
-        */
-        hook.componentDidConstruct(uniqId, WrappedComponent, props);
-      }
+app.listen(9393, 'localhost', function(err) {
+  if (err) {
+    console.log(err);
+    return;
+  }
 
-      render() {
-        return <WrappedComponent {...this.props} />;
-      }
-    }
-    return hoistStatic(Hoc, WrappedComponent);
-  };
+  console.log('Listening at http://localhost:9393');
+});
+```
+
+after that, here is your folder structure:
+
+``` javascript
+.
+├── .coren
+├── coren.config.js
+├── index.js
+├── package.json
+├── style.css
+└── app.js
+```
+
+just run `node app.js` to start express server and open `http://localhost:9393`. 
+
+Your server side render and bundle script is done!
+
+[simple example](https://github.com/Canner/coren/tree/master/examples/apps/withCss)
+
+## What coren do?
+
+- Automatically generate server side render result
+- Build static file: coren use webpack to build your app`(index.js)` and export your `css`
+- Smartly serve the ssr result
+
+And that's it. coren is easy to setup and easy to integrate in your current project.
+
+You only need to use proper collector and setup `coren.config.js`, how to do ssr, how to build your static file is coren's responsibility.
+
+## coren.config.js
+
+`coren.config.js` is config file to make coren run correctly.
+
+Below will introduce which key is supported.
+
+- entry
+- webpack
+- registerCollector
+- prepareContext
+
+#### entry
+
+> app you want to build (like webpack entry)
+
+- type: Object
+
+**example:** 
+
+``` javascript
+{
+  entry: {
+    index: './index.js'
+  }
 }
 ```
 
-During serverside render, two lifecycle will be triggered
-* `componentDidImport(id, component)`: called when component imported
-* `componentDidConstruct(id, component, props)`: called when component constructed
+#### webpack
 
-### **Why these two methods?**
-In `React-router`, only component matched with route will be rendered. So, component rendered will trigger both methods, on the other hand,  component *not* rendered will trigger only `componentDidImport`. It will help you put right data in your HTML.
+> custom webpack setting
 
-For Example, we should only put the `head` tags return from first constructed component. Components that didn't trigger `componentDidConstruct` should not be considered.
+- type: Object
+
+This setting is the same as webpack.
+
+Just put any webpack config in here except `entry`.
+
+**example:**
+
+``` javascript
+{
+   webpack: {
+    plugins: [
+      new webpack.BannerPlugin('This file is created by coren. Built time: ' + new Date())
+    ]
+  }
+}
+```
+
+#### registerCollector
+
+> register this app's custom collector
+
+- type: Function(app, {context})
+- return: App
+
+require needed collector and register it at this setting.
+
+**example:**
+
+``` javascript
+const {HeadCollector, RoutesCollector} = require('coren');
+module.exports = {
+    registerCollector: function(app, {context}) {
+    app.registerCollector("head", new HeadCollector());
+    app.registerCollector("routes", new RoutesCollector({
+      componentProps: {context}
+    }));
+    return app;
+  },
+}
+```
+
+#### prepareContext
+
+> use to get context and pass context to coren
+
+- type: Function
+- return: Promise
+
+`context` is a parameter pass to collector.
+
+So if there are some parameter you want to pass to collector before coren start. Do it here.
+
+**example:**
+
+``` javascript
+{
+  prepareContext: function() {
+    return Promise.resolve({db: {auth: true}});
+  }
+}
+```
+
+
 
 ## Collector
+
+Above example, coren use static method starting with `define` and `collector` decorator to make coren work.
+
 **What is a `Collector`?**
 
 `Collector` collect data from `define` methods, collector can choose which lifecycle it want to call `define` method.
 
-For example, we take a look at `HeadCollector`, `HeadCollector` call `defineHead(props)` in `componentDidConstruct`, it get `{title, description}`, then push to heads array.
+With collector, you can inject head, body in ssr result. You also can use any framework at your app.
 
-when `serverside renderer` call `appendToHead`, `HeadCollector` push the first head it got from component to `$head`
+The follow to use collector:
 
-``` js
-class HeadCollector {
-  constructor() {
-    this.heads = [];
-  }
+1. include and register needed collector at `coren.config.js`
+2. use `collector()` decorator at the component will use collector.
+3. use `defineXXXX` method at component.
 
-  // ...
+Below list the collector that coren supports now.
 
-  componentDidConstruct(id, component, props) {
-    this.heads.push(component.defineHead(props));
-  }
+#### HeadCollector
 
-  getFirstHead() {
-    return this.heads[0] || {};
-  }
+##### coren.config.js
 
-  // ...
-
-  appendToHead($head) {
-    const {title, description} = this.getFirstHead();
-    $head.append(`<title>${title}</title>`);
-    $head.append(`<meta name="description" content="${description}">`);
+``` javascript
+const {HeadCollector} = require('coren');
+module.exports = {
+  registerCollector: function(app, {context}) {
+    app.registerCollector("head", new HeadCollector());
+    return app;
   }
 }
 ```
 
-## App
-App represent your react application. developer use `App` to register collector
-``` js
-// create App with path to your React App entry file
-const app = new App({
-  path: path.resolve(__dirname, 'path/to/app')
-});
+##### app
 
-// register collector
-app.registerCollector("head", new HeadCollector());
-```
+supported `define` api:
 
-`App` controlls lifecycle of all registered collectors.
+**defineHead**
 
-Serverside renderer will call `App`'s lifecycle method at certain time, to get the desired result it want.
+- return: `{title: String, description: String}`
 
+example:
 
-## Serverside Renderer
-The main purpose of Serverside Renderer is to create HTML. By calling `App` to controll lifecycle of collectors, make sure collectors get the result they want.
-
-### Collector Lifecycle
-In `MultiRoutesRenderer`, every collector will go through same phases:
-1. `componentDidImport(id, component)`: when component imported
-2. `appWillRender`: do some async work here if you want to make some api call before render
-3. `routeWillRender`: when rendering multiple routes, appWillRender will be called every time the route match with your component and trigger render, so is every method below
-4. `wrapElement`: you can wrap your app reactElement if you need a provider outside
-5. (app renderToString) => ssrRenderer will call ReactDom.renderToString
-6. `componentDidConstruct(id, component, props)`: called when component was constructed
-7. `appendToHead($cheerio('head'))`: append any html to head
-8. `appendToBody($cheerio('body'))`: append any html to body
-
-
-# API
-## App
-### constructor({path: String})
-* path: path to your React app entry file
-``` js
-const app = new App({
-  path: path.resolve(__dirname, 'path/to/app')
-});
-```
-
-### registerCollector(key: String, collector: Collector)
-* key: you can directly access to collector by key
-``` js
-app.getCollector("head")
-// return headCollector
-```
-* collector: the collector you want to register
-
-``` js
-app.registerCollector("head", new HeadCollector());
-```
-
-## Collector
-### ifEnter(component): Boolean
-`app` will use `ifEnter` to determine whether call this collector or not
-
-### componentDidImport(id, component): void
-called when component imported, when component imported, a unique id attached to it, so you'll know where this component appeared before or not in `componentDidConstruct`.
-
-### componentDidConstruct(id: String, component: ReactComponent, props: Object): void
-called when component was constructed
-
-### appWillRender(): Promise
-Because we react wont wait for your async code during `import`. So a better way to use async related task is to push your promise to an array, wait for them in `appWillRender`.
-
-Take reduxCollector for example:
-``` js
-// /src/reduxCollector
-componentDidImport(id, component) {
-  const promise = component.definePreloadedState(this.componentProps);
-  this.queries.push(promise);
-}
-
-appWillRender() {
-  return Promise.map(this.queries,
-    state => Object.assign(this.initialState, state));
-}
-```
-
-### routeWillRender(): void
-In `MultiRoutesRenderer`, you'll have multiple routes to be rendered, so you need a hook to tell your collector when a route is going to be rendered. You can do some reset variable things here.
-
-Take `HeadCollector` for example, we make sure we collect fresh head from component constructed.
-``` js
-componentDidConstruct(id, component, props) {
-  this.heads.push(component.defineHead(props));
-}
-
-routeWillRender() {
-  // empty heads
-  this.heads = [];
-}
-```
-
-### wrapElement(ReactElement): ReactElement
-Some module require developer wrap ReactElement with provider in serverside render.
-
-Take `reduxCollector` for example, we wrap ReactElement with react-redux provider.
-``` js
-wrapElement(appElement) {
-  const store = createStore(this.reducers, this.initialState);
-  const wrapedElements = react.createElement(Provider, {store}, appElement);
-  this.state = store.getState();
-  return wrapedElements;
-}
-```
-
-### appendToHead($head: cheerio)
-append any html to head
-
-### appendToBody($body: cheerio)
-append any html to body
-
-# Usage
-## Getting Started
-1. npm install coren --save
-2. use @collector in your component
-``` js
-import collector from 'coren/lib/client/collectorHoc';
-
+``` javascript
 @collector()
-export default class UserList extends Component {
-  // ...
-  render() {
-    ...
-  }
-}
-```
-
-3. write `define` method.
-``` js
-@collector()
-export default class UserList extends Component {
+export default class Root extends Component {
   static defineHead() {
     return {
-      title: "user list",
-      description: "user list"
+      title: "home",
+      description: "home description"
     };
   }
+}
+```
 
-  static defineRoutes({Url}) {
-    return new Url('/users');
+#### RouteCollector
+
+##### coren.config.js
+
+``` javascript
+const {RoutesCollector} = require('coren');
+module.exports = {
+  registerCollector: function(app, {context}) {
+    app.registerCollector("routes", new RoutesCollector({
+      componentProps: {context}
+    }));
+    return app;
   }
+}
+```
 
-  static definePreloadedState({db}) {
-    return db.users.find().execAsync()
-    .then(list => ({
-      users: {
-        list,
-        fetched: true,
+##### app
+
+supported `define` api:
+
+**defineRoutes**
+
+- params: {Url, ParamUrl}
+- return: `Url` instance || `ParamUrl` instance
+
+example:
+
+``` javascript
+@collector()
+export default class Root extends Component {
+  static defineRoutes({Url, ParamUrl}) {
+    return new Url('/');
+  }
+}
+```
+
+#### ReduxCollector
+
+With ReduxCollector, your app will support `PRELOADED_STATE`. It means that your redux app can get initial state directly from ssr result.
+
+**coren.config.js**
+
+``` javascript
+const {ReduxCollector} = require('coren');
+const reducer = require('./reducer'); 
+module.exports = {
+  registerCollector: function(app, {context}) {
+    app.registerCollector("redux", new ReduxCollector({
+      componentProps: {context},
+      reducers: reducer,
+      configureStore: path.resolve(__dirname, './configureStore')
+    }));
+    return app;
+  },
+}
+```
+
+##### app
+
+supported `define` api:
+
+**definePreloadedState**
+
+- return: Promise
+
+example:
+
+``` javascript
+@collector()
+class UserList extends Component {
+  static definePreloadedState() {
+    return Promise.resolve({
+      currentUser: {
+        data: {},
+        fetched: false,
         isFetching: false,
         error: false
       }
-    }));
+    });
   }
 }
 ```
 
-4. serverside render
-serverside render with `app` and `multiRoutesRenderer`
-``` js
-const db = mongodb;
-const app = new App({
-  path: path.resolve(__dirname, 'path/to/app')
-});
+So collector is a fully customizable function. Based on different use case, you can add different collector do meet the demand.
 
-// register collectors
-app.registerCollector("head", new HeadCollector());
-app.registerCollector("routes", new RoutesCollector({
-  componentProps: {
-    db
-  }
-}));
-app.registerCollector("redux", new ImmutableReduxCollector({
-  componentProps: {
-    db
-  },
-  reducers: reducer
-}));
+### How to create own Collector
 
-// ssr
-const ssr = new MultiRoutesRenderer({
-  app,
-  // bundle path will be append to html body
-  js: ["/bundle.js"]
-});
-
-// get the array of html result
-ssr.renderToString()
-.then(results => {
-  return Promise.all(results.map(result => {
-    // throw HTML to anywhere you want
-    // cached to web server, cache server
-    // write to s3, cdn
-  }));
-})
-.catch(err => console.log(err));
-```
-
-## How to create own Collector
 Write your own class, implement methods in [Collector](#Collector).
 
 Take a look at built-in collector for reference.
@@ -495,10 +435,63 @@ Take a look at built-in collector for reference.
 https://github.com/Canner/coren/tree/master/server/collectors
 
 
-## Example
-Here's a example repo using this module.
-https://github.com/Canner/coren-example
+## Express Integration - coren middleware
 
-## 中文簡介
+From above example, in our express server, just include `coren middleware` and then ssr is done.
+
+It means that we don't need to require any react related code and coren module. So your server become cleaner and lower loading.
+
+### API
+
+#### res.sendCoren(<entry>, {updatePreloadedState?: {}})
+
+sendCoren api use to send proper entry result. this `entry` is the same with `coren.config.js` entry.
+
+So, if you want to return `index` entry, you can write: `res.sendCoren('index')`
+
+**example:**
+
+``` javascript
+var express = require('express');
+var app = express();
+var coren = require('coren/lib/server/coren-middleware');
+app.use(coren()); // use middleware
+app.use('/dist', express.static(__dirname + '/.coren/public/dist'));
+
+app.get('/', function(req, res) {
+  return res.sendCoren('index');
+});
+...
+```
+
+## Integrate with current project
+
+Though coren is unstable now, in our concept, it's very easy to integrate coren to your current project.
+
+Just follow these steps:
+
+1. write `coren.config.js`: including transfer webpack `production` setting
+2. add `defineXXXXX` method at your component
+3. add `coren middleware` at express server
+4. `npm run coren`
+
+Then just run deploy method to deploy this project.
+
+# Limitation
+
+- Based on webpack: coren strongly count on webpack, currently it doesn't support other tools like `rollup`, `browserify`. 
+
+
+# More Example
+
+- complete coren example: https://github.com/Canner/coren-example
+- simple example: https://github.com/Canner/coren/tree/master/examples/apps/
+
+# 中文簡介
 
 [Meduim 文章：Coren: React Composite Server-side Render](https://medium.com/canner-io-%E6%98%93%E9%96%8B%E7%A7%91%E6%8A%80/react-composite-server-side-render-a85a90f841f5)
+
+
+## License
+
+Apache-2.0 [@Canner](https://github.com/canner)
