@@ -46,14 +46,21 @@ function createClientTmpEntryFile(dir, config) {
       </div>
     , document.getElementById('root'));`;
   for (let key in entry) {
+    // entryPath: ./src/index.js
     const entryPath = entry[key];
-    const clientEntryDir = clientTmpEntryDir(dir);
-    const path = relative(clientEntryDir, join(dir, entryPath));
+    // clientTmpDir: /.coren/tmp
+    const clientTmpDir = clientTmpEntryDir(dir);
+    // clientEntryPath: /.coren/src/index.js
+    const clientEntryPath = join(clientTmpDir, entryPath);
+    // clientEntryDir: /.coren/src
+    const clientEntryDir = resolve(clientEntryPath, '../');
+    mkdirp.sync(clientEntryDir);
+    // importPath
+    const importPath = relative(clientEntryDir, join(dir, entryPath));
     const tmpJS =
       `${clientImport}
-       import App from "${path}";
+       import App from "${importPath}";
        ${clientRender}`;
-    const clientEntryPath = join(clientEntryDir, entryPath);
     fs.writeFileSync(clientEntryPath, tmpJS, 'utf8');
   }
 }
