@@ -10,7 +10,7 @@ const getEntryHtml = entry => {
 
 module.exports = function() {
   return function corenMiddleware(req, res, next) {
-    res.sendCoren = function(entry, options) {
+    res.sendCoren = function(entry, options = {}) {
       // multi routes render
       // from index/users/1 => users/index/1
       if (entry.indexOf('/') >= 0) {
