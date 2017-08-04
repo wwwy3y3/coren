@@ -5,6 +5,7 @@ const rp = require('request-promise');
 const {HeadCollector, RoutesCollector} = require('coren');
 const ImmutableReduxCollector = require('./immutableReduxCollector');
 const reducer = require('./reducer');
+const path = require('path');
 
 module.exports = {
   entry: {
@@ -33,7 +34,8 @@ module.exports = {
     }));
     app.registerCollector("redux", new ImmutableReduxCollector({
       componentProps: {context},
-      reducers: reducer
+      reducers: reducer,
+      configureStore: path.resolve(__dirname, './configureStore')
     }));
     return app;
   },

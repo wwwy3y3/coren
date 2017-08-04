@@ -1,6 +1,7 @@
 const webpack = require('webpack');
 const {ReduxCollector} = require('coren');
 const reducer = require('./reducer');
+const path = require('path');
 
 module.exports = {
   entry: {
@@ -16,7 +17,8 @@ module.exports = {
   customCollector: function(app) {
     app.registerCollector("redux", new ReduxCollector({
       componentProps: {db: {auth: false}},
-      reducers: reducer
+      reducers: reducer,
+      configureStore: path.resolve(__dirname, './configureStore')
     }));
     return app;
   }

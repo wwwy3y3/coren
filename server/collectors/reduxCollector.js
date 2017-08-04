@@ -4,11 +4,15 @@ const react = require('react');
 const Promise = require('bluebird');
 
 class ReduxCollector {
-  constructor({componentProps, reducers}) {
+  constructor({componentProps, reducers, configureStore}) {
+    if (!configureStore) {
+      throw new Error("configureStore is required in ReduxCollector");
+    }
     this.queries = [];
     this.initialState = {};
     this.componentProps = componentProps;
     this.reducers = reducers;
+    this.configureStore = configureStore;
   }
 
   ifEnter(component) {
@@ -41,7 +45,7 @@ class ReduxCollector {
   wrapClientImport() {
     return `
       import {Provider} from 'react-redux';
-      import configureStore from '../../configureStore';
+      import configureStore from '${this.configureStore}';
       const preloadedState = window.__PRELOADED_STATE__;
       delete window.__PRELOADED_STATE__;
       const store = configureStore(preloadedState);`;

@@ -2,6 +2,7 @@ const webpack = require('webpack');
 const {ReduxCollector, HeadCollector, RoutesCollector} = require('coren');
 const reducer = require('./reducer');
 const Promise = require('bluebird');
+const path = require('path');
 
 module.exports = {
   entry: {
@@ -19,17 +20,12 @@ module.exports = {
     }));
     app.registerCollector("redux", new ReduxCollector({
       componentProps: {context},
-      reducers: reducer
+      reducers: reducer,
+      configureStore: path.resolve(__dirname, './configureStore')
     }));
     return app;
   },
   prepareContext: function() {
-    return new Promise(resolve => {
-      resolve({
-        db: {
-          auth: true
-        }
-      });
-    });
+    return Promise.resolve({db: {auth: true}});
   }
 };
