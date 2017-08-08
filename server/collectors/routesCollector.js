@@ -1,6 +1,8 @@
 const co = require('co');
 const pathToRegexp = require('path-to-regexp');
 const {isEmpty, flatten} = require('lodash');
+// uniformed data format
+const route = (path, data) => ({path, data});
 
 class RouterUrl {
   constructor(url) {
@@ -11,7 +13,7 @@ class RouterUrl {
     // why return Promise with array?
     // because RouterParamUrl return Promise with array of urls
     // so we make these two class return same data format
-    return Promise.resolve([this.url]);
+    return Promise.resolve([route(this.url)]);
   }
 }
 
@@ -27,7 +29,7 @@ class RouterParamUrl {
     .then(data => {
       return data.map(row => {
         try {
-          return this.toPath(row);
+          return route(this.toPath(row), row);
         } catch (err) {
           // row not pass toPath, will throw TypeError
           // https://github.com/pillarjs/path-to-regexp#compile-reverse-path-to-regexp
@@ -73,7 +75,7 @@ class RoutesCollector {
 
   // default render "/" if empty
   getRoutes() {
-    return isEmpty(this.routes) ? ["/"] : this.routes;
+    return isEmpty(this.routes) ? [route("/")] : this.routes;
   }
 
   wrapClientImport() {
