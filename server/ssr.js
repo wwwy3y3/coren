@@ -1,16 +1,15 @@
 import {resolve, join, relative} from 'path';
+import Promise from 'bluebird';
 import App from './app';
 import MultiRoutesRenderer from './ssrRenderers/multiRoutes';
-import mkdirp from 'mkdirp';
-import Promise from 'bluebird';
 import loadCorenConfig from './loadCorenConfig';
+import {outputCommonJSDir, assetsJSON, ssrDir, corenBuildDir} from './CONFIG';
 const fs = Promise.promisifyAll(require("fs"));
 
-function assetToRelativePath(assets, publicDir) {
-  assets = assets.map(asset => {
-    return relative(publicDir, asset);
+function ssrAssetsPath(assets, buildDir) {
+  return assets.map(asset => {
+    return `/${relative(buildDir, asset)}`;
   });
-  return `/${assets}`;
 }
 
 function getPath(route, entryName) {
@@ -22,7 +21,8 @@ class Entry {
     this.entryName = entryName;
     this.assets = assets;
     this.dir = dir;
-    this.publicDir = join(this.dir, '.coren', 'public');
+    this.corenBuildDir = corenBuildDir(dir);
+    this.ssrDir = ssrDir(dir);
     this.app = new App({path});
     this.config = config;
   }
@@ -40,17 +40,17 @@ class Entry {
 
   render(context) {
     this.registerCollector(context);
-    const options = {app: this.app, js: [assetToRelativePath(this.assets['.js'], this.publicDir)]};
+
+    const options = {app: this.app, js: [ssrAssetsPath(this.assets['.js'], this.corenBuildDir)]};
     if (this.assets['.css']) {
-      options.css = [assetToRelativePath(this.assets['.css'], this.publicDir)];
+      options.css = [ssrAssetsPath(this.assets['.css'], this.corenBuildDir)];
     }
     const ssr = new MultiRoutesRenderer(options);
     // get the array of html result
     ssr.renderToString()
     .then(results => {
       return Promise.all(results.map(result => {
-        const filepath = join(this.publicDir, getPath(result.route, this.entryName));
-        mkdirp.sync(resolve(filepath, "../"));
+        const filepath = join(this.ssrDir, getPath(result.route, this.entryName));
 
         // write to filesystem
         return fs.writeFileAsync(filepath, result.html);
@@ -68,13 +68,12 @@ export default class ssr {
     this.entries = [];
     const assets = this.getAssetsJson();
     for (let key in entry) {
-      this.entries.push(new Entry({entryName: key, assets: assets[key], dir, path: resolve(dir, '.coren', 'dist', `${key}.commonjs2.js`), config: this.config}));
+      this.entries.push(new Entry({entryName: key, assets: assets[key], dir, path: resolve(outputCommonJSDir(dir), `${key}.commonjs2.js`), config: this.config}));
     }
   }
 
   getAssetsJson() {
-    const corenDir = join(this.dir, '.coren');
-    const data = fs.readFileSync(join(corenDir, 'assets.json'), 'utf8');
+    const data = fs.readFileSync(assetsJSON(this.dir), 'utf8');
     return JSON.parse(data);
   }
 

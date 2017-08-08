@@ -1,4 +1,43 @@
 import {join} from 'path';
+import mkdirp from 'mkdirp';
+
+exports.generateNeededDir = dir => {
+  const dirs = [
+    join(dir, '.coren', 'tmp'),
+    join(dir, '.coren', 'commonjs'),
+    join(dir, '.coren', 'html'),
+    join(dir, 'coren-build'),
+    join(dir, 'coren-build', 'pages'),
+    join(dir, 'coren-build', 'assets')
+  ];
+  dirs.forEach(d => mkdirp.sync(d));
+};
+// .coren
 exports.clientTmpEntryDir = dir => {
   return join(dir, '.coren', 'tmp');
+};
+
+exports.assetsJSON = dir => {
+  return join(dir, '.coren', 'assets.json');
+};
+
+exports.ssrDir = dir => {
+  return join(dir, '.coren', 'html');
+};
+
+exports.outputCommonJSDir = dir => {
+  return join(dir, '.coren', 'commonjs');
+};
+
+// coren-build
+exports.corenBuildDir = dir => {
+  return join(dir, 'coren-build');
+};
+
+exports.outputPageDir = dir => {
+  return join(dir, 'coren-build', 'pages');
+};
+
+exports.outputAssetDir = dir => {
+  return join(dir, 'coren-build', 'assets');
 };

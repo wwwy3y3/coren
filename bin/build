@@ -3,6 +3,7 @@ const path = require('path');
 const parseArgs = require('minimist');
 const Ssr = require('../server/ssr');
 const build = require('../server/build');
+const {generateNeededDir} = require('../server/CONFIG');
 
 const argv = parseArgs(process.argv.slice(2), {
   alias: {
@@ -12,9 +13,17 @@ const argv = parseArgs(process.argv.slice(2), {
 });
 
 const dir = path.resolve(argv._[0] || '.');
+
+console.log(`Start building ${dir}`);
+
+generateNeededDir(dir);
 build(dir)
 .then(() => {
   console.log('Build commonjs success');
   const ssr = new Ssr(dir);
   ssr.render();
-});
+})
+.catch(err => {
+  console.log(err);
+  process.exit(1);
+})

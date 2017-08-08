@@ -3,6 +3,7 @@ import App from './app';
 import {clientTmpEntryDir} from './CONFIG';
 import webpack from './webpack';
 import loadCorenConfig from './loadCorenConfig';
+import {outputCommonJSDir} from './CONFIG';
 import fs from 'fs';
 import mkdirp from 'mkdirp';
 
@@ -26,7 +27,7 @@ function createClientTmpEntryFile(dir, config) {
   const {entry} = config;
   // use first entry js to get collector's wrapClientRender & wrapClientImport
   const firstKey = Object.keys(entry)[0];
-  let app = new App({path: resolve(dir, '.coren', 'dist', `${firstKey}.commonjs2.js`)});
+  let app = new App({path: resolve(outputCommonJSDir(dir), `${firstKey}.commonjs2.js`)});
   if (config.registerCollector) {
     app = config.registerCollector(app, {context: {}});
   }
