@@ -41,3 +41,14 @@ exports.outputPageDir = dir => {
 exports.outputAssetDir = dir => {
   return join(dir, 'coren-build', 'assets');
 };
+
+exports.getEnv = () => {
+  if (process.env.COREN_ENV) {
+    return process.env.COREN_ENV;
+  }
+  if (process.env.NODE_ENV === 'development') {
+    return 'development';
+  }
+  return 'production';
+};
+

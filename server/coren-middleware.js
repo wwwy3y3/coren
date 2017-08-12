@@ -1,12 +1,56 @@
-const cheerio = require('cheerio');
-const fs = require('fs');
-const {has} = require('lodash');
-const path = require('path');
-const {ssrDir} = require('./CONFIG');
+import cheerio from 'cheerio';
+import fs from 'fs';
+import path from 'path';
+import {has} from 'lodash';
+import loadCorenConfig from './loadCorenConfig';
+import loadAssetsJSON from './loadAssetsJSON';
+import {ssrDir, getEnv} from './CONFIG';
+const env = getEnv();
+
+const htmlTemplate = `
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body><div id="root"></div></body>
+</html>
+`;
+
+const assetRelative = (absolutePath, rootPath, corenCofig) => {
+  let hostPath;
+  if (env === 'production') {
+    hostPath = corenCofig.assetsHost(absolutePath);
+  }
+  // if it isn't production & didn't define assetsHost func, use /assets/<file> to host
+  if (!hostPath) {
+    return path.sep + path.relative(`${rootPath}/coren-build/`, absolutePath);
+  }
+};
+
+const appendAssets = ($, rootPath, corenCofig, entryAssets) => {
+  if (entryAssets['.js']) {
+    entryAssets['.js'].forEach(function(js) {
+      $('body').append(`<script src="${assetRelative(js, rootPath, corenCofig)}"></script>`);
+    });
+  }
+  if (entryAssets['.css']) {
+    entryAssets['.css'].forEach(function(css) {
+      $('head').append(`<link rel="stylesheet" href="${assetRelative(css, rootPath, corenCofig)}">`);
+    });
+  }
+  return $;
+};
 
 const getEntryHtml = (entry, rootPath) => {
-  const filePath = path.join(ssrDir(rootPath), `${entry}.html`);
-  return fs.readFileSync(filePath, 'utf8');
+  // use different html template at different env
+  if (env === 'production' || env === 'pre-production') {
+    const filePath = path.join(ssrDir(rootPath), `${entry}.html`);
+    return fs.readFileSync(filePath, 'utf8');
+  } else if (env === 'development') {
+    return htmlTemplate;
+  }
 };
 
 const updatePreloadedState = ($, newState) => {
@@ -23,6 +67,8 @@ const updatePreloadedState = ($, newState) => {
 };
 
 module.exports = function(rootPath) {
+  const corenCofig = loadCorenConfig(rootPath);
+  const assetsJSON = loadAssetsJSON(rootPath);
   return function corenMiddleware(req, res, next) {
     var setHead = null;
     var preloadedState = null;
@@ -43,6 +89,7 @@ module.exports = function(rootPath) {
       }
 
       let $ = cheerio.load(getEntryHtml(entry, rootPath));
+      $ = appendAssets($, rootPath, corenCofig, assetsJSON[entry]);
       if (preloadedState) {
         $ = updatePreloadedState($, preloadedState);
       }

@@ -46,12 +46,6 @@ class MultiRoutesRenderer {
         const template = createTemplate();
         const $ = cheerio.load(template, {decodeEntities: false});
 
-        // insert bundles
-        this.js.forEach(bundle => $('body').append(`<script src="${bundle}"></script>`));
-
-        // insert css
-        this.css.forEach(link => $('head').append(`<link rel="stylesheet" href="${link}">`));
-
         // insert rendered html
         $('#root').html(markup);
 
