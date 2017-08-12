@@ -1,8 +1,19 @@
 const co = require('co');
 const pathToRegexp = require('path-to-regexp');
 const {isEmpty, flatten} = require('lodash');
+// create a match function
+const createMatch = url => (componentUrl, options = {}) => {
+  // exact default value is as same as react router default exact
+  const exact = options.exact || false;
+  const re = pathToRegexp(componentUrl, [], {end: exact});
+  return re.exec(url);
+};
+
 // uniformed data format
-const route = (path, data) => ({path, data});
+const route = (path, data) => ({path, data, match: createMatch(path)});
+
+// homeRoute default to "/", no data, match would be compare to "/"
+const homeRoute = route("/");
 
 class RouterUrl {
   constructor(url) {
@@ -75,7 +86,7 @@ class RoutesCollector {
 
   // default render "/" if empty
   getRoutes() {
-    return isEmpty(this.routes) ? [route("/")] : this.routes;
+    return isEmpty(this.routes) ? [homeRoute] : this.routes;
   }
 
   wrapClientImport() {
@@ -93,4 +104,5 @@ class RoutesCollector {
   }
 }
 
+RoutesCollector.homeRoute = homeRoute;
 module.exports = RoutesCollector;

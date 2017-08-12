@@ -1,4 +1,5 @@
-import immutable, {Map, List} from 'immutable';
+const immutable = require('immutable');
+const {Map, List} = immutable;
 const initialState = new Map({
   users: new Map({
     list: new List(),
@@ -14,7 +15,7 @@ const initialState = new Map({
   })
 });
 
-export default function reducer(state = initialState, action) {
+function reducer(state = initialState, action) {
   switch (action.type) {
     case 'GET_ALL_USERS':
       return state
@@ -50,3 +51,5 @@ export default function reducer(state = initialState, action) {
       return state;
   }
 }
+
+module.exports = exports.default = reducer;

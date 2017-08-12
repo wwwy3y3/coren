@@ -16,7 +16,7 @@ module.exports = {
       new webpack.BannerPlugin('This file is created by coren. Built time: ' + new Date())
     ],
     // issue: https://github.com/matthew-andrews/isomorphic-fetch/issues/98
-    externals: [
+    /*externals: [
       {
         'isomorphic-fetch': {
           root: 'isomorphic-fetch',
@@ -25,7 +25,7 @@ module.exports = {
           amd: 'isomorphic-fetch'
         }
       }
-    ]
+    ]*/
   },
   registerCollector: function(app, {context}) {
     app.registerCollector("head", new HeadCollector());

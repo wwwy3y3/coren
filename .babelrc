@@ -3,7 +3,8 @@
   "plugins": [
     "transform-decorators-legacy",
     "transform-class-properties",
-    "add-module-exports"
+    "add-module-exports",
+    "transform-async-to-generator"
   ],
   "env": {
     "development": {

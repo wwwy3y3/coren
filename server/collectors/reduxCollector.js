@@ -8,7 +8,7 @@ class ReduxCollector {
     if (!configureStore) {
       throw new Error("configureStore is required in ReduxCollector");
     }
-    this.queries = [];
+    this.preloadedStateGenerators = [];
     this.initialState = {};
     this.componentProps = componentProps;
     this.reducers = reducers;
@@ -20,19 +20,18 @@ class ReduxCollector {
   }
 
   componentDidImport(id, component) {
-    const promise = component.definePreloadedState(this.componentProps);
-    this.queries.push(promise);
+    this.preloadedStateGenerators.push(component.definePreloadedState);
   }
 
-  appWillRender() {
-    return Promise.map(this.queries,
+  routeWillRender(route) {
+    // clear initialState when new route render
+    this.initialState = {};
+
+    // execute user defined preloadedState
+    const definePreloadedStateProps = Object.assign({}, this.componentProps, {route});
+    const queries = this.preloadedStateGenerators.map(fn => fn(definePreloadedStateProps));
+    return Promise.map(queries,
       state => Object.assign(this.initialState, state));
-  }
-
-  appendToHead($head) {
-    $head.append(`<script data-coren>
-      window.__PRELOADED_STATE__ = ${JSON.stringify(this.state)}
-      </script>`);
   }
 
   wrapElement(appElement) {
@@ -40,6 +39,12 @@ class ReduxCollector {
     const wrapedElements = react.createElement(Provider, {store}, appElement);
     this.state = store.getState();
     return wrapedElements;
+  }
+
+  appendToHead($head) {
+    $head.append(`<script data-coren>
+      window.__PRELOADED_STATE__ = ${JSON.stringify(this.state)}
+      </script>`);
   }
 
   wrapClientImport() {

@@ -25,12 +25,12 @@ class App {
     });
   }
 
-  routeWillRender() {
-    this.collectors.forEach(collector => {
-      if (collector.routeWillRender) {
-        collector.routeWillRender();
+  async routeWillRender(route) {
+    for (let i = 0; i < this.collectors.length; i++) {
+      if (this.collectors[i].routeWillRender) {
+        await this.collectors[i].routeWillRender(route);
       }
-    });
+    }
   }
 
   registerCollector(key, collector) {
