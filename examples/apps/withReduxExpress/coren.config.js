@@ -3,6 +3,7 @@ const {ReduxCollector, HeadCollector, RoutesCollector} = require('coren');
 const reducer = require('./reducer');
 const Promise = require('bluebird');
 const path = require('path');
+const PreloadJsPlugin = require('./preloadJsPlugin');
 
 module.exports = {
   entry: {
@@ -27,5 +28,8 @@ module.exports = {
   },
   prepareContext: function() {
     return Promise.resolve({db: {auth: true}});
-  }
+  },
+  plugins: [
+    new PreloadJsPlugin()
+  ]
 };

@@ -40,10 +40,16 @@ class Entry {
 
   render(context) {
     this.registerCollector(context);
-    const options = {app: this.app, js: [assetToRelativePath(this.assets['.js'], this.publicDir)]};
+    const options = {
+      app: this.app,
+      js: [assetToRelativePath(this.assets['.js'], this.publicDir)],
+      plugins: this.config.plugins
+    };
+
     if (this.assets['.css']) {
       options.css = [assetToRelativePath(this.assets['.css'], this.publicDir)];
     }
+
     const ssr = new MultiRoutesRenderer(options);
     // get the array of html result
     ssr.renderToString()

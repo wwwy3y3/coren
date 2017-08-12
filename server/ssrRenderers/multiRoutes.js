@@ -15,7 +15,7 @@ class MultiRoutesRenderer {
   triggerPluginsLifecycle(lifecycle, props) {
     this.plugins.forEach(plugin => {
       if (plugin[lifecycle]) {
-        plugin.lifecycle(props);
+        plugin[lifecycle](props);
       }
     });
   }
