@@ -10,8 +10,9 @@ module.exports = class ImmutableReduxCollector extends ReduxCollector {
   appendToHead($head) {
     $head.append(`<script src="https://cdnjs.cloudflare.com/ajax/libs/immutable/3.8.1/immutable.min.js"></script>`);
     $head.append(`<script data-coren>
-      window.__PRELOADED_STATE__ = Immutable.fromJS(${JSON.stringify(this.state ? this.state.toJS() : {})})
+      window.__PRELOADED_STATE__ = ${JSON.stringify(this.state ? this.state.toJS() : {})}
       </script>`);
+    $head.append(`<script>window.__PRELOADED_STATE__ = Immutable.fromJS(window.__PRELOADED_STATE__);</script>`)
   }
 
   wrapElement(appElement) {
