@@ -5,10 +5,19 @@ const cheerio = require('cheerio');
 const {homeRoute} = require('../collectors/routesCollector');
 
 class MultiRoutesRenderer {
-  constructor({app, js = [], css = []}) {
+  constructor({app, js = [], css = [], plugins = []}) {
     this.app = app;
     this.js = js;
     this.css = css;
+    this.plugins = plugins;
+  }
+
+  triggerPluginsLifecycle(lifecycle, props) {
+    this.plugins.forEach(plugin => {
+      if (plugin[lifecycle]) {
+        plugin.lifecycle(props);
+      }
+    });
   }
 
   getRoutes() {
@@ -48,12 +57,25 @@ class MultiRoutesRenderer {
 
       const template = createTemplate();
       const $ = cheerio.load(template, {decodeEntities: false});
+      const $head = $('head');
+      const $body = $('body');
+
+      // plugin lifecycle: appDidRender
+      this.triggerPluginsLifecycle('appDidRender', {$head, $body});
 
       // insert bundles
-      this.js.forEach(bundle => $('body').append(`<script src="${bundle}"></script>`));
+      this.js.forEach(bundle => {
+        $('body').append(`<script src="${bundle}"></script>`);
+        // plugin lifecycle: jsDidAppend
+        this.triggerPluginsLifecycle('jsDidAppend', {link: bundle, $head, $body});
+      });
 
       // insert css
-      this.css.forEach(link => $('head').append(`<link rel="stylesheet" href="${link}">`));
+      this.css.forEach(link => {
+        $('head').append(`<link rel="stylesheet" href="${link}">`);
+        // plugin lifecycle: cssDidAppend
+        this.triggerPluginsLifecycle('cssDidAppend', {link, $head, $body});
+      });
 
       // insert rendered html
       $('#root').html(markup);
@@ -61,11 +83,11 @@ class MultiRoutesRenderer {
       // insert collectors' head and body
       this.app.collectors.forEach(collector => {
         if (collector.appendToHead) {
-          collector.appendToHead($('head'));
+          collector.appendToHead($head);
         }
 
         if (collector.appendToBody) {
-          collector.appendToBody($('body'));
+          collector.appendToBody($body);
         }
       });
       results.push({route: routes[i].path, html: $.html()});
