@@ -40,9 +40,10 @@ class Entry {
 
   render(context) {
     this.registerCollector(context);
+
     const options = {
       app: this.app,
-      js: [ssrAssetsPath(this.assets['.js'], this.publicDir)],
+      js: [ssrAssetsPath(this.assets['.js'], this.corenBuildDir)],
       plugins: this.config.plugins
     };
 
