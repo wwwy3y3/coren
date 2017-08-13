@@ -10,5 +10,5 @@ export default function loadAssetsJSON(dir) {
   if (hasAssets) {
     return JSON.parse(readFileSync(path, 'utf8'));
   }
-  throw new Error('Corent cannot find `assets.json`, please build the static file first.');
+  throw new Error('Coren cannot find `assets.json`, please build the static file first.');
 }

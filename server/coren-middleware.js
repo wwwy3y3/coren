@@ -18,26 +18,19 @@ const htmlTemplate = `
 </html>
 `;
 
-const assetRelative = (absolutePath, rootPath, corenCofig) => {
-  let hostPath;
-  if (env === 'production') {
-    hostPath = corenCofig.assetsHost(absolutePath);
-  }
-  // if it isn't production & didn't define assetsHost func, use /assets/<file> to host
-  if (!hostPath) {
-    return path.sep + path.relative(`${rootPath}/coren-build/`, absolutePath);
-  }
+const assetRelative = (absolutePath, corenCofig) => {
+  return corenCofig.assetsHost(env, absolutePath);
 };
 
 const appendAssets = ($, rootPath, corenCofig, entryAssets) => {
   if (entryAssets['.js']) {
     entryAssets['.js'].forEach(function(js) {
-      $('body').append(`<script src="${assetRelative(js, rootPath, corenCofig)}"></script>`);
+      $('body').append(`<script src="${assetRelative(js, corenCofig)}"></script>`);
     });
   }
   if (entryAssets['.css']) {
     entryAssets['.css'].forEach(function(css) {
-      $('head').append(`<link rel="stylesheet" href="${assetRelative(css, rootPath, corenCofig)}">`);
+      $('head').append(`<link rel="stylesheet" href="${assetRelative(css, corenCofig)}">`);
     });
   }
   return $;

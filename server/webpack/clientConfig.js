@@ -5,7 +5,7 @@ import AssetsPath from '../webpackPlugins/assets-path-plugin';
 export default function createClientWebpackConfig({dir, dev = false, shareConfig, corenConfig}) {
   const assetsDir = outputAssetDir(dir);
   let plugins = [
-    new AssetsPath({rootDir: dir, distDir: assetsDir, assetsLink: corenConfig.assetsLink || null}),
+    new AssetsPath({rootDir: dir}),
     new webpack.DefinePlugin({
       "process.env": {
         BROWSER: JSON.stringify(true)
