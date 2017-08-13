@@ -35,6 +35,7 @@ so many things need to be rendered in HTML
 
 
 ## Table Of Content
+<!-- toc -->
 
 - [How to use?](#how-to-use)
   * [Setup](#setup)
@@ -46,17 +47,26 @@ so many things need to be rendered in HTML
       - [prepareContext](#preparecontext)
   * [Collector](#collector)
       - [HeadCollector](#headcollector)
+        * [coren.config.js](#corenconfigjs-1)
+        * [app](#app)
       - [RouteCollector](#routecollector)
+        * [coren.config.js](#corenconfigjs-2)
+        * [app](#app-1)
       - [ReduxCollector](#reduxcollector)
+        * [app](#app-2)
     + [How to create own Collector](#how-to-create-own-collector)
   * [Express Integration - coren middleware](#express-integration---coren-middleware)
     + [API](#api)
-      - [res.sendCoren(<entry>, {updatePreloadedState?: {}})](#ressendcorenentry-updatepreloadedstate-)
+      - [res.setHead(Function($head: cheerio instance))](#ressetheadfunctionhead-cheerio-instance)
+      - [res.setPreloadedState(Object)](#ressetpreloadedstateobject)
+      - [res.sendCoren(`entry`)](#ressendcorenentry)
   * [Integrate with current project](#integrate-with-current-project)
 - [Limitation](#limitation)
 - [More Example](#more-example)
 - [中文簡介](#%E4%B8%AD%E6%96%87%E7%B0%A1%E4%BB%8B)
 - [License](#license)
+
+<!-- tocstop -->
 
 # How to use?
 
@@ -437,6 +447,7 @@ Take a look at built-in collector for reference.
 https://github.com/Canner/coren/tree/master/server/collectors
 
 
+
 ## Express Integration - coren middleware
 
 From above example, in our express server, just include `coren middleware` and then ssr is done.
@@ -445,7 +456,41 @@ It means that we don't need to require any react related code and coren module. 
 
 ### API
 
-#### res.sendCoren(<entry>, {updatePreloadedState?: {}})
+#### res.setHead(Function($head: cheerio instance))
+
+setHead api let you manipulate the content in `<head></head>`.
+
+You can reference `cheerio` to know the supported api.
+
+**example:**
+
+``` javascript
+app.get('/', function(req, res) {
+  res.setHead(function($head) {
+    $head.append('<script>alert("coren!")');
+  });
+  return res.sendCoren('index');
+});
+```
+
+
+
+#### res.setPreloadedState(Object)
+
+merge preloadedState content.
+
+With this api, the status of your app can be controlled by  server.
+
+**example:**
+
+``` javascript
+app.get('/', function(req, res) {
+  res.setPreloadedState({auth: false, user: 'john'});
+  return res.sendCoren('index');
+});
+```
+
+#### res.sendCoren(`entry`)
 
 sendCoren api use to send proper entry result. this `entry` is the same with `coren.config.js` entry.
 
@@ -481,8 +526,7 @@ Then just run deploy method to deploy this project.
 
 # Limitation
 
-- Based on webpack: coren strongly count on webpack, currently it doesn't support other tools like `rollup`, `browserify`. 
-
+- Based on webpack: coren strongly count on webpack, currently it doesn't support other tools like `rollup`, `browserify`.
 
 # More Example
 
@@ -494,6 +538,8 @@ Then just run deploy method to deploy this project.
 [Meduim 文章：Coren: React Composite Server-side Render](https://medium.com/canner-io-%E6%98%93%E9%96%8B%E7%A7%91%E6%8A%80/react-composite-server-side-render-a85a90f841f5)
 
 
+
 # License
 
 Apache-2.0 [@Canner](https://github.com/canner)
+
