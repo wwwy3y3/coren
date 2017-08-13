@@ -1,11 +1,11 @@
 import webpack from 'webpack';
-import {join} from 'path';
+import {outputAssetDir} from '../CONFIG';
 import AssetsPath from '../webpackPlugins/assets-path-plugin';
 
 export default function createClientWebpackConfig({dir, dev = false, shareConfig, corenConfig}) {
-  const distDir = join(dir, '.coren', 'public', 'dist');
+  const assetsDir = outputAssetDir(dir);
   let plugins = [
-    new AssetsPath({rootDir: dir, distDir, assetsLink: corenConfig.assetsLink || null}),
+    new AssetsPath({rootDir: dir}),
     new webpack.DefinePlugin({
       "process.env": {
         BROWSER: JSON.stringify(true)
@@ -26,7 +26,7 @@ export default function createClientWebpackConfig({dir, dev = false, shareConfig
     ...shareConfig,
     entry: corenConfig.clientEntry,
     output: {
-      path: distDir,
+      path: assetsDir,
       filename: '[name].web.js'
     },
     plugins: [

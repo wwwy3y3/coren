@@ -2,6 +2,7 @@ import {join} from 'path';
 import fs from 'fs';
 import mkdirp from 'mkdirp';
 import path from 'path';
+import {outputAssetDir} from '../CONFIG';
 
 function extractName(key) {
   const ext = path.extname(key);
@@ -13,24 +14,20 @@ function extractName(key) {
 }
 
 export default class AssetsPath {
-  constructor({rootDir, distDir, assetsLink}) {
+  constructor({rootDir}) {
     this.rootDir = rootDir;
-    this.distDir = distDir;
-    this.assetsLink = assetsLink;
+    this.distDir = outputAssetDir(rootDir);
   }
 
   apply(compiler) {
+    const assetsPath = {};
     compiler.plugin('after-compile', (compilation, cb) => {
       const assets = compilation.assets;
       const keys = Object.keys(assets);
-      const assetsPath = {};
       keys.forEach(key => {
         if (key !== 'extract-text-webpack-plugin-output-filename') {
           const {ext, basename} = extractName(key);
           let assetsLink = join(this.distDir, key);
-          if (this.assetsLink) {
-            assetsLink = this.assetsLink(key);
-          }
           if (!assetsPath[basename]) {
             assetsPath[basename] = {};
           }

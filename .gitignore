@@ -6,3 +6,5 @@ lib
 _gh-pages
 examples-dist
 .coren
+coren-build
+dist

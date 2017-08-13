@@ -1,12 +1,6 @@
 import {resolve} from 'path';
 import webpack from 'webpack';
-import ExtractTextPlugin from 'extract-text-webpack-plugin';
 import getBabelConfig from '../babel/getBabelConfig';
-
-const extractCSS = new ExtractTextPlugin({
-  filename: 'css/[name].css',
-  allChunks: true
-});
 
 export default function createShareConfig({dir, dev = false, corenConfig}) {
   const env = dev ? 'development' : 'production';
@@ -16,10 +10,10 @@ export default function createShareConfig({dir, dev = false, corenConfig}) {
       "process.env": {
         NODE_ENV: JSON.stringify(env)
       }
-    }),
-    extractCSS
+    })
   ];
   let config = {
+    // target: 'node',
     resolve: {
       extensions: ['.js']
     },
@@ -34,10 +28,6 @@ export default function createShareConfig({dir, dev = false, corenConfig}) {
             options: getBabelConfig(dir)
           },
           exclude: resolve(dir, "node_modules")
-        },
-        {
-          test: /\.css$/,
-          use: extractCSS.extract(["css-loader?minimize"])
         }
       ]
     }
@@ -52,13 +42,14 @@ export default function createShareConfig({dir, dev = false, corenConfig}) {
         ]
       };
     }
-    if (corenConfig.webpack.rules) {
+
+    if (corenConfig.webpack.module && corenConfig.webpack.module.rules) {
       config = {
         ...config,
         module: {
           rules: [
             ...config.module.rules,
-            ...corenConfig.webpack.rules
+            ...corenConfig.webpack.module.rules
           ]
         }
       };

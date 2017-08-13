@@ -1,12 +1,16 @@
-import {join} from 'path';
+import {resolve} from 'path';
 import {existsSync} from 'fs';
+import noop from 'noop3';
+import {red} from 'chalk';
 
 export const defaultConfig = {
-  webpack: null
+  webpack: null,
+  config: [],
+  assetsHost: noop
 };
 
 export default function loadCorenConfig(dir) {
-  const path = join(dir, 'coren.config.js');
+  const path = resolve(dir, 'coren.config.js');
   let config = defaultConfig;
   const hasConfig = existsSync(path);
   if (hasConfig) {
@@ -18,6 +22,11 @@ export default function loadCorenConfig(dir) {
   } else {
     throw new Error('You need to provide coren.config.js');
   }
-  config.wrapper = config.wrapper || [];
+  // test assetsHost
+  ['development', 'pre-production', 'production'].forEach(env => {
+    if (!config.assetsHost(env)) {
+      throw new Error(red(`Error: coren.config[assetsHost] doesn't provide '${env}' environment return value `));
+    }
+  });
   return config;
 }

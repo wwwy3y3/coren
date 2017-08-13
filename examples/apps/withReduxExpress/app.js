@@ -1,7 +1,7 @@
 var express = require('express');
 var app = express();
 var coren = require('coren/lib/server/coren-middleware');
-app.use(coren());
+app.use(coren(__dirname));
 app.use('/dist', express.static(__dirname + '/.coren/public/dist'));
 
 app.get('/', function(req, res) {

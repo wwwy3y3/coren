@@ -1,12 +1,18 @@
 {
   "scripts": {
-    "coren": "coren"
+    "coren": "coren",
+    "webpack-server": "webpack-dev-server --config webpack.config.dev.js --hot --inline --port 5556"
   },
   "dependencies": {
+    "assets-webpack-plugin": "^3.5.1",
     "babel-loader": "^7.1.1",
     "coren": "latest",
+    "css-loader": "^0.28.4",
     "express": "^4.15.3",
+    "extract-text-webpack-plugin": "^3.0.0",
     "react-redux": "^5.0.5",
-    "redux": "^3.7.2"
+    "redux": "^3.7.2",
+    "webpack": "^3.5.4",
+    "webpack-dev-server": "^2.7.1"
   }
 }

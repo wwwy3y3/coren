@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {collector} from 'coren';
 import {login, logout} from './actions';
+import './style.css';
 
 @collector()
 @connect(mapStateToProps, mapDispatchToProps)
