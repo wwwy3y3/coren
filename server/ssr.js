@@ -1,4 +1,5 @@
 import {resolve, join, relative} from 'path';
+import mkdirp from 'mkdirp';
 import Promise from 'bluebird';
 import App from './app';
 import MultiRoutesRenderer from './ssrRenderers/multiRoutes';
@@ -57,7 +58,7 @@ class Entry {
     .then(results => {
       return Promise.all(results.map(result => {
         const filepath = join(this.ssrDir, getPath(result.route, this.entryName));
-
+        mkdirp.sync(filepath);
         // write to filesystem
         return fs.writeFileAsync(filepath, result.html);
       }));
