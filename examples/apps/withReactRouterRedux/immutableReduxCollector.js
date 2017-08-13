@@ -1,17 +1,18 @@
-import {createStore} from 'redux';
-import {Provider} from 'react-redux';
-import react from 'react';
-import immutable from 'immutable';
-import {ReduxCollector} from 'coren';
-import {isEmpty} from 'lodash';
+const {createStore} = require('redux');
+const {Provider} = require('react-redux');
+const react = require('react');
+const immutable = require('immutable');
+const {ReduxCollector} = require('coren');
+const {isEmpty} = require('lodash');
 
-export default class ImmutableReduxCollector extends ReduxCollector {
+module.exports = class ImmutableReduxCollector extends ReduxCollector {
 
   appendToHead($head) {
     $head.append(`<script src="https://cdnjs.cloudflare.com/ajax/libs/immutable/3.8.1/immutable.min.js"></script>`);
     $head.append(`<script data-coren>
-      window.__PRELOADED_STATE__ = Immutable.fromJS(${JSON.stringify(this.state ? this.state.toJS() : {})})
+      window.__PRELOADED_STATE__ = ${JSON.stringify(this.state ? this.state.toJS() : {})}
       </script>`);
+    $head.append(`<script>window.__PRELOADED_STATE__ = Immutable.fromJS(window.__PRELOADED_STATE__);</script>`)
   }
 
   wrapElement(appElement) {

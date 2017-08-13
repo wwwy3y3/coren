@@ -4,6 +4,7 @@ const reducer = require('./reducer');
 const Promise = require('bluebird');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const path = require('path');
+const PreloadJsPlugin = require('./preloadJsPlugin');
 
 const extractCSS = new ExtractTextPlugin({
   filename: 'css/[name].css',
@@ -54,5 +55,8 @@ module.exports = {
   },
   prepareContext: function() {
     return Promise.resolve({db: {auth: true}});
-  }
+  },
+  plugins: [
+    new PreloadJsPlugin()
+  ]
 };
