@@ -27,7 +27,7 @@ export default function createClientWebpackConfig({dir, dev = false, shareConfig
     entry: corenConfig.clientEntry,
     output: {
       path: assetsDir,
-      filename: '[name].web.js'
+      filename: '[name].js'
     },
     plugins: [
       ...shareConfig.plugins,
