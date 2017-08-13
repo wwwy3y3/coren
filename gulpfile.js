@@ -22,6 +22,27 @@ exports.StyleCollector = require('./server/collectors/styleCollector');
 exports.collector = require('./client/collectorHoc');
 `;
 
+const argv = require('yargs').argv;
+const path = require('path');
+gulp.task('build:example', () => {
+  const exampleName = argv.example;
+  const absolutePath = dest => path.resolve(__dirname, `examples/apps/${exampleName}/node_modules/coren/${dest}`);
+  gulp.src(['server/*', 'server/**/*'])
+    .pipe(babel())
+    .pipe(gulp.dest(absolutePath('lib/server')));
+  gulp.src('bin/*')
+    .pipe(babel())
+    .pipe(gulp.dest(absolutePath('lib/bin')));
+  gulp.src('client/*')
+    .pipe(babel())
+    .pipe(gulp.dest(absolutePath('lib/client')));
+  gulp.src('shared/*')
+    .pipe(babel())
+    .pipe(gulp.dest(absolutePath('lib/shared')));
+  file('index.js', index)
+    .pipe(gulp.dest(absolutePath('lib')));
+});
+
 gulp.task('build', ['index'], () => {
   gulp.src(['server/*', 'server/**/*'])
     .pipe(babel())

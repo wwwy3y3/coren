@@ -30,11 +30,23 @@ export default class UserList extends Component {
     });
   }
 
-  static definePreloadedState() {
+  static definePreloadedState({route}) {
+    if (!route.match("/users/:id")) {
+      return Promise.resolve({
+        currentUser: {
+          data: {},
+          fetched: false,
+          isFetching: false,
+          error: false
+        }
+      });
+    }
+
+    const user = route.data;
     return Promise.resolve({
       currentUser: {
-        data: {},
-        fetched: false,
+        data: user,
+        fetched: true,
         isFetching: false,
         error: false
       }
@@ -46,6 +58,13 @@ export default class UserList extends Component {
   };
 
   componentDidMount() {
+    // if user data has fetched and
+    // userId from react router is same with user id in user data
+    // dont refetch data
+    if (this.props.user.get('fetched') &&
+      (this.props.user.get('data') && Number(this.props.user.get('data').get('id')) === Number(this.props.userId))) {
+      return;
+    }
     const {fetchUser, userId} = this.props;
     fetchUser(userId);
   }
@@ -77,6 +96,9 @@ function mapStateToProps(state, ownProps) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    fetchUser: userId => dispatch(fetchUser(userId))
+    fetchUser: userId => {
+      console.log(userId);
+      dispatch(fetchUser(userId))
+    }
   };
 }

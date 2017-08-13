@@ -40,11 +40,16 @@ class Entry {
 
   render(context) {
     this.registerCollector(context);
+    const options = {
+      app: this.app,
+      js: [ssrAssetsPath(this.assets['.js'], this.publicDir)],
+      plugins: this.config.plugins
+    };
 
-    const options = {app: this.app, js: [ssrAssetsPath(this.assets['.js'], this.corenBuildDir)]};
     if (this.assets['.css']) {
       options.css = [ssrAssetsPath(this.assets['.css'], this.corenBuildDir)];
     }
+
     const ssr = new MultiRoutesRenderer(options);
     // get the array of html result
     ssr.renderToString()
