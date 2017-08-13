@@ -58,7 +58,7 @@ class Entry {
     .then(results => {
       return Promise.all(results.map(result => {
         const filepath = join(this.ssrDir, getPath(result.route, this.entryName));
-        mkdirp.sync(filepath);
+        mkdirp.sync(resolve(filepath, "../"));
         // write to filesystem
         return fs.writeFileAsync(filepath, result.html);
       }));
