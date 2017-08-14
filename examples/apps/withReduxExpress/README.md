@@ -14,6 +14,6 @@ node app.js
 ### production
 
 ```
-npm run coren
+npm run build
 NODE_ENV=production node app.js
 ```

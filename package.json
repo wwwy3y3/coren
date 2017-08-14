@@ -12,7 +12,7 @@
     "lib"
   ],
   "bin": {
-    "coren": "./lib/bin/build"
+    "coren": "./lib/bin/coren"
   },
   "main": "lib/index.js",
   "keywords": [
@@ -40,6 +40,7 @@
     "chalk": "^2.0.1",
     "cheerio": "^1.0.0-rc.1",
     "co": "^4.6.0",
+    "commander": "^2.11.0",
     "lodash": "^4.17.4",
     "mkdirp": "^0.5.1",
     "noop3": "^999.999.999",
@@ -101,8 +102,7 @@
     "react-router-dom": "^4.1.1",
     "rimraf": "^2.5.4",
     "should": "^11.2.1",
-    "webpack-hot-middleware": "^2.18.0",
-    "yargs": "^8.0.2"
+    "webpack-hot-middleware": "^2.18.0"
   },
   "pre-commit": [
     "lint"

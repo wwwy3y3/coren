@@ -1,0 +1,74 @@
+#!/usr/bin/env node
+
+const Ssr = require('../server/ssr');
+const build = require('../server/build');
+const program = require('commander');
+const {generateNeededDir} = require('../server/CONFIG');
+const pkg = require('../../package.json');
+
+program
+  .version(pkg.version);
+
+// build
+program
+  .command('build [dir]')
+  .action(function(dir) {
+    dir = dir || process.cwd();
+    console.log(`Start building ${dir}`);
+
+    generateNeededDir(dir);
+    build(dir)
+    .then(() => {
+      console.log('Build commonjs success');
+      const ssr = new Ssr(dir);
+      ssr.render();
+    })
+    .catch(err => {
+      console.log(err);
+      process.exit(1);
+    });
+  });
+
+program
+  .arguments('<cmd>')
+  .action(function(cmd) {
+    if (typeof cmd === 'undefined') {
+      console.error('no command given!');
+    }
+    console.log('unknown command');
+    program.outputHelp();
+  });
+
+if (!process.argv.slice(2).length) {
+  program.outputHelp();
+}
+program.parse(process.argv);
+
+// program.parse(process.argv);
+
+// if (!process.argv.slice(2).length) {
+//   program.outputHelp();
+// }
+
+// const argv = parseArgs(process.argv.slice(2), {
+//   alias: {
+//     h: 'help'
+//   },
+//   boolean: ['h']
+// });
+
+// const dir = path.resolve(argv._[0] || '.');
+
+// console.log(`Start building ${dir}`);
+
+// generateNeededDir(dir);
+// build(dir)
+// .then(() => {
+//   console.log('Build commonjs success');
+//   const ssr = new Ssr(dir);
+//   ssr.render();
+// })
+// .catch(err => {
+//   console.log(err);
+//   process.exit(1);
+// })

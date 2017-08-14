@@ -83,7 +83,7 @@ then add coren script at package.json scripts setting
 ``` json
 {
   "scripts": {
-    "coren": "coren"
+    "build": "coren build"
   }
 }
 ```
@@ -148,7 +148,7 @@ module.exports = {
 };
 ```
 
-just run `npm run coren`, coren will build your app and do server side render.
+just run `npm run build`, coren will build your app and do server side render.
 
 Now, you finish building hello world app. It's time to use express to serve it!
 
@@ -520,7 +520,7 @@ Just follow these steps:
 1. write `coren.config.js`: including transfer webpack `production` setting
 2. add `defineXXXXX` method at your component
 3. add `coren middleware` at express server
-4. `npm run coren`
+4. `npm run build` ( or `coren build`)
 
 Then just run deploy method to deploy this project.
 

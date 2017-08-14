@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "coren": "coren",
+    "build": "coren build",
     "webpack-server": "webpack-dev-server --config webpack.config.dev.js --hot --inline --port 5556"
   },
   "dependencies": {
