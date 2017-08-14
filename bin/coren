@@ -5,6 +5,7 @@ const build = require('../server/build');
 const program = require('commander');
 const {generateNeededDir} = require('../server/CONFIG');
 const pkg = require('../../package.json');
+const {color} = require('../server/utils');
 
 program
   .version(pkg.version);
@@ -19,9 +20,9 @@ program
     generateNeededDir(dir);
     build(dir)
     .then(() => {
-      console.log('Build commonjs success');
       const ssr = new Ssr(dir);
       ssr.render();
+      console.log(color.success('Success build coren server side render'));
     })
     .catch(err => {
       console.log(err);
