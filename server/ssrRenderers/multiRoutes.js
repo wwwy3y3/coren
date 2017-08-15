@@ -5,11 +5,12 @@ const cheerio = require('cheerio');
 const {homeRoute} = require('../collectors/routesCollector');
 
 class MultiRoutesRenderer {
-  constructor({app, js = [], css = [], plugins = []}) {
+  constructor({app, js = [], css = [], plugins = [], skipssr}) {
     this.app = app;
     this.js = js;
     this.css = css;
     this.plugins = plugins;
+    this.skipssr = skipssr;
   }
 
   triggerPluginsLifecycle(lifecycle, props) {
@@ -51,9 +52,7 @@ class MultiRoutesRenderer {
         }
       });
 
-      const markup = renderToString(
-        appElement
-      );
+      const markup = renderToString(appElement);
 
       const template = createTemplate();
       const $ = cheerio.load(template, {decodeEntities: false});
@@ -78,7 +77,7 @@ class MultiRoutesRenderer {
       });
 
       // insert rendered html
-      $('#root').html(markup);
+      $('#root').html(this.skipssr ? '' : markup);
 
       // insert collectors' head and body
       this.app.collectors.forEach(collector => {

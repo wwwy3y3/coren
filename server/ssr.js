@@ -1,4 +1,4 @@
-import {resolve, join, relative} from 'path';
+import {resolve, join} from 'path';
 import mkdirp from 'mkdirp';
 import Promise from 'bluebird';
 import App from './app';
@@ -7,25 +7,36 @@ import loadCorenConfig from './loadCorenConfig';
 import {outputCommonJSDir, assetsJSON, ssrDir, corenBuildDir} from './CONFIG';
 const fs = Promise.promisifyAll(require("fs"));
 
-function ssrAssetsPath(assets, buildDir) {
-  return assets.map(asset => {
-    return `/${relative(buildDir, asset)}`;
-  });
-}
-
-function getPath(route, entryName) {
-  return `${route}/${entryName}.html`;
-}
-
 class Entry {
-  constructor({entryName, assets, dir, path, config}) {
+  constructor({entryName, assets, dir, path, config, skipssr = false, env}) {
     this.entryName = entryName;
     this.assets = assets;
     this.dir = dir;
+    this.skipssr = skipssr;
+    this.config = config;
+    this.env = env;
     this.corenBuildDir = corenBuildDir(dir);
     this.ssrDir = ssrDir(dir);
     this.app = new App({path});
-    this.config = config;
+  }
+
+  genAssets() {
+    const assets = {js: [], css: []};
+    if (this.assets['.js']) {
+      this.assets['.js'].forEach(js => {
+        assets.js.push(this.assetRelative(js));
+      });
+    }
+    if (this.assets['.css']) {
+      this.assets['.css'].forEach(css => {
+        assets.css.push(this.assetRelative(css));
+      });
+    }
+    return assets;
+  }
+
+  assetRelative(absolutePath) {
+    return this.config.assetsHost(this.env, absolutePath);
   }
 
   registerCollector(context) {
@@ -44,20 +55,18 @@ class Entry {
 
     const options = {
       app: this.app,
-      js: [ssrAssetsPath(this.assets['.js'], this.corenBuildDir)],
-      plugins: this.config.plugins
+      plugins: this.config.plugins,
+      skipssr: this.skipssr,
+      ...this.genAssets(this.assets)
     };
 
-    if (this.assets['.css']) {
-      options.css = [ssrAssetsPath(this.assets['.css'], this.corenBuildDir)];
-    }
-
     const ssr = new MultiRoutesRenderer(options);
+
     // get the array of html result
-    ssr.renderToString()
-    .then(results => {
+    ssr.renderToString().then(results => {
+      // output file
       return Promise.all(results.map(result => {
-        const filepath = join(this.ssrDir, getPath(result.route, this.entryName));
+        const filepath = join(this.ssrDir, `${result.route}/${this.entryName}.html`);
         mkdirp.sync(resolve(filepath, "../"));
         // write to filesystem
         return fs.writeFileAsync(filepath, result.html);
@@ -68,14 +77,22 @@ class Entry {
 }
 
 export default class ssr {
-  constructor(dir) {
+  constructor({dir, skipssr, env}) {
     this.dir = dir;
     this.config = loadCorenConfig(dir);
     const {entry} = this.config;
     this.entries = [];
     const assets = this.getAssetsJson();
     for (let key in entry) {
-      this.entries.push(new Entry({entryName: key, assets: assets[key], dir, path: resolve(outputCommonJSDir(dir), `${key}.commonjs2.js`), config: this.config}));
+      this.entries.push(new Entry({
+        entryName: key,
+        assets: assets[key],
+        path: resolve(outputCommonJSDir(dir), `${key}.commonjs2.js`),
+        config: this.config,
+        dir,
+        skipssr,
+        env
+      }));
     }
   }
 

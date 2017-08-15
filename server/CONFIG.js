@@ -51,4 +51,3 @@ exports.getEnv = () => {
   }
   return 'production';
 };
-

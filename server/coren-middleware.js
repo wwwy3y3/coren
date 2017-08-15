@@ -2,48 +2,11 @@ import cheerio from 'cheerio';
 import fs from 'fs';
 import path from 'path';
 import {has} from 'lodash';
-import loadCorenConfig from './loadCorenConfig';
-import loadAssetsJSON from './loadAssetsJSON';
-import {ssrDir, getEnv} from './CONFIG';
-const env = getEnv();
-
-const htmlTemplate = `
-<!doctype html>
-<html>
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body><div id="root"></div></body>
-</html>
-`;
-
-const assetRelative = (absolutePath, corenCofig) => {
-  return corenCofig.assetsHost(env, absolutePath);
-};
-
-const appendAssets = ($, rootPath, corenCofig, entryAssets) => {
-  if (entryAssets['.js']) {
-    entryAssets['.js'].forEach(function(js) {
-      $('body').append(`<script src="${assetRelative(js, corenCofig)}"></script>`);
-    });
-  }
-  if (entryAssets['.css']) {
-    entryAssets['.css'].forEach(function(css) {
-      $('head').append(`<link rel="stylesheet" href="${assetRelative(css, corenCofig)}">`);
-    });
-  }
-  return $;
-};
+import {ssrDir} from './CONFIG';
 
 const getEntryHtml = (entry, rootPath) => {
-  // use different html template at different env
-  if (env === 'production' || env === 'pre-production') {
-    const filePath = path.join(ssrDir(rootPath), `${entry}.html`);
-    return fs.readFileSync(filePath, 'utf8');
-  } else if (env === 'development') {
-    return htmlTemplate;
-  }
+  const filePath = path.join(ssrDir(rootPath), `${entry}.html`);
+  return fs.readFileSync(filePath, 'utf8');
 };
 
 const updatePreloadedState = ($, newState) => {
@@ -60,8 +23,6 @@ const updatePreloadedState = ($, newState) => {
 };
 
 module.exports = function(rootPath) {
-  const corenCofig = loadCorenConfig(rootPath);
-  const assetsJSON = loadAssetsJSON(rootPath);
   return function corenMiddleware(req, res, next) {
     var setHead = null;
     var preloadedState = null;
@@ -82,7 +43,6 @@ module.exports = function(rootPath) {
       }
 
       let $ = cheerio.load(getEntryHtml(entry, rootPath));
-      $ = appendAssets($, rootPath, corenCofig, assetsJSON[entry]);
       if (preloadedState) {
         $ = updatePreloadedState($, preloadedState);
       }

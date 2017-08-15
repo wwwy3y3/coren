@@ -6,6 +6,9 @@ const program = require('commander');
 const {generateNeededDir} = require('../server/CONFIG');
 const pkg = require('../../package.json');
 const {color} = require('../server/utils');
+const {getEnv} = require('../server/CONFIG');
+
+const env = getEnv();
 
 program
   .version(pkg.version);
@@ -13,14 +16,16 @@ program
 // build
 program
   .command('build [dir]')
-  .action(function(dir) {
+  .option('--skipssr', 'skip run ssr')
+  .option('--skipClientJS', 'skip build client js')
+  .action(function(dir, options) {
     dir = dir || process.cwd();
     console.log(`Start building ${dir}`);
-
+    const {skipssr, skipClientJS} = options;
     generateNeededDir(dir);
-    build(dir)
+    build({dir, skipClientJS, env})
     .then(() => {
-      const ssr = new Ssr(dir);
+      const ssr = new Ssr({dir, skipssr, env});
       ssr.render();
       console.log(color.success('Success build coren server side render'));
     })
