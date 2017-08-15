@@ -13,6 +13,10 @@ exports.generateNeededDir = dir => {
   dirs.forEach(d => mkdirp.sync(d));
 };
 // .coren
+exports.corenDir = dir => {
+  return join(dir, '.coren');
+};
+
 exports.clientTmpEntryDir = dir => {
   return join(dir, '.coren', 'tmp');
 };
