@@ -36,7 +36,7 @@ module.exports = {
         return 'https://s3-path/' + absolutePath;
       case 'development':
       case 'pre-production':
-        return `http://localhost:5556/dist/${rel}`;
+        return `http://localhost:9393/dist/${rel}`;
       default:
         return false;
     }
