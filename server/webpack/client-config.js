@@ -1,6 +1,6 @@
 import webpack from 'webpack';
 import {outputAssetDir} from '../CONFIG';
-import AssetsPath from '../webpackPlugins/assets-path-plugin';
+import AssetsPath from './plugins/assets-path-plugin';
 
 export default function createClientWebpackConfig({dir, dev = false, shareConfig, corenConfig}) {
   const assetsDir = outputAssetDir(dir);

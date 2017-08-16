@@ -8,18 +8,18 @@ const index = `
 // Application
 exports.App = require('./server/app');
 // ssr renderer
-exports.SingleRouteRenderer = require('./server/ssrRenderers/singleRoute');
-exports.MultiRoutesRenderer = require('./server/ssrRenderers/multiRoutes');
+exports.SingleRouteRenderer = require('./server/ssr-renderers/single-route');
+exports.MultiRoutesRenderer = require('./server/ssr-renderers/multi-routes');
 
 // collectors
-exports.HeadCollector = require('./server/collectors/headCollector');
-exports.ReduxCollector = require('./server/collectors/reduxCollector');
-exports.RoutesCollector = require('./server/collectors/routesCollector');
-exports.ScriptCollector = require('./server/collectors/scriptCollector');
-exports.StyleCollector = require('./server/collectors/styleCollector');
+exports.HeadCollector = require('./server/collectors/head-collector');
+exports.ReduxCollector = require('./server/collectors/redux-collector');
+exports.RoutesCollector = require('./server/collectors/routes-collector');
+exports.ScriptCollector = require('./server/collectors/script-collector');
+exports.StyleCollector = require('./server/collectors/style-collector');
 
 // client
-exports.collector = require('./client/collectorHoc');
+exports.collector = require('./client/collector-hoc');
 `;
 
 const argv = require('yargs').argv;

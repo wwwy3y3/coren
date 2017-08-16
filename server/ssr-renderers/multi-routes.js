@@ -2,7 +2,7 @@ const {renderToString} = require('react-dom/server');
 const {StaticRouter} = require('react-router-dom');
 const react = require('react');
 const cheerio = require('cheerio');
-const {homeRoute} = require('../collectors/routesCollector');
+const {homeRoute} = require('../collectors/routes-collector');
 
 class MultiRoutesRenderer {
   constructor({app, js = [], css = [], plugins = [], skipssr}) {

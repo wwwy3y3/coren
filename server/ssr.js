@@ -2,8 +2,8 @@ import {resolve, join} from 'path';
 import mkdirp from 'mkdirp';
 import Promise from 'bluebird';
 import App from './app';
-import MultiRoutesRenderer from './ssrRenderers/multiRoutes';
-import loadCorenConfig from './loadCorenConfig';
+import MultiRoutesRenderer from './ssr-renderers/multi-routes';
+import loadCorenConfig from './load-coren-config';
 import {outputCommonJSDir, assetsJSON, ssrDir, corenBuildDir} from './CONFIG';
 const fs = Promise.promisifyAll(require("fs"));
 

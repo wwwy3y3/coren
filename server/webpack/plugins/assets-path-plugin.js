@@ -1,7 +1,7 @@
 import fs from 'fs';
 import mkdirp from 'mkdirp';
 import path from 'path';
-import {outputAssetDir, corenDir, assetsJSON} from '../CONFIG';
+import {outputAssetDir, corenDir, assetsJSON} from '../../CONFIG';
 
 export default class AssetsPath {
   constructor({rootDir}) {
@@ -13,7 +13,7 @@ export default class AssetsPath {
     const assetsPath = {};
     compiler.plugin('after-emit', (compilation, cb) => {
       const assets = compilation.assets;
-      var stats = compilation.getStats().toJson({
+      const stats = compilation.getStats().toJson({
         hash: true,
         publicPath: true,
         assets: true,

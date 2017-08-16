@@ -1,8 +1,8 @@
 import ora from 'ora';
 import logSymbols from 'log-symbols';
 import webpack from './webpack';
-import loadCorenConfig from './loadCorenConfig';
-import {addClientEntry, createClientTmpEntryFile} from './clientEntry';
+import loadCorenConfig from './load-coren-config';
+import {addClientEntry, createClientTmpEntryFile} from './client-entry';
 
 const runWebpack = (compiler, msg) => {
   return () => {

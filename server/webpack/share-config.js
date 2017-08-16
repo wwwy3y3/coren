@@ -1,6 +1,6 @@
 import {resolve} from 'path';
 import webpack from 'webpack';
-import getBabelConfig from '../babel/getBabelConfig';
+import getBabelConfig from '../babel/get-babel-config';
 
 export default function createShareConfig({dir, dev = false, corenConfig}) {
   const env = dev ? 'development' : 'production';

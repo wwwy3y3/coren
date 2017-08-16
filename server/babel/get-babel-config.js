@@ -1,5 +1,5 @@
-import findBabelrc from './findBabelrc';
-import defaultBabelrc from './defaultBabelrc';
+import findBabelrc from './find-babelrc';
+import defaultBabelrc from './default-babelrc';
 
 // if user has babelrc file, it would cover default babelrc config
 export default function(dir) {
