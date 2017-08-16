@@ -5,12 +5,6 @@ const watch = require('gulp-watch');
 const file = require('gulp-file');
 
 const index = `
-// Application
-exports.App = require('./server/app');
-// ssr renderer
-exports.SingleRouteRenderer = require('./server/ssr-renderers/single-route');
-exports.MultiRoutesRenderer = require('./server/ssr-renderers/multi-routes');
-
 // collectors
 exports.HeadCollector = require('./server/collectors/head-collector');
 exports.ReduxCollector = require('./server/collectors/redux-collector');
