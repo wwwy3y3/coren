@@ -54,6 +54,7 @@
     "redux": "^3.6.0",
     "shortid": "^2.2.8",
     "webpack": "^3.4.1",
+    "webpack-merge": "^4.1.0",
     "webpack-node-externals": "^1.6.0"
   },
   "devDependencies": {
@@ -112,6 +113,12 @@
   "peerDependencies": {
     "react": "^15.3.1",
     "react-dom": "^15.3.1"
+  },
+  "jest": {
+    "rootDir": "./test",
+    "modulePaths": [
+      "<rootDir>/test/"
+    ]
   },
   "license": "Apache-2.0"
 }

@@ -13,19 +13,38 @@ const env = getEnv();
 program
   .version(pkg.version);
 
+program
+  .command('dev [dir]')
+  .option('--watch', 'watch the change')
+  .action(function(dir, options) {
+    // const {watch} = options;
+    dir = dir || process.cwd();
+    console.log(`Start building ${dir}`);
+    generateNeededDir(dir);
+    build({dir, env: 'development'})
+    .then(() => {
+      const ssr = new Ssr({dir, skipssr: true, env: 'development'});
+      ssr.render();
+      console.log(color.success('Success build coren server side render'));
+    })
+    .catch(err => {
+      console.log(err);
+      process.exit(1);
+    });
+  });
+
 // build
 program
   .command('build [dir]')
-  .option('--skipssr', 'skip run ssr')
-  .option('--skipClientJS', 'skip build client js')
+  .option('--webpack [webpackPath]', 'webpack path')
   .action(function(dir, options) {
     dir = dir || process.cwd();
     console.log(`Start building ${dir}`);
-    const {skipssr, skipClientJS} = options;
+    const {webpackPath} = options;
     generateNeededDir(dir);
-    build({dir, skipClientJS, env})
+    build({dir, env, webpackPath})
     .then(() => {
-      const ssr = new Ssr({dir, skipssr, env});
+      const ssr = new Ssr({dir, skipssr: true, env});
       ssr.render();
       console.log(color.success('Success build coren server side render'));
     })

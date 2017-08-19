@@ -1,9 +1,9 @@
-const corenMiddleware = require('../server/coren-middleware');
+const corenMiddleware = require('../../server/coren-middleware');
 
 describe('coren-middleware', () => {
   it('init test', () => {
     const myMock = jest.fn();
-    const middleware = corenMiddleware('./test/testExample/withBabelrc');
+    const middleware = corenMiddleware('./test/server/testExample/withBabelrc');
     middleware({}, {}, myMock);
     expect(myMock).toBeCalled();
   });
@@ -17,7 +17,7 @@ describe('coren-middleware', () => {
       mockSend = jest.fn();
       req = {};
       res = {send: mockSend};
-      middleware = corenMiddleware('./test/testExample/withBabelrc');
+      middleware = corenMiddleware('./test/server/testExample/withBabelrc');
       middleware(req, res, jest.fn());
     });
 

@@ -9,7 +9,7 @@ const {
   RoutesCollector,
   ScriptCollector,
   StyleCollector
-} = require('../');
+} = require('../../');
 
 const DummyDB = require('./dummyDB');
 const dummyDB = new DummyDB();

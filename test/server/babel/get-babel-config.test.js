@@ -1,6 +1,6 @@
 import {join} from 'path';
-import getBabelConfig from '../../server/babel/getBabelConfig';
-import defaultBabelrc from '../../server/babel/defaultBabelrc';
+import getBabelConfig from '../../../server/babel/get-babel-config';
+import defaultBabelrc from '../../../server/babel/default-babelrc';
 
 describe('getBabelConfig', () => {
   it('withBabelrc', () => {

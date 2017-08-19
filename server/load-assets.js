@@ -1,8 +1,5 @@
 import {existsSync, readFileSync} from 'fs';
 import {assetsJSON} from './CONFIG';
-export const defaultConfig = {
-  webpack: null
-};
 
 export default function loadAssetsJSON(dir) {
   const path = assetsJSON(dir);

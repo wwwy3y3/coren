@@ -1,4 +1,4 @@
-import findBabelrc from '../../server/babel/findBabelrc';
+import findBabelrc from '../../../server/babel/find-babelrc';
 import {join} from 'path';
 
 describe('findBabelrc', () => {

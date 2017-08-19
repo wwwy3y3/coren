@@ -31,18 +31,18 @@ const runWebpack = (compiler, msg) => {
   };
 };
 
-export default function build({dir, skipClientJS, env}) {
+export default function build({dir, env, clientWebpackPath}) {
+  const dev = env !== 'production';
   const config = loadCorenConfig(dir);
   const updatedCorenConfig = addClientEntry(dir, config);
-  const {clientCompiler, serverCompiler} = webpack({dir, corenConfig: updatedCorenConfig, dev: env !== 'production'});
+  const {clientCompiler, serverCompiler} = webpack({dir, corenConfig: updatedCorenConfig, dev, clientWebpackPath});
   const runServerWebpack = runWebpack(serverCompiler, 'Building server side webpack');
-  const runClientWebpack = runWebpack(clientCompiler, 'Building client side webpack');
 
   return runServerWebpack()
           .then(() => {
-            if (!skipClientJS) {
+            if (!dev) {
               createClientTmpEntryFile(dir, updatedCorenConfig);
-              return runClientWebpack();
+              return runWebpack(clientCompiler, 'Building client side webpack')();
             }
           })
           .catch(err => {

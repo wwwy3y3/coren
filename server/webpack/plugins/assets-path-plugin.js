@@ -2,6 +2,9 @@ import fs from 'fs';
 import mkdirp from 'mkdirp';
 import path from 'path';
 import {outputAssetDir, corenDir, assetsJSON} from '../../CONFIG';
+import {isString} from 'lodash';
+
+let emited = false;
 
 export default class AssetsPath {
   constructor({rootDir}) {
@@ -12,6 +15,9 @@ export default class AssetsPath {
   apply(compiler) {
     const assetsPath = {};
     compiler.plugin('after-emit', (compilation, cb) => {
+      if (emited) {
+        cb();
+      }
       const assets = compilation.assets;
       const stats = compilation.getStats().toJson({
         hash: true,
@@ -25,7 +31,8 @@ export default class AssetsPath {
       });
       const assetsByChunkName = stats.assetsByChunkName;
       for (let entry in assetsByChunkName) {
-        const chunks = assetsByChunkName[entry];
+        let chunks = assetsByChunkName[entry];
+        chunks = isString(chunks) ? [chunks] : chunks;
         chunks.forEach(chunk => {
           const ext = path.extname(chunk);
           if (!assetsPath[entry]) {
@@ -41,6 +48,7 @@ export default class AssetsPath {
         }
         cb();
       });
+      emited = true;
     });
   }
 }

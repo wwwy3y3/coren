@@ -55,3 +55,5 @@ exports.getEnv = () => {
   }
   return 'production';
 };
+
+exports.preserveEntry = ['$vendor'];

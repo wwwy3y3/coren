@@ -6506,6 +6506,12 @@ webpack-hot-middleware@^2.18.0:
     querystring "^0.2.0"
     strip-ansi "^3.0.0"
 
+webpack-merge@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.npmjs.org/webpack-merge/-/webpack-merge-4.1.0.tgz#6ad72223b3e0b837e531e4597c199f909361511e"
+  dependencies:
+    lodash "^4.17.4"
+
 webpack-node-externals@^1.6.0:
   version "1.6.0"
   resolved "https://registry.npmjs.org/webpack-node-externals/-/webpack-node-externals-1.6.0.tgz#232c62ec6092b100635a3d29d83c1747128df9bd"

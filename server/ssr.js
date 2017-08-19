@@ -4,7 +4,8 @@ import Promise from 'bluebird';
 import App from './app';
 import MultiRoutesRenderer from './ssr-renderers/multi-routes';
 import loadCorenConfig from './load-coren-config';
-import {outputCommonJSDir, assetsJSON, ssrDir, corenBuildDir} from './CONFIG';
+import loadAssetsJSON from './load-assets';
+import {outputCommonJSDir, preserveEntry, ssrDir, corenBuildDir} from './CONFIG';
 const fs = Promise.promisifyAll(require("fs"));
 
 class Entry {
@@ -82,23 +83,39 @@ export default class ssr {
     this.config = loadCorenConfig(dir);
     const {entry} = this.config;
     this.entries = [];
-    const assets = this.getAssetsJson();
+    const assets = loadAssetsJSON(dir);
     for (let key in entry) {
-      this.entries.push(new Entry({
-        entryName: key,
-        assets: assets[key],
-        path: resolve(outputCommonJSDir(dir), `${key}.commonjs2.js`),
-        config: this.config,
-        dir,
-        skipssr,
-        env
-      }));
+      if (!preserveEntry.includes(key)) {
+        this.entries.push(new Entry({
+          entryName: key,
+          assets: this.generateEntryAssets(assets, key),
+          path: resolve(outputCommonJSDir(dir), `${key}.commonjs2.js`),
+          config: this.config,
+          dir,
+          skipssr,
+          env
+        }));
+      }
     }
   }
 
-  getAssetsJson() {
-    const data = fs.readFileSync(assetsJSON(this.dir), 'utf8');
-    return JSON.parse(data);
+  // merge the preserve assets key with app's assets
+  generateEntryAssets(assets, entry) {
+    const entryAsset = assets[entry];
+    if (assets.$vendor) {
+      ['.js', '.css'].forEach(ext => {
+        if (assets.$vendor[ext]) {
+          if (!entryAsset[ext]) {
+            entryAsset[ext] = [];
+          }
+          entryAsset[ext] = [
+            ...assets.$vendor[ext],
+            ...entryAsset[ext]
+          ];
+        }
+      });
+    }
+    return entryAsset;
   }
 
   prepareContext() {
