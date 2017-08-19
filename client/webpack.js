@@ -42,6 +42,8 @@ export default class CorenWebpack {
         }
         return entry;
       });
+    } else {
+      this.userWebpack.entry = this.corenConfig.clientEntry;
     }
   }
 

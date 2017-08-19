@@ -46,6 +46,6 @@ export default function build({dir, env, clientWebpackPath}) {
             }
           })
           .catch(err => {
-            console.log(err);
+            throw new Error('Error:', err);
           });
 }
