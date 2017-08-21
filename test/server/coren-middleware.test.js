@@ -3,7 +3,7 @@ const corenMiddleware = require('../../server/coren-middleware');
 describe('coren-middleware', () => {
   it('init test', () => {
     const myMock = jest.fn();
-    const middleware = corenMiddleware('./test/server/testExample/withBabelrc');
+    const middleware = corenMiddleware('./test/server/testExample/corenMiddleWareTest');
     middleware({}, {}, myMock);
     expect(myMock).toBeCalled();
   });
@@ -17,13 +17,23 @@ describe('coren-middleware', () => {
       mockSend = jest.fn();
       req = {};
       res = {send: mockSend};
-      middleware = corenMiddleware('./test/server/testExample/withBabelrc');
+      middleware = corenMiddleware('./test/server/testExample/corenMiddleWareTest');
       middleware(req, res, jest.fn());
     });
 
-    it('return html', () => {
-      res.sendCoren('index');
-      expect(mockSend.mock.calls[0][0]).toMatchSnapshot();
+    describe('sendCoren', () => {
+      it('index', () => {
+        res.sendCoren('index');
+        expect(mockSend.mock.calls[0][0]).toMatchSnapshot();
+      });
+      it('index/users', () => {
+        res.sendCoren('index/users');
+        expect(mockSend.mock.calls[0][0]).toMatchSnapshot();
+      });
+      it('index/users/1', () => {
+        res.sendCoren('index/users/1');
+        expect(mockSend.mock.calls[0][0]).toMatchSnapshot();
+      });
     });
 
     it('setHead', () => {

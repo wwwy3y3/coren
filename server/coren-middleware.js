@@ -1,12 +1,18 @@
 import cheerio from 'cheerio';
-import fs from 'fs';
+import {existsSync, readFileSync, lstatSync} from 'fs';
 import path from 'path';
 import {has} from 'lodash';
 import {ssrDir} from './CONFIG';
 
 const getEntryHtml = (entry, rootPath) => {
-  const filePath = path.join(ssrDir(rootPath), `${entry}.html`);
-  return fs.readFileSync(filePath, 'utf8');
+  let filePath = path.join(ssrDir(rootPath), entry);
+  if (existsSync(filePath) && lstatSync(filePath).isDirectory()) {
+    filePath = `${filePath}/index.html`;
+  } else {
+    filePath = `${filePath}.html`;
+  }
+
+  return readFileSync(filePath, 'utf8');
 };
 
 const updatePreloadedState = ($, newState) => {

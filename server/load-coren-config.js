@@ -1,7 +1,7 @@
 import {resolve} from 'path';
 import {existsSync} from 'fs';
 import noop from 'noop3';
-import {red} from 'chalk';
+import {error} from './utils';
 
 export const defaultConfig = {
   webpack: null,
@@ -16,16 +16,16 @@ export default function loadCorenConfig(dir) {
   if (hasConfig) {
     const userConfig = require(path);
     if (!userConfig.entry) {
-      throw new Error('Cannot find `entry` in coren.config.js');
+      throw new Error(error('Cannot find `entry` in coren.config.js'));
     }
     config = Object.assign({}, config, userConfig);
   } else {
-    throw new Error('You need to provide coren.config.js');
+    throw new Error(error('Please provide coren.config.js'));
   }
-  // test assetsHost
+  // check assetsHost provide all enviroment case
   ['development', 'pre-production', 'production'].forEach(env => {
     if (!config.assetsHost(env)) {
-      throw new Error(red(`Error: coren.config[assetsHost] doesn't provide '${env}' environment return value `));
+      throw new Error(error(`Error: coren.config[assetsHost] doesn't provide '${env}' environment return value `));
     }
   });
   return config;

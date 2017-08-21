@@ -21,7 +21,10 @@ module.exports = {
       rules: [
         {
           test: /\.css$/,
-          use: extractCSS.extract(["css-loader?minimize"])
+          use: extractCSS.extract({
+            fallback: 'style-loader',
+            use: "css-loader?modules&importLoaders=1&localIdentName=[path]___[name]__[local]___[hash:base64:5]"
+          })
         }
       ]
     }
