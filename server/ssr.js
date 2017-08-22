@@ -5,7 +5,7 @@ import App from './app';
 import MultiRoutesRenderer from './ssr-renderers/multi-routes';
 import loadCorenConfig from './load-coren-config';
 import loadAssetsJSON from './load-assets';
-import {outputCommonJSDir, preserveEntry, ssrDir, corenBuildDir} from './CONFIG';
+import {outputCommonJSDir, preserveEntry, ssrDir} from './CONFIG';
 const fs = Promise.promisifyAll(require("fs"));
 
 class Entry {
@@ -16,7 +16,6 @@ class Entry {
     this.skipssr = skipssr;
     this.config = config;
     this.env = env;
-    this.corenBuildDir = corenBuildDir(dir);
     this.ssrDir = ssrDir(dir);
     this.app = new App({path});
   }

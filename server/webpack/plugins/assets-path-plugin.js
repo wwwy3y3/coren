@@ -1,7 +1,7 @@
 import fs from 'fs';
 import mkdirp from 'mkdirp';
 import path from 'path';
-import {outputAssetDir, corenDir, assetsJSON} from '../../CONFIG';
+import {corenDir, assetsJSON} from '../../CONFIG';
 import {isString} from 'lodash';
 
 let emited = false;
@@ -9,7 +9,6 @@ let emited = false;
 export default class AssetsPath {
   constructor({rootDir}) {
     this.rootDir = rootDir;
-    this.distDir = outputAssetDir(rootDir);
   }
 
   apply(compiler) {

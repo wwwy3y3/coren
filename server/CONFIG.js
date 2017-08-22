@@ -5,10 +5,7 @@ exports.generateNeededDir = dir => {
   const dirs = [
     join(dir, '.coren', 'tmp'),
     join(dir, '.coren', 'commonjs'),
-    join(dir, '.coren', 'html'),
-    join(dir, 'coren-build'),
-    join(dir, 'coren-build', 'pages'),
-    join(dir, 'coren-build', 'assets')
+    join(dir, '.coren', 'html')
   ];
   dirs.forEach(d => mkdirp.sync(d));
 };
@@ -31,19 +28,6 @@ exports.ssrDir = dir => {
 
 exports.outputCommonJSDir = dir => {
   return join(dir, '.coren', 'commonjs');
-};
-
-// coren-build
-exports.corenBuildDir = dir => {
-  return join(dir, 'coren-build');
-};
-
-exports.outputPageDir = dir => {
-  return join(dir, 'coren-build', 'pages');
-};
-
-exports.outputAssetDir = dir => {
-  return join(dir, 'coren-build', 'assets');
 };
 
 exports.getEnv = () => {

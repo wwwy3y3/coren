@@ -1,4 +1,3 @@
-const webpack = require('webpack');
 const Datastore = require('nedb');
 const bluebird = require('bluebird');
 const rp = require('request-promise');
@@ -12,11 +11,8 @@ module.exports = {
     index: './index.js'
   },
   webpack: {
-    plugins: [
-      new webpack.BannerPlugin('This file is created by coren. Built time: ' + new Date())
-    ],
     // issue: https://github.com/matthew-andrews/isomorphic-fetch/issues/98
-    /*externals: [
+    externals: [
       {
         'isomorphic-fetch': {
           root: 'isomorphic-fetch',
@@ -25,7 +21,7 @@ module.exports = {
           amd: 'isomorphic-fetch'
         }
       }
-    ]*/
+    ]
   },
   registerCollector: function(app, {context}) {
     app.registerCollector("head", new HeadCollector());
@@ -52,5 +48,17 @@ module.exports = {
     .then(() => {
       return {db: {users: db}};
     });
+  },
+  assetsHost: (env, absolutePath = '') => {
+    const rel = path.relative(`${__dirname}/dist/`, absolutePath);
+    switch (env) {
+      case 'production':
+        return `/dist/${rel}`;
+      case 'development':
+      case 'pre-production':
+        return `http://localhost:5556/dist/${rel}`;
+      default:
+        return false;
+    }
   }
 };

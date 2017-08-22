@@ -1,7 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CorenWebpack = require('coren/lib/client/webpack');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 const extractCSS = new ExtractTextPlugin({
   filename: 'css/[name].css',
@@ -10,22 +10,20 @@ const extractCSS = new ExtractTextPlugin({
 
 const config = new CorenWebpack(__dirname, {
   // entry is defined in `coren.config.js`
+  devServer: {
+    headers: {"Access-Control-Allow-Origin": "http://localhost:9393"}
+  },
   entry: {
-    index: ['webpack-hot-middleware/client']
+    index: [
+      'webpack-dev-server/client?http://localhost:5556',
+      'babel-polyfill'
+    ]
   },
   output: {
     path: path.join(__dirname, 'dist'),
     filename: '[name].js',
-    publicPath: '/dist'
+    publicPath: 'http://localhost:5556/dist/'
   },
-  resolve: {
-    extensions: ['.js']
-  },
-  plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoEmitOnErrorsPlugin(),
-    extractCSS
-  ],
   module: {
     rules: [
       {
@@ -33,7 +31,19 @@ const config = new CorenWebpack(__dirname, {
         use: extractCSS.extract(["css-loader?minimize"])
       }
     ]
-  }
+  },
+  resolve: {
+    extensions: ['.js']
+  },
+  plugins: [
+    new webpack.NoEmitOnErrorsPlugin(),
+    new webpack.DefinePlugin({
+      "process.env": {
+        NODE_ENV: JSON.stringify("development")
+      }
+    }),
+    extractCSS
+  ]
 });
 
 module.exports = config.output();
