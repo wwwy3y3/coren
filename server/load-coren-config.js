@@ -1,7 +1,8 @@
 import {resolve} from 'path';
 import {existsSync} from 'fs';
 import noop from 'noop3';
-import {error} from './utils';
+import {color} from './utils';
+const {error} = color;
 
 export const defaultConfig = {
   webpack: null,

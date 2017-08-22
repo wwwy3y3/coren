@@ -1,6 +1,7 @@
 import {existsSync, readFileSync} from 'fs';
 import {assetsJSON} from './CONFIG';
-import {error} from './utils';
+import {color} from './utils';
+const {error} = color;
 export default function loadAssetsJSON(dir) {
   const path = assetsJSON(dir);
   const hasAssets = existsSync(path);

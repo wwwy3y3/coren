@@ -15,5 +15,6 @@ export default function(dir) {
     returnBabelrc.presets = defaultBabelrc.presets;
     returnBabelrc.plugins = defaultBabelrc.plugins;
   }
+
   return returnBabelrc;
 }

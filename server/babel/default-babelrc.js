@@ -1,11 +1,11 @@
 module.exports = {
   presets: [
-    'react',
-    'es2015'
+    require.resolve('babel-preset-react'),
+    require.resolve('babel-preset-es2015')
   ],
   plugins: [
-    'transform-decorators-legacy',
-    'transform-class-properties',
-    'add-module-exports'
+    require.resolve('babel-plugin-transform-decorators-legacy'),
+    require.resolve('babel-plugin-transform-class-properties'),
+    require.resolve('babel-plugin-add-module-exports')
   ]
 };

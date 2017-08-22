@@ -3,6 +3,8 @@ import logSymbols from 'log-symbols';
 import webpack from './webpack';
 import loadCorenConfig from './load-coren-config';
 import {addClientEntry, createClientTmpEntryFile} from './client-entry';
+import {color} from './utils';
+const {error} = color;
 
 const runWebpack = (compiler, msg) => {
   return () => {
@@ -46,6 +48,6 @@ export default function build({dir, env, clientWebpackPath}) {
             }
           })
           .catch(err => {
-            throw new Error('Error:', err);
+            throw new Error(error(err));
           });
 }
