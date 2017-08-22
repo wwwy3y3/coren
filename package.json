@@ -1,6 +1,6 @@
 {
   "name": "coren",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "React Pluggable Serverside Render framework Edit",
   "homepage": "https://github.com/Canner/coren",
   "repository": "git@github.com:Canner/render.git",
