@@ -12,8 +12,6 @@ React Pluggable Serverside Render
 - **Pass Variables To Component:** [Collector](#collector) can pass anything you want(`DB Query`, `Server API`) to [Define](#define) method
 - **Production stage** ssr: just run coren before deploy code
 
-
-
 ## React Pluggable Serverside Render
 
 Is serverside render a big headache for your Single Page App?
@@ -35,16 +33,22 @@ so many things need to be rendered in HTML
 
 
 ## Table Of Content
+
 <!-- toc -->
 
 - [How to use?](#how-to-use)
-  * [Setup](#setup)
-  * [What coren do?](#what-coren-do)
-  * [coren.config.js](#corenconfigjs)
+  * [Setup for new project](#setup-for-new-project)
+    + [coren.config.js](#corenconfigjs)
       - [entry](#entry)
       - [webpack](#webpack)
       - [registerCollector](#registercollector)
       - [prepareContext](#preparecontext)
+      - [assetsHost](#assetshost)
+    + [webpack configuration](#webpack-configuration)
+    + [express](#express)
+  * [Start the project](#start-the-project)
+      - [development](#development)
+      - [production](#production)
   * [Collector](#collector)
       - [HeadCollector](#headcollector)
         * [coren.config.js](#corenconfigjs-1)
@@ -70,140 +74,17 @@ so many things need to be rendered in HTML
 
 # How to use?
 
-## Setup
+## Setup for new project
 
-Install coren and needed package.
+First, clone [coren-starter-kit](https://github.com/Canner/coren-starter-kit)
 
-``` bash
-npm install coren react react-dom express —save
-```
+In this repo, we provide basic `webpack`, `express`, `coren.config.js` setting.
 
-then add coren script at package.json scripts setting
+You can find most of the setting is the same with common react project setting. Only some parts is different.
 
-``` json
-{
-  "scripts": {
-    "build": "coren build"
-  }
-}
-```
+Now explain the different part of coren setting.
 
-after that you can start build your react app!
-
-Now add `index.js` & `style.css` file:
-
-**index.js**
-
-``` js
-import React, {Component} from 'react';
-import {collector} from 'coren';
-import './style.css';
-@collector()
-export default class Root extends Component {
-  static defineHead() {
-    return {
-      title: "home",
-      description: "home description"
-    };
-  }
-
-  render() {
-    return (
-      <div className="hello">Hello Coren</div>
-    );
-  }
-}
-```
-
-**style.css**
-
-``` css
-.hello {
-  font-size: 50px;
-  color: orange;
-}
-```
-
-Then you need to add `coren.config.js`, that is the config file use to tell coren this repo's setting.
-
-**coren.config.js**
-
-``` javascript
-const webpack = require('webpack');
-const {HeadCollector} = require('coren');
-
-module.exports = {
-  entry: {
-    index: './index.js'
-  },
-  webpack: {
-    plugins: [
-      new webpack.BannerPlugin('This file is created by coren. Built time: ' + new Date())
-    ]
-  },
-  registerCollector: function(app) {
-    app.registerCollector("head", new HeadCollector());
-    return app;
-  }
-};
-```
-
-just run `npm run build`, coren will build your app and do server side render.
-
-Now, you finish building hello world app. It's time to use express to serve it!
-
-add **app.js**
-
-``` javascript
-var express = require('express');
-var app = express();
-var coren = require('coren/lib/server/coren-middleware');
-app.use(coren());
-app.use('/dist', express.static(__dirname + '/.coren/public/dist'));
-
-app.get('/', function(req, res) {
-  return res.sendCoren('index');
-});
-
-app.listen(9393, 'localhost', function(err) {
-  if (err) {
-    console.log(err);
-    return;
-  }
-
-  console.log('Listening at http://localhost:9393');
-});
-```
-
-after that, here is your folder structure:
-
-``` javascript
-.
-├── .coren
-├── coren.config.js
-├── index.js
-├── package.json
-├── style.css
-└── app.js
-```
-
-just run `node app.js` to start express server and open `http://localhost:9393`. 
-
-Your server side render and bundle script is done!
-
-[simple example](https://github.com/Canner/coren/tree/master/examples/apps/withCss)
-
-## What coren do?
-
-- Automatically generate server side render result
-- Build static file: coren use webpack to build your app`(index.js)` and export your `css`
-- Smartly serve the ssr result
-
-And that's it. coren is easy to setup and easy to integrate in your current project.
-
-You only need to use proper collector and setup `coren.config.js`, how to do ssr, how to build your static file is coren's responsibility.
-
-## coren.config.js
+### coren.config.js
 
 `coren.config.js` is config file to make coren run correctly.
 
@@ -218,11 +99,15 @@ Below will introduce which key is supported.
 
 > app you want to build (like webpack entry)
 
+This entry will be used in `client webpack` & `server side webpack`.
+
+So this is the `only` place to put your webapck entry.
+
 - type: Object
 
 **example:** 
 
-``` javascript
+```javascript
 {
   entry: {
     index: './index.js'
@@ -232,17 +117,17 @@ Below will introduce which key is supported.
 
 #### webpack
 
-> custom webpack setting
+> server side render webpack setting
 
 - type: Object
 
-This setting is the same as webpack.
+This webpack setting is used in `server side render.`The configuration is the same with webpack.
 
 Just put any webpack config in here except `entry`.
 
 **example:**
 
-``` javascript
+```javascript
 {
    webpack: {
     plugins: [
@@ -263,7 +148,7 @@ require needed collector and register it at this setting.
 
 **example:**
 
-``` javascript
+```javascript
 const {HeadCollector, RoutesCollector} = require('coren');
 module.exports = {
     registerCollector: function(app, {context}) {
@@ -278,7 +163,7 @@ module.exports = {
 
 #### prepareContext
 
-> use to get context and pass context to coren
+> get context and pass context to coren
 
 - type: Function
 - return: Promise
@@ -289,7 +174,7 @@ So if there are some parameter you want to pass to collector before coren start.
 
 **example:**
 
-``` javascript
+```javascript
 {
   prepareContext: function() {
     return Promise.resolve({db: {auth: true}});
@@ -297,11 +182,123 @@ So if there are some parameter you want to pass to collector before coren start.
 }
 ```
 
+#### assetsHost
 
+> host path in different environment
+
+- type: Fucntion(env: String, absolutePath: String)
+- return: String
+
+You need to provide `development`,  `pre-production` , and`production` environment return result.
+
+**example:**
+
+```javascript
+{
+  assetsHost: (env, absolutePath = '') => {
+    const rel = path.relative(`${__dirname}/dist/`, absolutePath);
+    switch (env) {
+      case 'production':
+        return `/dist/${rel}`; // example: /dist/index.js
+      case 'development':
+      case 'pre-production':
+        return `http://localhost:9393/dist/${rel}`;
+      default:
+        return false;
+    }
+  }
+}
+```
+
+
+
+### webpack configuration
+
+To make server side render work, coren will do some needed process when you build client side webpack, so you need to extend `CorenWebpack` to make it work.
+
+**example: webpack.config.dev.js**
+
+```javascript
+const CorenWebpack = require('coren/lib/client/webpack');
+
+const config = new CorenWebpack(__dirname, {
+  // Because coren.config.js already has `entry` setting,
+  // here you dont need to write entry `value`.
+  // only need to write other package you want to merge to entry value
+  entry: {
+    index: [
+      'webpack-hot-middleware/client?reload=true',
+      'babel-polyfill'
+    ]
+  }
+  // write other webpack setting
+});
+
+module.exports = config.output();
+```
+
+The only thing you need to do is `new CorenWebpack` and put all your original webpack setting at the second parameter. 
+
+
+
+### express
+
+When use coren, you don't need to use other template engine like `pug`. The html file is built by coren. We will help you to append the proper static file link & `<head/>` config.
+
+To make it work, coren provide a coren express middleware. This middleware will automatically load the proper html based on entry name. It also provide some basic api to help you alter the html return.
+
+**example:**
+
+```javascript
+var express = require('express');
+var app = express();
+var coren = require('coren/lib/server/coren-middleware');
+
+app.use(coren(__dirname));
+app.use('/dist', express.static(__dirname + '/.coren/public/dist'));
+
+app.get('/', function(req, res) {
+  return res.sendCoren('index');
+});
+
+app.listen(9393, 'localhost', function(err) {
+  console.log('Listening at http://localhost:9393');
+});
+```
+
+
+
+## Start the project
+
+Now open the `coren-starter-kit` folder, let's build the project and push it to production.
+
+#### development
+
+Type `npm start`.
+
+After webpack building finished, type `npm run coren-dev`. This command will build html files.
+
+Then open `http://localhost:9393`. Your app is worked !
+
+#### production
+
+Type `npm run prod`.
+
+Coren will build `server-side-render` and `client site production code` to you.
+
+So now you can deploy this app to `aws cloud`, `heroku`...
+
+It will work well and with server side render.
+
+
+
+
+
+So far, you can use `offline` server side rendering to build your app.
+
+Next, we introduce the other feature of coren - `Collector`.
 
 ## Collector
-
-Above example, coren use static method starting with `define` and `collector` decorator to make coren work.
 
 **What is a `Collector`?**
 
@@ -309,7 +306,43 @@ Above example, coren use static method starting with `define` and `collector` de
 
 With collector, you can inject head, body in ssr result. You also can use any framework at your app.
 
-The follow to use collector:
+Let's see an example:
+
+```javascript
+import React, {Component} from 'react';
+import {collector} from 'coren';
+import './style.css';
+@collector()
+export default class Root extends Component {
+  static defineHead() {
+    return {
+      title: "home",
+      description: "home description"
+    };
+  }
+
+  render() {
+    return (
+      <div className="hello">Hello Coren</div>
+    );
+  }
+}
+```
+
+WIth `defineHead`, this page's html `head` would be
+
+```html
+<head>
+  <title>home</title>
+  <meta name="description" content="home description">
+</head>
+```
+
+So you can use `Collector` to configure html result.
+
+
+
+Three steps to use collector:
 
 1. include and register needed collector at `coren.config.js`
 2. use `collector()` decorator at the component will use collector.
@@ -321,7 +354,7 @@ Below list the collector that coren supports now.
 
 ##### coren.config.js
 
-``` javascript
+```javascript
 const {HeadCollector} = require('coren');
 module.exports = {
   registerCollector: function(app, {context}) {
@@ -341,7 +374,7 @@ supported `define` api:
 
 example:
 
-``` javascript
+```javascript
 @collector()
 export default class Root extends Component {
   static defineHead() {
@@ -357,7 +390,7 @@ export default class Root extends Component {
 
 ##### coren.config.js
 
-``` javascript
+```javascript
 const {RoutesCollector} = require('coren');
 module.exports = {
   registerCollector: function(app, {context}) {
@@ -380,7 +413,7 @@ supported `define` api:
 
 example:
 
-``` javascript
+```javascript
 @collector()
 export default class Root extends Component {
   static defineRoutes({Url, ParamUrl}) {
@@ -395,7 +428,7 @@ With ReduxCollector, your app will support `PRELOADED_STATE`. It means that your
 
 **coren.config.js**
 
-``` javascript
+```javascript
 const {ReduxCollector} = require('coren');
 const reducer = require('./reducer'); 
 module.exports = {
@@ -420,7 +453,7 @@ supported `define` api:
 
 example:
 
-``` javascript
+```javascript
 @collector()
 class UserList extends Component {
   static definePreloadedState() {
@@ -464,7 +497,7 @@ You can reference `cheerio` to know the supported api.
 
 **example:**
 
-``` javascript
+```javascript
 app.get('/', function(req, res) {
   res.setHead(function($head) {
     $head.append('<script>alert("coren!")');
@@ -483,7 +516,7 @@ With this api, the status of your app can be controlled by  server.
 
 **example:**
 
-``` javascript
+```javascript
 app.get('/', function(req, res) {
   res.setPreloadedState({auth: false, user: 'john'});
   return res.sendCoren('index');
@@ -498,7 +531,7 @@ So, if you want to return `index` entry, you can write: `res.sendCoren('index')`
 
 **example:**
 
-``` javascript
+```javascript
 var express = require('express');
 var app = express();
 var coren = require('coren/lib/server/coren-middleware');
@@ -517,16 +550,20 @@ Though coren is unstable now, in our concept, it's very easy to integrate coren 
 
 Just follow these steps:
 
-1. write `coren.config.js`: including transfer webpack `production` setting
-2. add `defineXXXXX` method at your component
-3. add `coren middleware` at express server
-4. `npm run build` ( or `coren build`)
+1. write `coren.config.js`
+2. Use `new CorenWebpack` to extend webpack config
+3. add `defineXXXXX` method at your component
+4. add `coren middleware` at express server
+5. start webpack server
+6. after webpack is built, `npm run coren-dev` ( or `coren dev`)
+7. start express
 
-Then just run deploy method to deploy this project.
+
 
 # Limitation
 
 - Based on webpack: coren strongly count on webpack, currently it doesn't support other tools like `rollup`, `browserify`.
+- Because coren is server side render framework, there are some modules that don't support `isomorphic` environment. For these modules, that may break the ssr.
 
 # More Example
 

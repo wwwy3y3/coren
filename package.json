@@ -103,7 +103,8 @@
     "webpack-hot-middleware": "^2.18.0"
   },
   "pre-commit": [
-    "lint"
+    "lint",
+    "test"
   ],
   "peerDependencies": {
     "react": "^15.3.1",
