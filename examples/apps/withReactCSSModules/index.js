@@ -1,28 +1,13 @@
-import React, {Component} from 'react';
-import {collector} from 'coren';
-import CSSModules from 'react-css-modules';
-import styles from './style.css';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import Content from "./Content";
 
-@collector()
-@CSSModules(styles)
-export default class Root extends Component {
-  static defineHead() {
-    return {
-      title: "home",
-      description: "home description"
-    };
-  }
+ReactDOM.render(
+  <div>
+    <Content/>
+  </div>
+, document.getElementById('root'));
 
-  handleClick() {
-    console.log('hihi');
-  }
-
-  render() {
-    return (
-      <div>
-        <h1 styleName="red">use react-css-modules!</h1>
-        <button styleName="hi" onClick={this.handleClick}>index file!</button>
-      </div>
-    );
-  }
+if(module.hot) {
+  module.hot.accept();
 }

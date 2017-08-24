@@ -41,13 +41,13 @@ export default class AssetsPath {
         });
       }
       mkdirp.sync(corenDir(this.rootDir)); // because plugin would be used by client webpack, need to create dir
+      emited = true;
       fs.writeFile(assetsJSON(this.rootDir), JSON.stringify(assetsPath), function(err) {
         if (err) {
           throw new Error(err);
         }
         cb();
       });
-      emited = true;
     });
   }
 }

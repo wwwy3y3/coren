@@ -1,16 +1,6 @@
 var express = require('express');
 var app = express();
 var coren = require('coren/lib/server/coren-middleware');
-var webpack = require('webpack');
-
-var webpackConfig = require('./webpack.config.dev');
-var compiler = webpack(webpackConfig);
-
-app.use(require("webpack-dev-middleware")(compiler, {
-  noInfo: true, publicPath: webpackConfig.output.publicPath
-}));
-
-app.use(require("webpack-hot-middleware")(compiler));
 
 app.use(coren(__dirname));
 

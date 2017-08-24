@@ -1,23 +1,20 @@
-import React, {Component} from 'react';
-import {Route, Link} from 'react-router-dom';
-import Home from './Home';
-import UserList from './UserList';
-import User from './User';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import {BrowserRouter as Router} from 'react-router-dom';
 
-export default class Root extends Component {
-  render() {
-    return (
-        <div>
-          <ul>
-            <li><Link to="/">Home</Link></li>
-            <li><Link to="/users">All Users</Link></li>
-          </ul>
+import {Provider} from 'react-redux';
+import configureStore from './configureStore';
+const preloadedState = window.__PRELOADED_STATE__;
+delete window.__PRELOADED_STATE__;
+const store = configureStore(preloadedState);
+import Home from "./components/Home.js";
 
-          <hr/>
-          <Route exact path="/" component={Home}/>
-          <Route exact path="/users" component={UserList}/>
-          <Route exact path="/users/:id" component={User}/>
-        </div>
-    );
-  }
-}
+ReactDOM.render(
+  <div>
+    <Provider store={store}>
+      <Router>
+        <Home/>
+      </Router>
+    </Provider>
+  </div>
+, document.getElementById('root'));

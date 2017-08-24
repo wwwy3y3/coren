@@ -13,7 +13,7 @@ const extractCSS = new ExtractTextPlugin({
 
 module.exports = {
   entry: {
-    index: './index.js'
+    index: './Home.js'
   },
   webpack: {
     plugins: [
@@ -30,13 +30,13 @@ module.exports = {
     }
   },
   assetsHost: (env, absolutePath = '') => {
-    const rel = path.relative(`${__dirname}/coren-build/assets`, absolutePath);
+    const rel = path.relative(`${__dirname}/dist/`, absolutePath);
     switch (env) {
       case 'production':
         return 'https://s3-path/' + absolutePath;
       case 'development':
       case 'pre-production':
-        return `http://localhost:9393/dist/${rel}`;
+        return `http://localhost:5556/dist/${rel}`;
       default:
         return false;
     }

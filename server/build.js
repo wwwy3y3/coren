@@ -2,7 +2,6 @@ import ora from 'ora';
 import logSymbols from 'log-symbols';
 import webpack from './webpack';
 import loadCorenConfig from './load-coren-config';
-import {addClientEntry, createClientTmpEntryFile} from './client-entry';
 import {color} from './utils';
 const {error} = color;
 
@@ -36,14 +35,12 @@ const runWebpack = (compiler, msg) => {
 export default function build({dir, env, clientWebpackPath}) {
   const dev = env !== 'production';
   const config = loadCorenConfig(dir);
-  const updatedCorenConfig = addClientEntry(dir, config);
-  const {clientCompiler, serverCompiler} = webpack({dir, corenConfig: updatedCorenConfig, dev, clientWebpackPath});
+  const {clientCompiler, serverCompiler} = webpack({dir, corenConfig: config, dev, clientWebpackPath});
   const runServerWebpack = runWebpack(serverCompiler, 'Building server side webpack');
 
   return runServerWebpack()
           .then(() => {
             if (!dev) {
-              createClientTmpEntryFile(dir, updatedCorenConfig);
               return runWebpack(clientCompiler, 'Building client side webpack')();
             }
           })

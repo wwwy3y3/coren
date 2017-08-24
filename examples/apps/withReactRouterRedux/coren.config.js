@@ -8,7 +8,7 @@ const path = require('path');
 
 module.exports = {
   entry: {
-    index: './index.js'
+    index: './components/index.js'
   },
   webpack: {
     // issue: https://github.com/matthew-andrews/isomorphic-fetch/issues/98

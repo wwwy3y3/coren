@@ -18,7 +18,7 @@ export default class Root extends Component {
   render() {
     return (
         <div>
-          Home Content
+          Home Contentss
         </div>
     );
   }

@@ -46,22 +46,6 @@ class ReduxCollector {
       window.__PRELOADED_STATE__ = ${JSON.stringify(this.state)}
       </script>`);
   }
-
-  wrapClientImport() {
-    return `
-      import {Provider} from 'react-redux';
-      import configureStore from '${this.configureStore}';
-      const preloadedState = window.__PRELOADED_STATE__;
-      delete window.__PRELOADED_STATE__;
-      const store = configureStore(preloadedState);`;
-  }
-
-  wrapClientRender($children) {
-    return `
-      <Provider store={store}>
-        ${$children}
-      </Provider>`;
-  }
 }
 
 module.exports = ReduxCollector;

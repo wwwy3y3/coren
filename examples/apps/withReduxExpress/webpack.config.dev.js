@@ -11,7 +11,7 @@ const extractCSS = new ExtractTextPlugin({
 const config = new CorenWebpack(__dirname, {
   // entry is defined in `coren.config.js`
   entry: {
-    index: ['webpack-hot-middleware/client']
+    index: ['webpack-hot-middleware/client', './index.js']
   },
   output: {
     path: path.join(__dirname, 'dist'),

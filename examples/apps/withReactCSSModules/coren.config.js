@@ -10,7 +10,7 @@ const extractCSS = new ExtractTextPlugin({
 
 module.exports = {
   entry: {
-    index: './index.js'
+    index: './Content.js'
   },
   webpack: {
     plugins: [

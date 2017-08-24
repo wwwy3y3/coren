@@ -2,16 +2,12 @@ import {resolve} from 'path';
 import merge from 'webpack-merge';
 import {mapValues, isString} from 'lodash';
 import getBabelConfig from '../server/babel/get-babel-config';
-import {addClientEntry, createClientTmpEntryFile} from '../server/client-entry';
 import loadCorenConfig from '../server/load-coren-config';
 import AssetsPathPlugin from '../server/webpack/plugins/assets-path-plugin';
 export default class CorenWebpack {
   constructor(dir, userWebpack) {
     this.userWebpack = userWebpack;
     this.corenConfig = loadCorenConfig(dir);
-    this.corenConfig = addClientEntry(dir, this.corenConfig);
-    createClientTmpEntryFile(dir, this.corenConfig);
-    this.mergeEntry();
     this.userWebpack.plugins = [
       new AssetsPathPlugin({rootDir: dir}),
       ...this.userWebpack.plugins

@@ -1,70 +1,20 @@
-import React, {Component, PropTypes} from 'react';
-import {connect} from 'react-redux';
-import {collector} from 'coren';
-import {login, logout} from './actions';
-import './style.css';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import {BrowserRouter as Router} from 'react-router-dom';
+import {Provider} from 'react-redux';
+import Home from "./Home";
+import configureStore from './configureStore';
 
-@collector()
-@connect(mapStateToProps, mapDispatchToProps)
-export default class Index extends Component {
-  constructor(props) {
-    super(props);
-    this.toggleAuth = this.toggleAuth.bind(this);
-  }
-  static defineHead() {
-    return {
-      title: "redux",
-      description: "redux content"
-    };
-  }
+const preloadedState = window.__PRELOADED_STATE__;
+delete window.__PRELOADED_STATE__;
+const store = configureStore(preloadedState);
 
-  static definePreloadedState() {
-    return Promise.resolve({
-      auth: false
-    });
-  }
-
-  toggleAuth() {
-    const {auth, login, logout} = this.props;
-    if (auth) {
-      logout();
-    } else {
-      login();
-    }
-  }
-
-  render() {
-    const {auth} = this.props;
-    return (
-      <div>
-        {auth ?
-          <span>
-            you've log in.
-          </span>
-        : <span>
-            you've log out.
-          </span>
-        }
-        <button onClick={this.toggleAuth}>
-          {auth ?
-            <span>logout</span>
-          : <span>login</span>
-          }
-        </button>
-      </div>
-    );
-  }
-}
-
-function mapStateToProps(state) {
-  return {
-    auth: state.auth
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return {
-    login: () => dispatch(login()),
-    logout: () => dispatch(logout())
-  };
-}
+ReactDOM.render(
+  <div>
+    <Provider store={store}>
+      <Router>
+        <Home/>
+      </Router>
+    </Provider>
+  </div>
+, document.getElementById('root'));
