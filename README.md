@@ -6,31 +6,21 @@ React Pluggable Serverside Render
 
 # Features
 
-- **Offline** ssr solution: your server will not include any react related code but still can do ssr.
+- **:no_mobile_phones: Offline** ssr solution: your server will not include any react related code but still can do ssr.
 - **:electric_plug: Pluggable:** You can customize your own [collector](#collector) for your own need
-- **Access to Component Props:** in [componentDidConstruct](#componentDidConstruct) method from [Lifecycle Hook](#lifecycle-hook) you can access to component props
-- **Pass Variables To Component:** [Collector](#collector) can pass anything you want(`DB Query`, `Server API`) to [Define](#define) method
-- **Production stage** ssr: just run coren before deploy code
+- **:wrench: Access to Component Props:** in [componentDidConstruct](#componentDidConstruct) method from [Lifecycle Hook](#lifecycle-hook) you can access to component props
+- **:link: Pass Variables To Component:** [Collector](#collector) can pass anything you want(`DB Query`, `Server API`) to [Define](#define) method
+- **:cloud: Production stage** ssr: just run coren before deploy code
 
 ## React Pluggable Serverside Render
 
-Is serverside render a big headache for your Single Page App?
-
-say you need head title, description, jsonld, og...
-
-perhaps fetch data from db, then render redux preloadedState
-
-so many things need to be rendered in HTML
+Is serverside render a big headache for your Applications?  You need to setup various kinds of settings such as title, description, jsonld, og, maybe fetch data from your database... etc. So here comes **Coren**!
 
 ### How about we use more flexible way to solve it?
 
-**What if we let component `define` what they need in static method?**
+The central idea of **Coren** is to provide a pluggable, and more flexible way to **define** server-side methods in your components.
 
-**What if we could fetch database in component?**
-
-`Coren` provide you pluggable, flexible way to render your html
-
-
+**And say goodbye to all your html template engines**
 
 ## Table Of Content
 
@@ -80,9 +70,7 @@ First, clone [coren-starter-kit](https://github.com/Canner/coren-starter-kit)
 
 In this repo, we provide basic `webpack`, `express`, `coren.config.js` setting.
 
-You can find most of the setting is the same with common react project setting. Only some parts is different.
-
-Now explain the different part of coren setting.
+Now we are going to explain the different part of in coren projects.
 
 ### coren.config.js
 
@@ -97,7 +85,7 @@ Below will introduce which key is supported.
 
 #### entry
 
-> app you want to build (like webpack entry)
+> JS entry point you want to build (like webpack entry)
 
 This entry will be used in `client webpack` & `server side webpack`.
 
@@ -121,9 +109,9 @@ So this is the `only` place to put your webapck entry.
 
 - type: Object
 
-This webpack setting is used in `server side render.`The configuration is the same with webpack.
+This webpack setting will be used during server side render. The configuration will be passed to `webpack` internally.
 
-Just put any webpack config in here except `entry`.
+Just put any webpack configurations in here except `entry`.
 
 **example:**
 
@@ -139,19 +127,19 @@ Just put any webpack config in here except `entry`.
 
 #### registerCollector
 
-> register this app's custom collector
+> register custom collectors to your applications
 
 - type: Function(app, {context})
 - return: App
 
-require needed collector and register it at this setting.
+This must be set. You need to setup your custom collectors.
 
 **example:**
 
 ```javascript
 const {HeadCollector, RoutesCollector} = require('coren');
 module.exports = {
-    registerCollector: function(app, {context}) {
+  registerCollector: function(app, {context}) {
     app.registerCollector("head", new HeadCollector());
     app.registerCollector("routes", new RoutesCollector({
       componentProps: {context}
