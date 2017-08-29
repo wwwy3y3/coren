@@ -1,9 +1,9 @@
 import {existsSync, readFileSync} from 'fs';
-import {assetsJSON} from './CONFIG';
+import {getAssetsJsonPath} from './coren-working-space';
 import {color} from './utils';
 const {error} = color;
 export default function loadAssetsJSON(dir) {
-  const path = assetsJSON(dir);
+  const path = getAssetsJsonPath(dir);
   const hasAssets = existsSync(path);
   if (hasAssets) {
     return JSON.parse(readFileSync(path, 'utf8'));

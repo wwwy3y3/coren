@@ -1,7 +1,7 @@
 import {join} from 'path';
 import mkdirp from 'mkdirp';
 
-exports.generateNeededDir = dir => {
+exports.initialize = dir => {
   const dirs = [
     join(dir, '.coren', 'tmp'),
     join(dir, '.coren', 'commonjs'),
@@ -10,23 +10,23 @@ exports.generateNeededDir = dir => {
   dirs.forEach(d => mkdirp.sync(d));
 };
 // .coren
-exports.corenDir = dir => {
+exports.getRootPath = dir => {
   return join(dir, '.coren');
 };
 
-exports.clientTmpEntryDir = dir => {
+exports.getClientTmpEntryDir = dir => {
   return join(dir, '.coren', 'tmp');
 };
 
-exports.assetsJSON = dir => {
+exports.getAssetsJsonPath = dir => {
   return join(dir, '.coren', 'assets.json');
 };
 
-exports.ssrDir = dir => {
+exports.getSsrDir = dir => {
   return join(dir, '.coren', 'html');
 };
 
-exports.outputCommonJSDir = dir => {
+exports.getCommonJSDir = dir => {
   return join(dir, '.coren', 'commonjs');
 };
 

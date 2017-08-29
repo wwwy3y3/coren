@@ -2,10 +2,10 @@ import cheerio from 'cheerio';
 import {existsSync, readFileSync, lstatSync} from 'fs';
 import path from 'path';
 import {has} from 'lodash';
-import {ssrDir} from './CONFIG';
+import {getSsrDir} from './coren-working-space';
 
 const getEntryHtml = (entry, rootPath) => {
-  let filePath = path.join(ssrDir(rootPath), entry);
+  let filePath = path.join(getSsrDir(rootPath), entry);
   if (existsSync(filePath) && lstatSync(filePath).isDirectory()) {
     filePath = `${filePath}/index.html`;
   } else {

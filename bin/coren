@@ -4,10 +4,9 @@ const path = require('path');
 const Ssr = require('../server/ssr');
 const build = require('../server/build');
 const program = require('commander');
-const {generateNeededDir} = require('../server/CONFIG');
+const {initialize, getEnv} = require('../server/coren-working-space');
 const pkg = require('../../package.json');
 const {color} = require('../server/utils');
-const {getEnv} = require('../server/CONFIG');
 
 const env = getEnv();
 
@@ -21,7 +20,7 @@ program
     // const {watch} = options;
     dir = dir || process.cwd();
     console.log(`Start building ${dir}`);
-    generateNeededDir(dir);
+    initialize(dir);
     build({dir, env: 'development'})
     .then(() => {
       const ssr = new Ssr({dir, skipssr: true, env: 'development'});
@@ -42,7 +41,7 @@ program
     dir = dir || process.cwd();
     console.log(`Start building ${dir}`);
     const {webpack} = options;
-    generateNeededDir(dir);
+    initialize(dir);
     build({dir, env: 'production', clientWebpackPath: path.resolve(webpack)})
     .then(() => {
       const ssr = new Ssr({dir, skipssr: false, env: 'production'});

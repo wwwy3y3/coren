@@ -5,7 +5,7 @@ import App from './app';
 import MultiRoutesRenderer from './ssr-renderers/multi-routes';
 import loadCorenConfig from './load-coren-config';
 import loadAssetsJSON from './load-assets';
-import {outputCommonJSDir, preserveEntry, ssrDir} from './CONFIG';
+import {getCommonJSDir, preserveEntry, getSsrDir} from './coren-working-space';
 const fs = Promise.promisifyAll(require("fs"));
 
 class Entry {
@@ -16,7 +16,7 @@ class Entry {
     this.skipssr = skipssr;
     this.config = config;
     this.env = env;
-    this.ssrDir = ssrDir(dir);
+    this.getSsrDir = getSsrDir(dir);
     this.app = new App({path});
   }
 
@@ -40,24 +40,20 @@ class Entry {
   }
 
   registerCollector(context) {
-    if (!this.config.registerCollector) {
-      return;
+    if (this.config.registerCollector) {
+      this.config.registerCollector(this.app, {context});
     }
-    const returnApp = this.config.registerCollector(this.app, {context});
-    if (!returnApp instanceof App) {
-      throw new Error('You need to return App instance');
-    }
-    this.app = returnApp;
   }
 
   render(context) {
     this.registerCollector(context);
-
+    const {js, css} = this.genAssets();
     const options = {
       app: this.app,
       plugins: this.config.plugins,
       skipssr: this.skipssr,
-      ...this.genAssets(this.assets)
+      js,
+      css
     };
 
     const ssr = new MultiRoutesRenderer(options);
@@ -66,7 +62,7 @@ class Entry {
     ssr.renderToString().then(results => {
       // output file
       return Promise.all(results.map(result => {
-        const filepath = join(this.ssrDir, `${result.route}/${this.entryName}.html`);
+        const filepath = join(this.getSsrDir, `${result.route}/${this.entryName}.html`);
         mkdirp.sync(resolve(filepath, "../"));
         // write to filesystem
         return fs.writeFileAsync(filepath, result.html);
@@ -88,7 +84,7 @@ export default class ssr {
         this.entries.push(new Entry({
           entryName: key,
           assets: this.generateEntryAssets(assets, key),
-          path: resolve(outputCommonJSDir(dir), `${key}.commonjs2.js`),
+          path: resolve(getCommonJSDir(dir), `${key}.commonjs2.js`),
           config: this.config,
           dir,
           skipssr,
@@ -124,7 +120,7 @@ export default class ssr {
         this.context = context;
       });
     }
-    return new Promise(resolve => resolve());
+    return Promise.resolve();
   }
 
   render() {

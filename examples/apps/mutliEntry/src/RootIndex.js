@@ -7,13 +7,13 @@ import configureStore from './configureStore';
 const preloadedState = window.__PRELOADED_STATE__;
 delete window.__PRELOADED_STATE__;
 const store = configureStore(preloadedState);
-import Index from "./components/index";
+import Home from "./components/index.js";
 
 ReactDOM.render(
   <div>
     <Provider store={store}>
       <Router>
-        <Index/>
+        <Home/>
       </Router>
     </Provider>
   </div>

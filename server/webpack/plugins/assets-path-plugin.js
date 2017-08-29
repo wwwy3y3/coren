@@ -1,7 +1,7 @@
 import fs from 'fs';
 import mkdirp from 'mkdirp';
 import path from 'path';
-import {corenDir, assetsJSON} from '../../CONFIG';
+import {getRootPath, getAssetsJsonPath} from '../../coren-working-space';
 import {isString} from 'lodash';
 
 let emited = false;
@@ -40,9 +40,9 @@ export default class AssetsPath {
           assetsPath[entry][ext] = [assets[chunk].existsAt];
         });
       }
-      mkdirp.sync(corenDir(this.rootDir)); // because plugin would be used by client webpack, need to create dir
+      mkdirp.sync(getRootPath(this.rootDir)); // because plugin would be used by client webpack, need to create dir
       emited = true;
-      fs.writeFile(assetsJSON(this.rootDir), JSON.stringify(assetsPath), function(err) {
+      fs.writeFile(getAssetsJsonPath(this.rootDir), JSON.stringify(assetsPath), function(err) {
         if (err) {
           throw new Error(err);
         }

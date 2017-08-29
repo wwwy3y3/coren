@@ -1,14 +1,14 @@
 import {join, relative, resolve} from 'path';
-import App from './app';
-import {outputCommonJSDir, clientTmpEntryDir} from './CONFIG';
-import {isFile} from './utils';
 import {isString, isArray} from 'lodash';
 import fs from 'fs';
 import mkdirp from 'mkdirp';
+import App from './app';
+import {getCommonJSDir, getClientTmpEntryDir} from './coren-working-space';
+import {isFile} from './utils';
 
 exports.addClientEntry = (dir, config) => {
   const {entry} = config;
-  const clientEntryDir = clientTmpEntryDir(dir);
+  const clientEntryDir = getClientTmpEntryDir(dir);
   config.clientEntry = {};
   for (let key in entry) {
     const entryPath = entry[key];
@@ -38,7 +38,7 @@ exports.createClientTmpEntryFile = (dir, config) => {
   const {entry} = config;
   // use first entry js to get collector's wrapClientRender & wrapClientImport
   const firstKey = Object.keys(entry)[0];
-  let app = new App({path: resolve(outputCommonJSDir(dir), `${firstKey}.commonjs2.js`)});
+  let app = new App({path: resolve(getCommonJSDir(dir), `${firstKey}.commonjs2.js`)});
   if (config.registerCollector) {
     app = config.registerCollector(app, {context: {}});
   }
@@ -67,7 +67,7 @@ exports.createClientTmpEntryFile = (dir, config) => {
       const path = entryPath[i];
       if (isFile(path)) {
         // clientTmpDir: /.coren/tmp
-        const clientTmpDir = clientTmpEntryDir(dir);
+        const clientTmpDir = getClientTmpEntryDir(dir);
         // clientEntryPath: /.coren/tmp/src/index.js
         const clientEntryPath = join(clientTmpDir, entryPath);
         // clientEntryDir: /.coren/tmp/src
