@@ -39,19 +39,6 @@ export default class UserList extends Component {
     users: PropTypes.object
   };
 
-  static definePreloadedState({context}) {
-    const {db} = context;
-    return db.users.find().execAsync()
-    .then(list => ({
-      users: {
-        list,
-        fetched: true,
-        isFetching: false,
-        error: false
-      }
-    }));
-  }
-
   componentDidMount() {
     const {users} = this.props;
     if (!users.fetched) {
@@ -61,7 +48,6 @@ export default class UserList extends Component {
 
   render() {
     const {users} = this.props;
-    console.log(users)
     if (users.fetched && users.error) {
       return <div>Error</div>;
     }
