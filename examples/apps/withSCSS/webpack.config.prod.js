@@ -9,13 +9,8 @@ const extractCSS = new ExtractTextPlugin({
 });
 
 const config = new CorenWebpack(__dirname, {
-  devServer: {
-    headers: {"Access-Control-Allow-Origin": "http://localhost:9393"}
-  },
   entry: {
     index: [
-      'webpack-dev-server/client?http://localhost:5556',
-      'babel-polyfill',
       './index.js'
     ]
   },
@@ -27,8 +22,11 @@ const config = new CorenWebpack(__dirname, {
   module: {
     rules: [
       {
-        test: /\.css$/,
-        use: extractCSS.extract(["css-loader?minimize"])
+        test: /\.scss$/,
+        use: extractCSS.extract([
+          "css-loader?minimize",
+          "sass-loader"
+        ])
       }
     ]
   },
@@ -39,9 +37,8 @@ const config = new CorenWebpack(__dirname, {
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.DefinePlugin({
       "process.env": {
-        NODE_ENV: JSON.stringify("development"),
-        isBrowser: true
-      },
+        NODE_ENV: JSON.stringify("production")
+      }
     }),
     extractCSS
   ]

@@ -1,51 +1,65 @@
-const immutable = require('immutable');
-const {Map, List} = immutable;
-const initialState = new Map({
-  users: new Map({
-    list: new List(),
+const initialState = {
+  users: {
+    list: [],
     isFetching: false,
     fetched: false,
     error: false
-  }),
-  currentUser: new Map({
-    data: new Map(),
+  },
+  currentUser: {
+    data: {},
     isFetching: false,
     fetched: false,
     error: false
-  })
-});
+  }
+};
 
 function reducer(state = initialState, action) {
   switch (action.type) {
     case 'GET_ALL_USERS':
-      return state
-              .setIn(['users', 'isFetching'], true);
+      return Object.assign({}, state, {
+        users: Object.assign({}, state.users, {isFetching: true})
+      });
 
     case 'GET_ALL_USERS_SUCCESS':
-      return state
-              .setIn(['users', 'list'], immutable.fromJS(action.payload))
-              .setIn(['users', 'fetched'], true)
-              .setIn(['users', 'isFetching'], false);
+      return Object.assign({}, state, {
+        users: Object.assign({}, state.users, {
+          list: action.payload,
+          fetched: true,
+          isFetching: false
+        })
+      });
 
     case 'GET_ALL_USERS_FAILURE':
-      return state
-              .setIn(['users', 'fetched'], true)
-              .setIn(['users', 'error'], true);
+      return Object.assign({}, state, {
+        users: Object.assign({}, state.users, {
+          fetched: true,
+          error: true
+        })
+      });
 
     case 'GET_USER':
-      return state
-              .setIn(['currentUser', 'isFetching'], true);
+      return Object.assign({}, state, {
+        currentUser: Object.assign({}, state.currentUser, {
+          isFetching: true
+        })
+      });
 
     case 'GET_USER_SUCCESS':
-      return state
-              .setIn(['currentUser', 'data'], immutable.fromJS(action.payload))
-              .setIn(['currentUser', 'fetched'], true)
-              .setIn(['currentUser', 'isFetching'], false);
+      return Object.assign({}, state, {
+        currentUser: Object.assign({}, state.currentUser, {
+          data: action.payload,
+          fetched: true,
+          isFetching: false
+        })
+      });
 
     case 'GET_USER_FAILURE':
-      return state
-              .setIn(['currentUser', 'fetched'], true)
-              .setIn(['currentUser', 'error'], true);
+      return Object.assign({}, state, {
+        currentUser: Object.assign({}, state.currentUser, {
+          fetched: true,
+          error: true
+        })
+      });
 
     default:
       return state;

@@ -1,24 +1,24 @@
 import React, {Component} from 'react';
-import {collector} from 'coren';
+import {ssr, head, route, wrapSSR} from 'coren';
+import {StaticRouter} from 'react-router-dom';
 
-@collector()
+@wrapSSR(appElement => {
+  return (
+    <StaticRouter>
+      {appElement}
+    </StaticRouter>
+  );
+})
+@route('/')
+@head({title: 'home', description: 'home description'})
+@ssr
 export default class Root extends Component {
-  static defineHead() {
-    return {
-      title: "home",
-      description: "home description"
-    };
-  }
-
-  static defineRoutes({Url}) {
-    return new Url('/');
-  }
 
   render() {
     return (
-        <div>
-          Home Contentss
-        </div>
+      <div>
+        Home Content
+      </div>
     );
   }
 }

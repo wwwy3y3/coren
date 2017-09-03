@@ -39,19 +39,13 @@ class Entry {
     return this.config.assetsHost(this.env, absolutePath);
   }
 
-  registerCollector(context) {
-    if (this.config.registerCollector) {
-      this.config.registerCollector(this.app, {context});
-    }
-  }
-
   render(context) {
-    this.registerCollector(context);
     const {js, css} = this.genAssets();
     const options = {
       app: this.app,
       plugins: this.config.plugins,
       skipssr: this.skipssr,
+      context,
       js,
       css
     };

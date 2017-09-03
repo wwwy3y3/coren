@@ -1,9 +1,39 @@
 import React, {Component} from 'react';
-import {Route, Link} from 'react-router-dom';
+import {Route, Link, StaticRouter} from 'react-router-dom';
+import {ssr, wrapSSR, wrapDOM} from 'coren';
 import Home from './Home';
 import UserList from './UserList';
 import User from './User';
+import {BrowserRouter as Router} from 'react-router-dom';
+import {Provider} from 'react-redux';
+import configureStore from '../configureStore';
 
+let store;
+if (process.env.isBrowser) {
+  const preloadedState = window.__PRELOADED_STATE__;
+  delete window.__PRELOADED_STATE__;
+  store = configureStore(preloadedState);
+}
+
+@wrapSSR(appElement => {
+  return (
+    <Provider>
+      <StaticRouter>
+        {appElement}
+      </StaticRouter>
+    </Provider>
+  );
+})
+@wrapDOM(({children}) => {
+  return (
+    <Provider store={store}>
+      <Router>
+        {children}
+      </Router>
+    </Provider>
+  );
+})
+@ssr
 export default class Root extends Component {
   render() {
     return (

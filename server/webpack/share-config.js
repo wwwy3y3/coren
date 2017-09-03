@@ -13,7 +13,6 @@ export default function createShareConfig({dir, dev = false, corenConfig}) {
     })
   ];
   let config = {
-    // target: 'node',
     resolve: {
       extensions: ['.js']
     },

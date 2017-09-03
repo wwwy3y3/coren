@@ -1,16 +1,16 @@
 import React, {Component} from 'react';
-import {collector} from 'coren';
+import {head, ssr, route, wrapSSR} from 'coren';
 import './style.scss';
 
-@collector()
+@wrapSSR(appElement => {
+  return (
+    <h1>{appElement}</h1>
+  );
+})
+@route('/')
+@head({title: 'home', description: 'home description!!!!!'})
+@ssr
 export default class Root extends Component {
-  static defineHead() {
-    return {
-      title: "home",
-      description: "home description"
-    };
-  }
-
   handleClick() {
     console.log('hihi');
   }

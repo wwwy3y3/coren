@@ -1,28 +1,43 @@
 import React, {Component, PropTypes} from 'react';
-import {connect} from 'react-redux';
+import {Provider, connect} from 'react-redux';
 import {fetchAllUsers} from '../actions';
-import {Link} from 'react-router-dom';
-// import collector from 'coren/lib/client/collectorHoc';
-import {collector} from 'coren';
+import {Link, StaticRouter} from 'react-router-dom';
+import {ssr, head, route, wrapSSR, reduxStore, preloadedState} from 'coren';
+import reducer from '../reducer';
 
-@collector()
+@wrapSSR((appElement, config) => {
+  const {route, reduxStore} = config;
+  return (
+    <Provider store={reduxStore}>
+      <StaticRouter location={route.path}>
+        {appElement}
+      </StaticRouter>
+    </Provider>
+  );
+})
+@route('/users')
+@reduxStore({reducer})
+@preloadedState((props, options) => {
+  const {context} = options;
+  const {db} = context;
+  return db.users.find().execAsync()
+  .then(list => ({
+    users: {
+      list,
+      fetched: true,
+      isFetching: false,
+      error: false
+    }
+  }));
+})
+@head({title: 'user list', description: 'user list'})
+@ssr
 @connect(mapStateToProps, mapDispatchToProps)
 export default class UserList extends Component {
   static propTypes = {
     fetchAllUsers: PropTypes.func,
     users: PropTypes.object
   };
-
-  static defineHead() {
-    return {
-      title: "user list",
-      description: "user list"
-    };
-  }
-
-  static defineRoutes({Url}) {
-    return new Url('/users');
-  }
 
   static definePreloadedState({context}) {
     const {db} = context;
@@ -39,18 +54,19 @@ export default class UserList extends Component {
 
   componentDidMount() {
     const {users} = this.props;
-    if (!users.get('fetched')) {
+    if (!users.fetched) {
       this.props.fetchAllUsers();
     }
   }
 
   render() {
     const {users} = this.props;
-    if (users.get('fetched') && users.get('error')) {
+    console.log(users)
+    if (users.fetched && users.error) {
       return <div>Error</div>;
     }
 
-    if (users.get('isFetching')) {
+    if (users.isFetching) {
       return <div>loading</div>;
     }
 
@@ -58,7 +74,7 @@ export default class UserList extends Component {
         <div>
           <ul>
           {
-            users.get('list').toJS().map(user =>
+            users.list.map(user =>
               <li><Link to={`/users/${user.id}`}>{user.id} {user.name}</Link></li>
             )
           }
@@ -70,7 +86,7 @@ export default class UserList extends Component {
 
 function mapStateToProps(state) {
   return {
-    users: state.get('users')
+    users: state.users
   };
 }
 

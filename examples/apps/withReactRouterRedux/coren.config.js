@@ -52,8 +52,8 @@ module.exports = {
   assetsHost: (env, absolutePath = '') => {
     const rel = path.relative(`${__dirname}/dist/`, absolutePath);
     switch (env) {
+        // return `/dist/${rel}`;
       case 'production':
-        return `/dist/${rel}`;
       case 'development':
       case 'pre-production':
         return `http://localhost:5556/dist/${rel}`;
