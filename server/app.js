@@ -8,6 +8,7 @@ class App {
   }
 
   import() {
+    hook.init();
     return require(this.path);
   }
 

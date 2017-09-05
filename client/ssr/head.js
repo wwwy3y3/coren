@@ -1,4 +1,4 @@
-import hook from '../../shared/ssrHook';
+import {ssrDecorator} from '../ssrHelper';
 
 export default ({title, description}) => {
   const name = 'head';
@@ -10,8 +10,5 @@ export default ({title, description}) => {
       $head.append(`<meta name="description" content="${description}">`);
     }
   };
-
-  return WrappedComponent => {
-    hook.bindMethod(WrappedComponent.__COREN_ID(), cycle);
-  };
+  return ssrDecorator(cycle);
 };

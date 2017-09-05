@@ -1,4 +1,4 @@
-import hook from '../../shared/ssrHook';
+import {ssrDecorator} from '../ssrHelper';
 const pathToRegexp = require('path-to-regexp');
 
 // create a match function
@@ -38,9 +38,7 @@ const routeFn = function(route) {
     }
   };
 
-  return WrappedComponent => {
-    hook.bindMethod(WrappedComponent.__COREN_ID(), cycle);
-  };
+  return ssrDecorator(cycle);
 };
 
 exports.homeRoute = homeRoute;

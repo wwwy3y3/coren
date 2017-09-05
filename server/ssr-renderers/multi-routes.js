@@ -57,14 +57,15 @@ class MultiRoutesRenderer {
     const componentProps = this.app.getProps();
 
     const results = [];
-
     for (let corenID in components) {
+      console.log('Run corenID:', corenID);
       const props = componentProps[corenID];
       const collectedMethod = this.collectLifeCycleMethod(methods[corenID]);
       const routes = await this.getRoutes(methods[corenID], props);
       // render each route's ssr page
       for (let i = 0; i < routes.length; i++) {
         const route = routes[i];
+        console.log('build route:', route.path);
         const template = createTemplate();
         const $ = cheerio.load(template, {decodeEntities: false});
         const $head = $('head');

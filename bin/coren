@@ -24,8 +24,9 @@ program
     build({dir, env: 'development'})
     .then(() => {
       const ssr = new Ssr({dir, skipssr: true, env: 'development'});
-      ssr.render();
-      console.log(color.success('Success build coren server side render'));
+      ssr.render().then(() => {
+        console.log(color.success('Success build coren server side render'));
+      });
     })
     .catch(err => {
       console.log(err);

@@ -53,7 +53,7 @@ class Entry {
     const ssr = new MultiRoutesRenderer(options);
 
     // get the array of html result
-    ssr.renderToString().then(results => {
+    return ssr.renderToString().then(results => {
       // output file
       return Promise.all(results.map(result => {
         const filepath = join(this.getSsrDir, `${result.route}/${this.entryName}.html`);
@@ -118,10 +118,8 @@ export default class ssr {
   }
 
   render() {
-    this.prepareContext().then(() => {
-      this.entries.forEach(entry => {
-        entry.render(this.context);
-      });
+    return this.prepareContext().then(() => {
+      return Promise.all(this.entries.map(entry => entry.render(this.context)));
     });
   }
 }

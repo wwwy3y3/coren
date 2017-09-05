@@ -1,4 +1,4 @@
-import hook from '../../shared/ssrHook';
+import {ssrDecorator} from '../ssrHelper';
 
 export default wrapFn => {
   const name = 'wrapSSR';
@@ -10,7 +10,5 @@ export default wrapFn => {
     }
   };
 
-  return WrappedComponent => {
-    hook.bindMethod(WrappedComponent.__COREN_ID(), cycle);
-  };
+  return ssrDecorator(cycle);
 };

@@ -1,5 +1,9 @@
 class Hook {
   constructor() {
+    this.init();
+  }
+
+  init() {
     this.components = {};
     this.methods = {};
     this.props = {};

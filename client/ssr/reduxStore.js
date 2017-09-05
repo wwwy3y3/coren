@@ -1,5 +1,5 @@
 import {createStore} from 'redux';
-import hook from '../../shared/ssrHook';
+import {ssrDecorator} from '../ssrHelper';
 
 export default function({reducer}) {
   const name = 'reduxStore';
@@ -18,7 +18,5 @@ export default function({reducer}) {
     }
   };
 
-  return WrappedComponent => {
-    hook.bindMethod(WrappedComponent.__COREN_ID(), cycle);
-  };
+  return ssrDecorator(cycle);
 }
