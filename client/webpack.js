@@ -1,6 +1,5 @@
 import {resolve} from 'path';
 import merge from 'webpack-merge';
-import {mapValues, isString} from 'lodash';
 import getBabelConfig from '../server/babel/get-babel-config';
 import loadCorenConfig from '../server/load-coren-config';
 import AssetsPathPlugin from '../server/webpack/plugins/assets-path-plugin';
@@ -26,21 +25,6 @@ export default class CorenWebpack {
         ]
       }
     });
-  }
-
-  mergeEntry() {
-    const userEntry = this.userWebpack.entry;
-    if (userEntry) {
-      this.userWebpack.entry = mapValues(this.corenConfig.clientEntry, (entry, key) => {
-        if (userEntry[key]) {
-          entry = isString(entry) ? [entry] : entry;
-          return [...userEntry[key], ...entry];
-        }
-        return entry;
-      });
-    } else {
-      this.userWebpack.entry = this.corenConfig.clientEntry;
-    }
   }
 
   output() {

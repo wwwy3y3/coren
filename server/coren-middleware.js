@@ -30,8 +30,8 @@ const updatePreloadedState = ($, newState) => {
 
 module.exports = function(rootPath) {
   return function corenMiddleware(req, res, next) {
-    var setHead = null;
-    var preloadedState = null;
+    let setHead;
+    let preloadedState;
 
     res.sendCoren = function(entry) {
       // multi routes render

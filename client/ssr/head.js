@@ -1,6 +1,6 @@
 import hook from '../../shared/ssrHook';
 
-export default function({title, description}) {
+export default ({title, description}) => {
   const name = 'head';
 
   const cycle = {
@@ -14,4 +14,4 @@ export default function({title, description}) {
   return WrappedComponent => {
     hook.bindMethod(WrappedComponent.__COREN_ID(), cycle);
   };
-}
+};

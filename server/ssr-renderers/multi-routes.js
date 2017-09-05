@@ -61,8 +61,8 @@ class MultiRoutesRenderer {
     for (let corenID in components) {
       const props = componentProps[corenID];
       const collectedMethod = this.collectLifeCycleMethod(methods[corenID]);
-      // get routes
       const routes = await this.getRoutes(methods[corenID], props);
+      // render each route's ssr page
       for (let i = 0; i < routes.length; i++) {
         const route = routes[i];
         const template = createTemplate();
@@ -72,35 +72,30 @@ class MultiRoutesRenderer {
         let appElement = react.createElement(app);
         let options = {route, context: this.context};
 
-        // run lifecycle method
+        // Run lifecycle method
+        // setOptions -> wrapSSR -> appendToHead -> appendToBody
         for (let fn of collectedMethod.setOptions) {
           options = Object.assign({}, options, await fn(props, options));
         }
-
         collectedMethod.wrapSSR.forEach(fn => {
           appElement = fn(appElement, options);
         });
         collectedMethod.appendToHead.forEach(fn => fn($head, options));
         collectedMethod.appendToBody.forEach(fn => fn($body, options));
 
-        const markup = renderToString(appElement);
-
-        // plugin lifecycle: appDidRender
+        // Run plugin lifecycle: appDidRender -> jsDidAppend -> cssDidAppend
+        // & Append js, css link
         this.triggerPluginsLifecycle('appDidRender', {$head, $body});
-
-        // insert bundles
         this.js.forEach(bundle => {
           $('body').append(`<script src="${bundle}"></script>`);
-          // plugin lifecycle: jsDidAppend
           this.triggerPluginsLifecycle('jsDidAppend', {link: bundle, $head, $body});
         });
-
-        // insert css
         this.css.forEach(link => {
           $('head').append(`<link rel="stylesheet" href="${link}">`);
-          // plugin lifecycle: cssDidAppend
           this.triggerPluginsLifecycle('cssDidAppend', {link, $head, $body});
         });
+
+        const markup = renderToString(appElement);
 
         // insert rendered html
         $('#root').html(this.skipssr ? '' : markup);

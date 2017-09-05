@@ -16,15 +16,7 @@ exports.wrapDOM = require('./client/ssr/wrapDOM');
 exports.wrapSSR = require('./client/ssr/wrapSSR');
 exports.ssr = require('./client/ssr/ssr');
 
-// collectors
-exports.HeadCollector = require('./server/collectors/head-collector');
-exports.ReduxCollector = require('./server/collectors/redux-collector');
-exports.RoutesCollector = require('./server/collectors/routes-collector');
-exports.ScriptCollector = require('./server/collectors/script-collector');
-exports.StyleCollector = require('./server/collectors/style-collector');
-
-// client
-exports.collector = require('./client/collector-hoc');
+exports.ssrHook = require('./shared/ssrHook');
 `;
 
 const argv = require('yargs').argv;

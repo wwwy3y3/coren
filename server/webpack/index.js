@@ -1,6 +1,6 @@
-import createClientConfig from './webpack/client-config';
-import createServerConfig from './webpack/server-config';
-import createShareConfig from './webpack/share-config';
+import createClientConfig from './client-config';
+import createServerConfig from './server-config';
+import createShareConfig from './share-config';
 
 export default function createWebpackConfig({dir, dev = false, corenConfig, clientWebpackPath} = {}) {
   const shareConfig = createShareConfig({dir, dev, corenConfig});

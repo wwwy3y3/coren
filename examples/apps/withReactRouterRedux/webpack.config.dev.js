@@ -16,7 +16,12 @@ const config = new CorenWebpack(__dirname, {
     index: [
       'webpack-dev-server/client?http://localhost:5556',
       'babel-polyfill',
-      './index.js'
+      './containers/index.js'
+    ],
+    about: [
+      'webpack-dev-server/client?http://localhost:5556',
+      'babel-polyfill',
+      './containers/about.js'
     ]
   },
   output: {

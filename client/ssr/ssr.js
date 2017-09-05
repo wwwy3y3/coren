@@ -3,7 +3,7 @@ import hoistStatic from 'hoist-non-react-statics';
 import shortid from 'shortid';
 import hook from '../../shared/ssrHook';
 
-export default function(WrappedComponent) {
+export default WrappedComponent => {
   const corenID = shortid.generate();
   class Hoc extends React.Component {
     constructor(props) {
@@ -24,4 +24,4 @@ export default function(WrappedComponent) {
   const HoistComponent = hoistStatic(Hoc, WrappedComponent);
   hook.registerComponent(corenID, HoistComponent);
   return HoistComponent;
-}
+};

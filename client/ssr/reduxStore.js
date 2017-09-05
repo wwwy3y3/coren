@@ -7,8 +7,13 @@ export default function({reducer}) {
   const cycle = {
     name,
     setOptions: (props, options) => {
-      const {preloadedState} = options;
-      const store = createStore(reducer, preloadedState);
+      let store;
+      if (options.preloadedState) {
+        const {preloadedState} = options;
+        store = createStore(reducer, preloadedState);
+      } else {
+        store = createStore(reducer);
+      }
       return {reduxStore: store};
     }
   };

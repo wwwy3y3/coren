@@ -1,14 +1,12 @@
 const Datastore = require('nedb');
 const bluebird = require('bluebird');
 const rp = require('request-promise');
-const {HeadCollector, RoutesCollector} = require('coren');
-const ImmutableReduxCollector = require('./immutableReduxCollector');
-const reducer = require('./reducer');
 const path = require('path');
 
 module.exports = {
   entry: {
-    index: './components/index.js'
+    index: './components/index.js',
+    about: './components/about.js'
   },
   webpack: {
     // issue: https://github.com/matthew-andrews/isomorphic-fetch/issues/98
@@ -22,18 +20,6 @@ module.exports = {
         }
       }
     ]
-  },
-  registerCollector: function(app, {context}) {
-    app.registerCollector("head", new HeadCollector());
-    app.registerCollector("routes", new RoutesCollector({
-      componentProps: {context}
-    }));
-    app.registerCollector("redux", new ImmutableReduxCollector({
-      componentProps: {context},
-      reducers: reducer,
-      configureStore: path.resolve(__dirname, './configureStore')
-    }));
-    return app;
   },
   prepareContext: function() {
     const db = new Datastore();

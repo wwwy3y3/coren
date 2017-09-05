@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Route, Link, StaticRouter} from 'react-router-dom';
-import {ssr, wrapSSR, wrapDOM} from 'coren';
+import {ssr, wrapSSR, wrapDOM, head} from 'coren';
 import Home from './Home';
 import UserList from './UserList';
 import User from './User';
@@ -41,6 +41,7 @@ export default class Root extends Component {
           <ul>
             <li><Link to="/">Home</Link></li>
             <li><Link to="/users">All Users</Link></li>
+            <li><a href="/about">About</a></li>
           </ul>
 
           <hr/>

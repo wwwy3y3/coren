@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Index from './components/index';
+import About from '../components/about';
 
 ReactDOM.render(
-  <Index/>
+  <About/>
 , document.getElementById('root'));

@@ -56,4 +56,3 @@ export default routeParamsFn => {
     hook.bindMethod(WrappedComponent.__COREN_ID(), cycle);
   };
 };
-

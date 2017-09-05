@@ -13,7 +13,11 @@ const config = new CorenWebpack(__dirname, {
   entry: {
     index: [
       'babel-polyfill',
-      './index.js'
+      './containers/index.js'
+    ],
+    about: [
+      'babel-polyfill',
+      './containers/about.js'
     ]
   },
   output: {
@@ -35,7 +39,8 @@ const config = new CorenWebpack(__dirname, {
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.DefinePlugin({
       "process.env": {
-        NODE_ENV: JSON.stringify("production")
+        NODE_ENV: JSON.stringify("production"),
+        isBrowser: true
       }
     }),
     extractCSS
