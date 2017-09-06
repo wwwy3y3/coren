@@ -1,12 +1,13 @@
 import React, {Component} from 'react';
 import {Route, Link, StaticRouter} from 'react-router-dom';
-import {ssr, wrapSSR, wrapDOM, head} from 'coren';
+import {ssr, reactRouterRedux, wrapDOM, head} from 'coren';
 import Home from './Home';
 import UserList from './UserList';
 import User from './User';
 import {BrowserRouter as Router} from 'react-router-dom';
 import {Provider} from 'react-redux';
 import configureStore from '../configureStore';
+import reducer from '../reducer';
 
 let store;
 if (process.env.isBrowser) {
@@ -15,15 +16,16 @@ if (process.env.isBrowser) {
   store = configureStore(preloadedState);
 }
 
-@wrapSSR(appElement => {
-  return (
-    <Provider>
-      <StaticRouter>
-        {appElement}
-      </StaticRouter>
-    </Provider>
-  );
-})
+// @wrapSSR(appElement => {
+//   return (
+//     <Provider>
+//       <StaticRouter>
+//         {appElement}
+//       </StaticRouter>
+//     </Provider>
+//   );
+// })
+@reactRouterRedux({reducer})
 @wrapDOM(({children}) => {
   return (
     <Provider store={store}>

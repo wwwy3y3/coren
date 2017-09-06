@@ -8,6 +8,7 @@ const index = `
 // ssr collector
 exports.head = require('./client/ssr/head');
 exports.headParams = require('./client/ssr/headParams');
+exports.reactRouterRedux = require('./client/ssr/reactRouterRedux');
 exports.route = require('./client/ssr/route');
 exports.routeParams = require('./client/ssr/routeParams');
 exports.reduxStore = require('./client/ssr/reduxStore');

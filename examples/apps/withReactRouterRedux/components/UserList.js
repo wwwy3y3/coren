@@ -1,22 +1,12 @@
 import React, {Component, PropTypes} from 'react';
-import {Provider, connect} from 'react-redux';
+import {connect} from 'react-redux';
 import {fetchAllUsers} from '../actions';
-import {Link, StaticRouter} from 'react-router-dom';
-import {ssr, head, route, wrapSSR, reduxStore, preloadedState} from 'coren';
+import {Link} from 'react-router-dom';
+import {ssr, head, route, reactRouterRedux, preloadedState} from 'coren';
 import reducer from '../reducer';
 
-@wrapSSR((appElement, config) => {
-  const {route, reduxStore} = config;
-  return (
-    <Provider store={reduxStore}>
-      <StaticRouter location={route.path}>
-        {appElement}
-      </StaticRouter>
-    </Provider>
-  );
-})
+@reactRouterRedux({reducer})
 @route('/users')
-@reduxStore({reducer})
 @preloadedState((props, options) => {
   const {context} = options;
   const {db} = context;

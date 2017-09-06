@@ -1,14 +1,8 @@
 import React, {Component} from 'react';
-import {ssr, head, route, wrapSSR} from 'coren';
-import {StaticRouter} from 'react-router-dom';
+import {ssr, head, route, reactRouterRedux} from 'coren';
+import reducer from '../reducer';
 
-@wrapSSR(appElement => {
-  return (
-    <StaticRouter>
-      {appElement}
-    </StaticRouter>
-  );
-})
+@reactRouterRedux({reducer})
 @route('/')
 @head({title: 'home', description: 'home description'})
 @ssr

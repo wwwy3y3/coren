@@ -1,20 +1,10 @@
 import React, {Component, PropTypes} from 'react';
-import {Provider, connect} from 'react-redux';
-import {ssr, headParams, routeParams, wrapSSR, preloadedState, reduxStore} from 'coren';
-import {StaticRouter} from 'react-router-dom';
+import {connect} from 'react-redux';
+import {ssr, headParams, routeParams, preloadedState, reactRouterRedux} from 'coren';
 import {fetchUser} from '../actions';
 import reducer from '../reducer';
 
-@wrapSSR((appElement, config) => {
-  const {route, reduxStore} = config;
-  return (
-    <Provider store={reduxStore}>
-      <StaticRouter location={route.path}>
-        {appElement}
-      </StaticRouter>
-    </Provider>
-  );
-})
+@reactRouterRedux({reducer})
 @routeParams((props, context) => {
   const {db} = context;
   return {
@@ -30,7 +20,6 @@ import reducer from '../reducer';
     description: `user ${userId}`
   };
 })
-@reduxStore({reducer})
 @preloadedState((props, options) => {
   const {route} = options;
   if (!route.match("/users/:id")) {
