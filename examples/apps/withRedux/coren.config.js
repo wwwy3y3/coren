@@ -1,5 +1,4 @@
 const webpack = require('webpack');
-const {ReduxCollector, HeadCollector, RoutesCollector} = require('coren');
 const reducer = require('./reducer');
 const Promise = require('bluebird');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
@@ -33,25 +32,12 @@ module.exports = {
     const rel = path.relative(`${__dirname}/dist/`, absolutePath);
     switch (env) {
       case 'production':
-        return 'https://s3-path/' + absolutePath;
       case 'development':
       case 'pre-production':
         return `http://localhost:5556/dist/${rel}`;
       default:
         return false;
     }
-  },
-  registerCollector: function(app, {context}) {
-    app.registerCollector("head", new HeadCollector());
-    app.registerCollector("routes", new RoutesCollector({
-      componentProps: {context}
-    }));
-    app.registerCollector("redux", new ReduxCollector({
-      componentProps: {context},
-      reducers: reducer,
-      configureStore: path.resolve(__dirname, './configureStore')
-    }));
-    return app;
   },
   prepareContext: function() {
     return Promise.resolve({db: {auth: true}});

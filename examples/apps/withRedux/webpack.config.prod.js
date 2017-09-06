@@ -9,9 +9,8 @@ const extractCSS = new ExtractTextPlugin({
 });
 
 const config = new CorenWebpack(__dirname, {
-  // entry is defined in `coren.config.js`
   entry: {
-    index: ['webpack-hot-middleware/client', './index.js']
+    index: './index.js'
   },
   output: {
     path: path.join(__dirname, 'dist'),
@@ -24,6 +23,12 @@ const config = new CorenWebpack(__dirname, {
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
+    new webpack.DefinePlugin({
+      "process.env": {
+        NODE_ENV: JSON.stringify("production"),
+        isBrowser: true
+      }
+    }),
     extractCSS
   ],
   module: {

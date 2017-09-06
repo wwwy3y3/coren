@@ -1,10 +1,30 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import {collector} from 'coren';
+import {ssr, head, route, reactRedux, wrapDOM} from 'coren';
+import {Provider} from 'react-redux';
+import configureStore from './configureStore';
+import reducer from './reducer';
 import {login, logout} from './actions';
 import './style.css';
 
-@collector()
+let store;
+if (process.env.isBrowser) {
+  const preloadedState = window.__PRELOADED_STATE__;
+  delete window.__PRELOADED_STATE__;
+  store = configureStore(preloadedState);
+}
+
+@reactRedux({reducer})
+@wrapDOM(({children}) => {
+  return (
+    <Provider store={store}>
+      {children}
+    </Provider>
+  );
+})
+@route('/')
+@head({title: 'home', description: 'home description'})
+@ssr
 @connect(mapStateToProps, mapDispatchToProps)
 export default class Index extends Component {
   constructor(props) {
