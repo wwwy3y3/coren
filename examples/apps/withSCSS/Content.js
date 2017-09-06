@@ -2,11 +2,6 @@ import React, {Component} from 'react';
 import {head, ssr, route, wrapSSR} from 'coren';
 import './style.scss';
 
-@wrapSSR(appElement => {
-  return (
-    <h1>{appElement}</h1>
-  );
-})
 @route('/')
 @head({title: 'home', description: 'home description!!!!!'})
 @ssr

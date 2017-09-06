@@ -1,18 +1,13 @@
 import React, {Component} from 'react';
-import {collector} from 'coren';
+import {ssr, route, head} from 'coren';
 import CSSModules from 'react-css-modules';
 import styles from './style.css';
 
-@collector()
+@route('/')
+@head({title: "home", description: "home description"})
+@ssr
 @CSSModules(styles)
 export default class Root extends Component {
-  static defineHead() {
-    return {
-      title: "home",
-      description: "home description"
-    };
-  }
-
   handleClick() {
     console.log('hihi');
   }

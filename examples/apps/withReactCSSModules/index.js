@@ -3,9 +3,7 @@ import ReactDOM from 'react-dom';
 import Content from "./Content";
 
 ReactDOM.render(
-  <div>
-    <Content/>
-  </div>
+  <Content/>
 , document.getElementById('root'));
 
 if(module.hot) {
