@@ -177,6 +177,8 @@ Let's take a look of `.coren/html/index.html`, `index` entry's ssr result.
 </html>
 ```
 
+It's great! Your ssr is ready!
+
 What coren do for you?
 
 * offline generate ssr and append result in `#root` ---> `@ssr`, `@route`
@@ -217,7 +219,7 @@ Let' recap what we do to make coren work:
 * use `CorenWebpack` at webpack.config.js
 * use coren middleware to host the file
 
-Next you can learn the documentation more deeply and know how coren internal work.
+Next, you can look at the documentation and understand how coren works internally.
 
 # Documentation
 
