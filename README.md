@@ -28,7 +28,7 @@ The central idea of **Coren** is to provide a pluggable, and more flexible way t
 
 - [How to use?](#how-to-use)
   * [Setup a new project](#setup-a-new-project)
-  * [Documentation](#documentation)
+- [Documentation](#documentation)
     + [coren.config.js](#corenconfigjs)
       - [entry](#entry)
       - [webpack](#webpack)
@@ -98,8 +98,9 @@ module.exports = {
 
 `coren.config.js` is config file to make coren run correctly.
 
-**`entry`** is the component you want to do server sider render.
-**`assetsHost`** is used to generate the static file link in different building environment.
+* **`entry`** is the component you want to do server sider render.
+
+* **`assetsHost`** is used to generate the static file link in different building environment.
 
 Then open `./src/components/Index.js`.
 
@@ -121,11 +122,8 @@ export default class Index extends Component {
 }
 ```
 
-Coren use `decorator` to wrap component to make server side render work.
-
-This component is wrapped by `@ssr`, `@head`, `@route`.
-With these decorator, coren will do server side render to this component, append `<title>Home</title><meta name="description" content="home description">` at `<head/>`, and use `/` route.
-So that is how coren work. We use decorator to control the server side render flow.
+Coren use `decorator` to wrap component to make server side render work. This component is wrapped by `@ssr`, `@head`, `@route`.<br/>With these decorator, coren will do server side render at this component, append `<title>Home</title><meta name="description" content="home description">` at `<head/>`, and use `/` route.
+<br/>So that is how coren work. We use decorator to control the server side render flow.
 
 And last, take a look of `webpack.prod.js`
 
@@ -144,7 +142,7 @@ module.exports = config.output();
 When use coren, you can keep the original webpack setting.
 The only thing you need to do is to use `new CorenWebpack(__dirname, <original webpack setting>)` this grammer.
 
-With `coren.config.js`, `Component`, and `CorenWebpack`, now you can do coren ssr.
+So now, with `coren.config.js`, `Component`, and `CorenWebpack`, you can do coren ssr.
 
 Install package:
 
@@ -158,9 +156,9 @@ Run coren, do server side render
 npm run coren-production
 ```
 
-After compile complete, coren will create a `.coren` folder. This folder includes server side render result and coren internal file.
+After compiled, coren will create a `.coren` folder. This folder includes server side render result and coren internal file.
 
-Now you can take a look of `.coren/html/index.html`, `index` entry's ssr result.
+Let's take a look of `.coren/html/index.html`, `index` entry's ssr result.
 
 **@coren-starter-kit/.coren/html/index.html**
 ```html
@@ -181,18 +179,15 @@ Now you can take a look of `.coren/html/index.html`, `index` entry's ssr result.
 
 What coren do for you?
 
-* add head `title`, `meta description`
-* append server side render result in `#root`
+* offline generate ssr and append result in `#root` ---> `@ssr`, `@route`
+* add head `title`, `meta description` ----------------> `@head`
 * append static file link
-* offline generate ssr
 
 So it's very easy to use coren, and it's very easy to integrate coren in your current project.
 
 ### What's next?
 
-Now we have server side render result, then we can use a server to host it.
-You can choose `any` framework to host this html.
-Currently, we provide an express middleware to make host coren ssr result easily.
+We have server side render result. You can use a server to host it. Choose `any` framework to host this html.<br/>Currently, we provide an express middleware to make host coren ssr result easily.
 
 Please open `app.js`
 
@@ -215,7 +210,7 @@ This middleware provide some helpful methods to manipulate ssr result.
 
 Congrats! You finish the brief introduction of coren.
 
-Let' recap what we do:
+Let' recap what we do to make coren work:
 
 * add `coren.config.js`
 * use `decorator` to wrap ssr component
@@ -224,7 +219,7 @@ Let' recap what we do:
 
 Next you can learn the documentation more deeply and know how coren internal work.
 
-## Documentation
+# Documentation
 
 ### coren.config.js
 
