@@ -12,7 +12,7 @@ module.exports = {
   entry: {
     index: './Content.js'
   },
-  webpack: {
+  serverWebpack: {
     plugins: [
       new webpack.BannerPlugin('This file is created by coren. Built time: ' + new Date()),
       extractCSS

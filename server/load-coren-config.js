@@ -5,7 +5,7 @@ import {color} from './utils';
 const {error} = color;
 
 export const defaultConfig = {
-  webpack: null,
+  serverWebpack: null,
   config: [],
   assetsHost: noop
 };

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {head, ssr, route, wrapSSR} from 'coren';
+import {head, ssr, route} from 'coren';
 import './style.scss';
 
 @route('/')
