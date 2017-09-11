@@ -254,7 +254,7 @@ So this is the `only` place to put your webapck entry.
 }
 ```
 
-#### webpack
+#### ssrWebpack
 
 > server side render webpack setting
 
@@ -268,7 +268,7 @@ Just put any webpack configurations in here except `entry`.
 
 ```javascript
 {
-   webpack: {
+   ssrWebpack: {
     plugins: [
       new webpack.BannerPlugin('This file is created by coren. Built time: ' + new Date())
     ]

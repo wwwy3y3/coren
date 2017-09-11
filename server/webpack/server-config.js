@@ -41,34 +41,34 @@ export default function serverClientWebpackConfig({dev = false, dir, corenConfig
       ]
     }
   };
-  if (corenConfig.serverWebpack) {
-    if (corenConfig.serverWebpack.plugins) {
+  if (corenConfig.ssrWebpack) {
+    if (corenConfig.ssrWebpack.plugins) {
       config = {
         ...config,
         plugins: [
           ...config.plugins,
-          ...corenConfig.serverWebpack.plugins
+          ...corenConfig.ssrWebpack.plugins
         ]
       };
     }
 
-    if (corenConfig.serverWebpack.module && corenConfig.serverWebpack.module.rules) {
+    if (corenConfig.ssrWebpack.module && corenConfig.ssrWebpack.module.rules) {
       config = {
         ...config,
         module: {
           rules: [
             ...config.module.rules,
-            ...corenConfig.serverWebpack.module.rules
+            ...corenConfig.ssrWebpack.module.rules
           ]
         }
       };
     }
-    if (corenConfig.serverWebpack.externals) {
+    if (corenConfig.ssrWebpack.externals) {
       config = {
         ...config,
         externals: [
           ...config.externals,
-          ...corenConfig.serverWebpack.externals
+          ...corenConfig.ssrWebpack.externals
         ]
       };
     }

@@ -8,7 +8,7 @@ module.exports = {
     index: './components/index.js',
     about: './components/about.js'
   },
-  webpack: {
+  ssrWebpack: {
     // issue: https://github.com/matthew-andrews/isomorphic-fetch/issues/98
     externals: [
       {
