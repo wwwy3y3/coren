@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Route, Link, StaticRouter} from 'react-router-dom';
+import {Route, Link} from 'react-router-dom';
 import {ssr, reactRouterRedux, wrapDOM, head} from 'coren';
 import Home from './Home';
 import UserList from './UserList';
@@ -16,15 +16,6 @@ if (process.env.isBrowser) {
   store = configureStore(preloadedState);
 }
 
-// @wrapSSR(appElement => {
-//   return (
-//     <Provider>
-//       <StaticRouter>
-//         {appElement}
-//       </StaticRouter>
-//     </Provider>
-//   );
-// })
 @reactRouterRedux({reducer})
 @wrapDOM(({children}) => {
   return (

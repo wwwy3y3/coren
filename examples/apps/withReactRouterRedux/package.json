@@ -2,7 +2,7 @@
   "scripts": {
     "coren-dev": "coren dev",
     "coren-production": "NODE_ENV=production coren build --webpack webpack.config.prod.js",
-    "webpack-server": "webpack-dev-server --config webpack.config.dev.js --hot --inline --port 5556"
+    "webpack-server": "NODE_ENV=development webpack-dev-server --config webpack.config.dev.js --hot --inline --port 5556"
   },
   "dependencies": {
     "babel-loader": "^7.1.1",

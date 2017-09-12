@@ -7,6 +7,12 @@ import {ssrDecorator} from '../ssrHelper';
 export default ({reducer}) => {
   const name = 'reactRouterRedux';
 
+  const setOptions = () => {
+    // save initialstate
+    const initialState = createStore(reducer).getState();
+    return {initialState};
+  };
+
   const wrapSSR = (appElement, options) => {
     const {route} = options;
     let store;
@@ -16,6 +22,7 @@ export default ({reducer}) => {
     } else {
       store = createStore(reducer);
     }
+
     return (
       <Provider store={store}>
         <StaticRouter location={route.path}>
@@ -28,6 +35,7 @@ export default ({reducer}) => {
 
   const cycle = {
     name,
+    setOptions,
     wrapSSR
   };
 

@@ -9,7 +9,6 @@ const extractCSS = new ExtractTextPlugin({
 });
 
 const config = new CorenWebpack(__dirname, {
-  // entry is defined in `coren.config.js`
   entry: {
     index: [
       'babel-polyfill',

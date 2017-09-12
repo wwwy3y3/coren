@@ -8,5 +8,5 @@ export default function loadAssetsJSON(dir) {
   if (hasAssets) {
     return JSON.parse(readFileSync(path, 'utf8'));
   }
-  throw new Error(error('Cannot find `assets.json`, please build the static file first.'));
+  throw new Error(error('Cannot find `assets.json`, please build the webpack entry first.'));
 }

@@ -22,17 +22,6 @@ import reducer from '../reducer';
 })
 @preloadedState((props, options) => {
   const {route} = options;
-  if (!route.match("/users/:id")) {
-    return Promise.resolve({
-      currentUser: {
-        data: {},
-        fetched: false,
-        isFetching: false,
-        error: false
-      }
-    });
-  }
-
   const user = route.data;
   return Promise.resolve({
     currentUser: {

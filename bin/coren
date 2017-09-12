@@ -4,11 +4,11 @@ const path = require('path');
 const Ssr = require('../server/ssr');
 const build = require('../server/build');
 const program = require('commander');
-const {initialize, getEnv} = require('../server/coren-working-space');
+const {initialize} = require('../server/coren-working-space');
 const pkg = require('../../package.json');
 const {color} = require('../server/utils');
 
-const env = getEnv();
+const env = process.env.NODE_ENV;
 
 program
   .version(pkg.version);
@@ -21,9 +21,9 @@ program
     dir = dir || process.cwd();
     console.log(`Start building ${dir}`);
     initialize(dir);
-    build({dir, env: 'development'})
+    build({dir, env})
     .then(() => {
-      const ssr = new Ssr({dir, skipssr: true, env: 'development'});
+      const ssr = new Ssr({dir, skipssr: true, env});
       ssr.render().then(() => {
         console.log(color.success('Success build coren server side render'));
       });
@@ -45,7 +45,7 @@ program
     initialize(dir);
     build({dir, env: 'production', clientWebpackPath: path.resolve(webpack)})
     .then(() => {
-      const ssr = new Ssr({dir, skipssr: false, env: 'production'});
+      const ssr = new Ssr({dir, skipssr: false, env});
       ssr.render();
       console.log(color.success('Success build coren server side render'));
     });

@@ -16,6 +16,8 @@ export default Wrapper => {
 
       return hoistStatic(Hoc, WrappedComponent);
     }
+
+    console.warn('Because `process.env.isBrowser` is false, wrapDOM will not work');
     return WrappedComponent;
   };
 };

@@ -66,4 +66,5 @@ function reducer(state = initialState, action) {
   }
 }
 
+exports.initialState = initialState;
 module.exports = exports.default = reducer;

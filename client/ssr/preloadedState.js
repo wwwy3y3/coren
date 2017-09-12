@@ -9,9 +9,13 @@ export default fn => {
       return {preloadedState: data};
     },
     appendToHead: ($head, options) => {
-      const {preloadedState} = options;
+      const {preloadedState, initialState} = options;
+      let state = preloadedState;
+      if (initialState) {
+        state = Object.assign({}, initialState, preloadedState);
+      }
       $head.append(`<script data-coren>
-        window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState)}
+        window.__PRELOADED_STATE__ = ${JSON.stringify(state)}
         </script>`);
     }
   };

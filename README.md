@@ -28,28 +28,16 @@ The central idea of **Coren** is to provide a pluggable, and more flexible way t
 
 - [How to use?](#how-to-use)
   * [Setup a new project](#setup-a-new-project)
+    + [What's next?](#whats-next)
 - [Documentation](#documentation)
+  * [How Coren work?](#how-coren-work)
     + [coren.config.js](#corenconfigjs)
       - [entry](#entry)
-      - [webpack](#webpack)
-      - [registerCollector](#registercollector)
-      - [prepareContext](#preparecontext)
+      - [ssrWebpack](#ssrwebpack)
       - [assetsHost](#assetshost)
+      - [prepareContext](#preparecontext)
     + [webpack configuration](#webpack-configuration)
     + [express](#express)
-  * [Start the project](#start-the-project)
-      - [development](#development)
-      - [production](#production)
-  * [Collector](#collector)
-      - [HeadCollector](#headcollector)
-        * [coren.config.js](#corenconfigjs-1)
-        * [app](#app)
-      - [RouteCollector](#routecollector)
-        * [coren.config.js](#corenconfigjs-2)
-        * [app](#app-1)
-      - [ReduxCollector](#reduxcollector)
-        * [app](#app-2)
-    + [How to create own Collector](#how-to-create-own-collector)
   * [Express Integration - coren middleware](#express-integration---coren-middleware)
     + [API](#api)
       - [res.setHead(Function($head: cheerio instance))](#ressetheadfunctionhead-cheerio-instance)
@@ -223,24 +211,28 @@ Next, you can look at the documentation and understand how coren works internall
 
 # Documentation
 
+## How Coren work?
+
+
+
+
+
 ### coren.config.js
 
 `coren.config.js` is config file to make coren run correctly.
 
-Below will introduce which key is supported.
+Config key:
 
-- entry
-- webpack
-- registerCollector
-- prepareContext
+- entry `(required)`
+- ssrWebpack `(required)`
+- assetsHost `(required)`
+- prepareContext `(optional)`
 
 #### entry
 
 > JS entry point you want to build (like webpack entry)
 
-This entry will be used in `client webpack` & `server side webpack`.
-
-So this is the `only` place to put your webapck entry.
+This entry will be used in `server side webpack`.
 
 - type: Object
 
@@ -276,59 +268,17 @@ Just put any webpack configurations in here except `entry`.
 }
 ```
 
-#### registerCollector
-
-> register custom collectors to your applications
-
-- type: Function(app, {context})
-- return: App
-
-This must be set. You need to setup your custom collectors.
-
-**example:**
-
-```javascript
-const {HeadCollector, RoutesCollector} = require('coren');
-module.exports = {
-  registerCollector: function(app, {context}) {
-    app.registerCollector("head", new HeadCollector());
-    app.registerCollector("routes", new RoutesCollector({
-      componentProps: {context}
-    }));
-    return app;
-  },
-}
-```
-
-#### prepareContext
-
-> get context and pass context to coren
-
-- type: Function
-- return: Promise
-
-`context` is a parameter pass to collector.
-
-So if there are some parameter you want to pass to collector before coren start. Do it here.
-
-**example:**
-
-```javascript
-{
-  prepareContext: function() {
-    return Promise.resolve({db: {auth: true}});
-  }
-}
-```
-
 #### assetsHost
 
-> host path in different environment
+> host path in different environment.
+>
+> Because coren will automatically append static file link to ssr result, you need to provide the corresponding static link at different environment.
 
-- type: Fucntion(env: String, absolutePath: String)
+- type: Function(env: String, absolutePath: String)
+  - Provide `production`, `development`, `pre-production` env cases return value.
 - return: String
 
-You need to provide `development`,  `pre-production` , and`production` environment return result.
+
 
 **example:**
 
@@ -349,11 +299,30 @@ You need to provide `development`,  `pre-production` , and`production` environme
 }
 ```
 
+#### prepareContext
 
+> Prepare `global` ssr variable.
+>
+> In some case, you may want to load data before doing ssr. You can add any variable you want and coren will save it in `context`.
+
+- type: Function
+- return: Promise
+
+**example:**
+
+```javascript
+{
+  prepareContext: function() {
+    return Promise.resolve({db: {auth: true}});
+  }
+}
+```
+
+#### 
 
 ### webpack configuration
 
-To make server side render work, coren will do some needed process when you build client side webpack, so you need to extend `CorenWebpack` to make it work.
+To make server side render work, coren will do some needed process when you build client side webpack. You need to extend `CorenWebpack` to make it work.
 
 **example: webpack.config.dev.js**
 
@@ -361,16 +330,7 @@ To make server side render work, coren will do some needed process when you buil
 const CorenWebpack = require('coren/lib/client/webpack');
 
 const config = new CorenWebpack(__dirname, {
-  // Because coren.config.js already has `entry` setting,
-  // here you dont need to write entry `value`.
-  // only need to write other package you want to merge to entry value
-  entry: {
-    index: [
-      'webpack-hot-middleware/client?reload=true',
-      'babel-polyfill'
-    ]
-  }
-  // write other webpack setting
+  // write original webpack setting
 });
 
 module.exports = config.output();
@@ -404,219 +364,6 @@ app.listen(9393, 'localhost', function(err) {
   console.log('Listening at http://localhost:9393');
 });
 ```
-
-
-
-## Start the project
-
-Now open the `coren-starter-kit` folder, let's build the project and push it to production.
-
-#### development
-
-Type `npm start`.
-
-After webpack building finished, type `npm run coren-dev`. This command will build html files.
-
-Then open `http://localhost:9393`. Your app is worked !
-
-#### production
-
-Type `npm run prod`.
-
-Coren will build `server-side-render` and `client site production code` to you.
-
-So now you can deploy this app to `aws cloud`, `heroku`...
-
-It will work well and with server side render.
-
-
-
-
-
-So far, you can use `offline` server side rendering to build your app.
-
-Next, we introduce the other feature of coren - `Collector`.
-
-## Collector
-
-**What is a `Collector`?**
-
-`Collector` collect data from `define` methods, collector can choose which lifecycle it want to call `define` method.
-
-With collector, you can inject head, body in ssr result. You also can use any framework at your app.
-
-Let's see an example:
-
-```javascript
-import React, {Component} from 'react';
-import {collector} from 'coren';
-import './style.css';
-@collector()
-export default class Root extends Component {
-  static defineHead() {
-    return {
-      title: "home",
-      description: "home description"
-    };
-  }
-
-  render() {
-    return (
-      <div className="hello">Hello Coren</div>
-    );
-  }
-}
-```
-
-WIth `defineHead`, this page's html `head` would be
-
-```html
-<head>
-  <title>home</title>
-  <meta name="description" content="home description">
-</head>
-```
-
-So you can use `Collector` to configure html result.
-
-
-
-Three steps to use collector:
-
-1. include and register needed collector at `coren.config.js`
-2. use `collector()` decorator at the component will use collector.
-3. use `defineXXXX` method at component.
-
-Below list the collector that coren supports now.
-
-#### HeadCollector
-
-##### coren.config.js
-
-```javascript
-const {HeadCollector} = require('coren');
-module.exports = {
-  registerCollector: function(app, {context}) {
-    app.registerCollector("head", new HeadCollector());
-    return app;
-  }
-}
-```
-
-##### app
-
-supported `define` api:
-
-**defineHead**
-
-- return: `{title: String, description: String}`
-
-example:
-
-```javascript
-@collector()
-export default class Root extends Component {
-  static defineHead() {
-    return {
-      title: "home",
-      description: "home description"
-    };
-  }
-}
-```
-
-#### RouteCollector
-
-##### coren.config.js
-
-```javascript
-const {RoutesCollector} = require('coren');
-module.exports = {
-  registerCollector: function(app, {context}) {
-    app.registerCollector("routes", new RoutesCollector({
-      componentProps: {context}
-    }));
-    return app;
-  }
-}
-```
-
-##### app
-
-supported `define` api:
-
-**defineRoutes**
-
-- params: {Url, ParamUrl}
-- return: `Url` instance || `ParamUrl` instance
-
-example:
-
-```javascript
-@collector()
-export default class Root extends Component {
-  static defineRoutes({Url, ParamUrl}) {
-    return new Url('/');
-  }
-}
-```
-
-#### ReduxCollector
-
-With ReduxCollector, your app will support `PRELOADED_STATE`. It means that your redux app can get initial state directly from ssr result.
-
-**coren.config.js**
-
-```javascript
-const {ReduxCollector} = require('coren');
-const reducer = require('./reducer'); 
-module.exports = {
-  registerCollector: function(app, {context}) {
-    app.registerCollector("redux", new ReduxCollector({
-      componentProps: {context},
-      reducers: reducer,
-      configureStore: path.resolve(__dirname, './configureStore')
-    }));
-    return app;
-  },
-}
-```
-
-##### app
-
-supported `define` api:
-
-**definePreloadedState**
-
-- return: Promise
-
-example:
-
-```javascript
-@collector()
-class UserList extends Component {
-  static definePreloadedState() {
-    return Promise.resolve({
-      currentUser: {
-        data: {},
-        fetched: false,
-        isFetching: false,
-        error: false
-      }
-    });
-  }
-}
-```
-
-So collector is a fully customizable function. Based on different use case, you can add different collector do meet the demand.
-
-### How to create own Collector
-
-Write your own class, implement methods in [Collector](#Collector).
-
-Take a look at built-in collector for reference.
-
-https://github.com/Canner/coren/tree/master/server/collectors
 
 
 
