@@ -8,8 +8,6 @@
 # Features
 
 - **:no_mobile_phones: Offline** ssr solution: your server will not include any react related code but still can do ssr.
-- **:wrench: Access to Component Props:** in [componentDidConstruct](#componentDidConstruct) method from [Lifecycle Hook](#lifecycle-hook) you can access to component props
-- **:link: Pass Variables To Component:** [Collector](#collector) can pass anything you want(`DB Query`, `Server API`) to [Define](#define) method
 - **:cloud: Production stage** ssr: just run coren before deploy code
 
 ## React Pluggable Serverside Render
@@ -59,7 +57,8 @@ First, clone [coren-starter-kit](https://github.com/Canner/coren-starter-kit).
 
 In this starter-kit, you can find it's not so much different from other react boilerplate.
 
-So we are going to explain the different part of coren projects. At this brief introduction, we will not elaborate on each term. But don't worry, you can see more details document after this part.
+So we are going to explain the different part of coren projects. At this brief introduction, we will not elaborate on each term. But don't worry, you can see more detail document after this part.
+
 
 First take a look at `coren.config.js`.
 
@@ -88,7 +87,7 @@ module.exports = {
 
 * **`entry`** is the component you want to do server sider render.
 
-* **`assetsHost`** is used to generate the static file link in different building environment.
+* **`assetsHost`** is used to generate the static file link in the different building environment.
 
 Then open `./src/components/Index.js`.
 
@@ -110,7 +109,9 @@ export default class Index extends Component {
 }
 ```
 
-Coren use `decorator` to wrap component to make server side render work. This component is wrapped by `@ssr`, `@head`, `@route`.<br/>With these decorator, coren will do server side render at this component, append `<title>Home</title><meta name="description" content="home description">` at `<head/>`, and use `/` route.
+Coren uses `decorator` to wrap component to make server side render work. Each decorator can define its `lifecycle`, and coren will execute it at each lifecycle's step.
+
+This component is wrapped by `@ssr`, `@head`, `@route`. With these decorator, coren will do server side render at this component, append `<title>Home</title><meta name="description" content="home description">` at `<head/>`, and use `/` route.
 <br/>So that is how coren work. We use decorator to control the server side render flow.
 
 And last, take a look of `webpack.prod.js`
@@ -128,7 +129,7 @@ module.exports = config.output();
 ```
 
 When use coren, you can keep the original webpack setting.
-The only thing you need to do is to use `new CorenWebpack(__dirname, <original webpack setting>)` this grammer.
+The only thing you need to do is to use `new CorenWebpack(__dirname, <original webpack setting>)` this grammar.
 
 So now, with `coren.config.js`, `Component`, and `CorenWebpack`, you can do coren ssr.
 
@@ -146,7 +147,7 @@ npm run coren-production
 
 After compiled, coren will create a `.coren` folder. This folder includes server side render result and coren internal file.
 
-Let's take a look of `.coren/html/index.html`, `index` entry's ssr result.
+Let's take a look at `.coren/html/index.html`, `index` entry's ssr result.
 
 **@coren-starter-kit/.coren/html/index.html**
 ```html
@@ -173,6 +174,16 @@ What coren do for you?
 * add head `title`, `meta description` ----------------> `@head`
 * append static file link
 
+**coren build flow :**
+
+```
++----------------------+   +--------------------+   +----------------+
+|                      |   |                    |   |                |
+| read coren.config.js +---> do coren lifecycle +---> build ssr html |
+|                      |   |                    |   |                |
++----------------------+   +--------------------+   +----------------+
+```
+
 So it's very easy to use coren, and it's very easy to integrate coren in your current project.
 
 ### What's next?
@@ -196,7 +207,7 @@ app.get('/', function(req, res) {
 ...
 ```
 
-This middleware provide some helpful methods to manipulate ssr result.
+This middleware provides some helpful methods to manipulate ssr result.
 
 Congrats! You finish the brief introduction of coren.
 
@@ -213,10 +224,6 @@ Next, you can look at the documentation and understand how coren works internall
 
 ## How Coren work?
 
-
-
-
-
 ### coren.config.js
 
 `coren.config.js` is config file to make coren run correctly.
@@ -224,8 +231,8 @@ Next, you can look at the documentation and understand how coren works internall
 Config key:
 
 - entry `(required)`
-- ssrWebpack `(required)`
 - assetsHost `(required)`
+- ssrWebpack `(optional)`
 - prepareContext `(optional)`
 
 #### entry
@@ -246,31 +253,9 @@ This entry will be used in `server side webpack`.
 }
 ```
 
-#### ssrWebpack
-
-> server side render webpack setting
-
-- type: Object
-
-This webpack setting will be used during server side render. The configuration will be passed to `webpack` internally.
-
-Just put any webpack configurations in here except `entry`.
-
-**example:**
-
-```javascript
-{
-   ssrWebpack: {
-    plugins: [
-      new webpack.BannerPlugin('This file is created by coren. Built time: ' + new Date())
-    ]
-  }
-}
-```
-
 #### assetsHost
 
-> host path in different environment.
+> host path in the different environment.
 >
 > Because coren will automatically append static file link to ssr result, you need to provide the corresponding static link at different environment.
 
@@ -295,6 +280,28 @@ Just put any webpack configurations in here except `entry`.
       default:
         return false;
     }
+  }
+}
+```
+
+#### ssrWebpack
+
+> server side render webpack setting
+
+- type: Object
+
+This webpack setting will be used during server side render. The configuration will be passed to `webpack` internally.
+
+Just put any webpack configurations in here except `entry`.
+
+**example:**
+
+```javascript
+{
+   ssrWebpack: {
+    plugins: [
+      new webpack.BannerPlugin('This file is created by coren. Built time: ' + new Date())
+    ]
   }
 }
 ```
