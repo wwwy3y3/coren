@@ -4,7 +4,7 @@ import nodeExternals from 'webpack-node-externals';
 import getBabelConfig from '../babel/get-babel-config';
 import {getCommonJSDir} from '../coren-working-space';
 
-export default function serverClientWebpackConfig({dev = false, dir, corenConfig}) {
+export default function serverWebpackConfig({dev = false, dir, corenConfig}) {
   const env = dev ? 'development' : 'production';
   let config = {
     entry: corenConfig.entry,
@@ -24,7 +24,8 @@ export default function serverClientWebpackConfig({dev = false, dir, corenConfig
     plugins: [
       new webpack.DefinePlugin({
         "process.env": {
-          NODE_ENV: JSON.stringify(env)
+          NODE_ENV: JSON.stringify(env),
+          isBrowser: false
         }
       })
     ],

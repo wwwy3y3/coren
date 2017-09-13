@@ -5,7 +5,6 @@ import {ssr, head, route} from 'coren';
 @head({title: 'About', description: 'About description'})
 @ssr
 export default class Root extends Component {
-
   render() {
     return (
       <div>

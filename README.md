@@ -114,7 +114,7 @@ Coren uses `decorator` to wrap component to make server side render work. Each d
 This component is wrapped by `@ssr`, `@head`, `@route`. With these decorator, coren will do server side render at this component, append `<title>Home</title><meta name="description" content="home description">` at `<head/>`, and use `/` route.
 <br/>So that is how coren work. We use decorator to control the server side render flow.
 
-And last, take a look of `webpack.prod.js`
+And last, take a look at `webpack.prod.js`
 
 **@coren-starter-kit/webpack.prod.js**
 ```js

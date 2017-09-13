@@ -35,6 +35,16 @@ class Entry {
     return assets;
   }
 
+  genOutputPath(route) {
+    let outputPath = '';
+    if (route === '/') {
+      outputPath = 'index.html';
+    } else {
+      outputPath = `${route}/index.html`;
+    }
+    return join(this.getSsrDir, outputPath);
+  }
+
   assetRelative(absolutePath) {
     return this.config.assetsHost(this.env, absolutePath);
   }
@@ -56,7 +66,7 @@ class Entry {
     return ssr.renderToString().then(results => {
       // output file
       return Promise.all(results.map(result => {
-        const filepath = join(this.getSsrDir, `${result.route}/${this.entryName}.html`);
+        const filepath = this.genOutputPath(result.route);
         mkdirp.sync(resolve(filepath, "../"));
         // write to filesystem
         return fs.writeFileAsync(filepath, result.html);

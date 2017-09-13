@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Route, Link} from 'react-router-dom';
-import {ssr, reactRouterRedux, wrapDOM, head} from 'coren';
+import {ssr, reactRouterRedux, wrapDOM} from 'coren';
 import Home from './Home';
 import UserList from './UserList';
 import User from './User';

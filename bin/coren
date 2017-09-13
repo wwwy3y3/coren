@@ -13,6 +13,7 @@ const env = process.env.NODE_ENV;
 program
   .version(pkg.version);
 
+// dev
 program
   .command('dev [dir]')
   .option('--watch', 'watch the change')
@@ -23,7 +24,7 @@ program
     initialize(dir);
     build({dir, env})
     .then(() => {
-      const ssr = new Ssr({dir, skipssr: true, env});
+      const ssr = new Ssr({dir, skipssr: true, env: env ? env : 'development'});
       ssr.render().then(() => {
         console.log(color.success('Success build coren server side render'));
       });
