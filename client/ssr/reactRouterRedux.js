@@ -18,11 +18,11 @@ export default ({reducer}) => {
     let store;
     if (options.preloadedState) {
       const {preloadedState} = options;
-      store = createStore(reducer, preloadedState);
+      const mergeState = Object.assign({}, options.initialState, preloadedState);
+      store = createStore(reducer, mergeState);
     } else {
       store = createStore(reducer);
     }
-
     return (
       <Provider store={store}>
         <StaticRouter location={route.path}>

@@ -4,12 +4,10 @@ import path from 'path';
 import {has} from 'lodash';
 import {getSsrDir} from './coren-working-space';
 
-const getEntryHtml = (entry, rootPath) => {
-  let filePath = path.join(getSsrDir(rootPath), entry);
+const getEntryHtml = (reqPath, rootPath) => {
+  let filePath = path.join(getSsrDir(rootPath), reqPath);
   if (existsSync(filePath) && lstatSync(filePath).isDirectory()) {
     filePath = `${filePath}/index.html`;
-  } else {
-    filePath = `${filePath}.html`;
   }
 
   return readFileSync(filePath, 'utf8');
@@ -33,22 +31,8 @@ module.exports = function(rootPath) {
     let setHead;
     let preloadedState;
 
-    res.sendCoren = function(entry) {
-      // multi routes render
-      // from index/users/1 => users/index/1
-      if (entry.indexOf('/') >= 0) {
-        const entries = entry.split('/').filter(val => val);
-
-        // multi routes render
-        if (entries.length > 1) {
-          const firstEntry = entries[0];
-          const newEntries = entries.slice(1);
-          newEntries.push(firstEntry);
-          entry = newEntries.join('/');
-        }
-      }
-
-      let $ = cheerio.load(getEntryHtml(entry, rootPath));
+    res.sendCoren = function(reqPath) {
+      let $ = cheerio.load(getEntryHtml(reqPath, rootPath));
       if (preloadedState) {
         $ = updatePreloadedState($, preloadedState);
       }

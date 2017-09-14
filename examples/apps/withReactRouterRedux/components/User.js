@@ -12,8 +12,8 @@ import reducer from '../reducer';
     dataProvider: () => db.users.find().execAsync()
   };
 })
-@headParams(config => {
-  const {route} = config;
+@headParams(options => {
+  const {route} = options;
   const userId = route.data.id;
   return {
     title: `user ${userId}`,

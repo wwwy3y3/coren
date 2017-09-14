@@ -1,8 +1,10 @@
 {
   "en": {
-    "hi": "Hello"
+    "app.album.title": "Album List",
+    "app.photo.title": "Photo List"
   },
   "zh": {
-    "hi": "你好"
+    "app.album.title": "相簿列表",
+    "app.photo.title": "照片列表"
   }
 }

@@ -1,12 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Content from "./Content";
+import Index from '../components/index';
 
 ReactDOM.render(
-  <div>
-    <Content/>
-  </div>
+  <Index/>
 , document.getElementById('root'));
+
 
 if(module.hot) {
   module.hot.accept();

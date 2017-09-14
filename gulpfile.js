@@ -9,6 +9,7 @@ const index = `
 exports.head = require('./client/ssr/head');
 exports.headParams = require('./client/ssr/headParams');
 exports.reactRouterRedux = require('./client/ssr/reactRouterRedux');
+exports.reactRouterReduxIntl = require('./client/ssr/reactRouterReduxIntl');
 exports.reactRedux = require('./client/ssr/reactRedux');
 exports.route = require('./client/ssr/route');
 exports.routeParams = require('./client/ssr/routeParams');

@@ -15,17 +15,20 @@ export default ({reducer}) => {
   };
 
   const wrapSSR = (appElement, options) => {
-    const {route} = options;
+    const {route, context} = options;
+    const {localeData} = context;
+    const locale = route.data.locale;
     let store;
     if (options.preloadedState) {
       const {preloadedState} = options;
-      store = createStore(reducer, preloadedState);
+      const mergeState = Object.assign({}, options.initialState, preloadedState);
+      store = createStore(reducer, mergeState);
     } else {
       store = createStore(reducer);
     }
 
     return (
-      <IntlProvider>
+      <IntlProvider locale={locale} messages={localeData[locale]}>
         <Provider store={store}>
           <StaticRouter location={route.path}>
             {appElement}

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`coren-middleware test res function sendCoren index 1`] = `
+exports[`coren-middleware test res function sendCoren / 1`] = `
 "<!DOCTYPE html><html><head>
   <meta charset=\\"utf-8\\">
   <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
@@ -21,7 +21,7 @@ exports[`coren-middleware test res function sendCoren index 1`] = `
 </body></html>"
 `;
 
-exports[`coren-middleware test res function sendCoren index/users 1`] = `
+exports[`coren-middleware test res function sendCoren /users 1`] = `
 "<!DOCTYPE html><html><head>
   <meta charset=\\"utf-8\\">
   <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
@@ -42,7 +42,7 @@ exports[`coren-middleware test res function sendCoren index/users 1`] = `
 </body></html>"
 `;
 
-exports[`coren-middleware test res function sendCoren index/users/1 1`] = `
+exports[`coren-middleware test res function sendCoren /users/1 1`] = `
 "<!DOCTYPE html><html><head>
   <meta charset=\\"utf-8\\">
   <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">

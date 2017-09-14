@@ -22,16 +22,16 @@ describe('coren-middleware', () => {
     });
 
     describe('sendCoren', () => {
-      it('index', () => {
-        res.sendCoren('index');
+      it('/', () => {
+        res.sendCoren('/');
         expect(mockSend.mock.calls[0][0]).toMatchSnapshot();
       });
-      it('index/users', () => {
-        res.sendCoren('index/users');
+      it('/users', () => {
+        res.sendCoren('/users');
         expect(mockSend.mock.calls[0][0]).toMatchSnapshot();
       });
-      it('index/users/1', () => {
-        res.sendCoren('index/users/1');
+      it('/users/1', () => {
+        res.sendCoren('/users/1');
         expect(mockSend.mock.calls[0][0]).toMatchSnapshot();
       });
     });
@@ -40,13 +40,13 @@ describe('coren-middleware', () => {
       res.setHead(function($head) {
         $head.append('<script>hihihihi</script>');
       });
-      res.sendCoren('index');
+      res.sendCoren('/');
       expect(mockSend.mock.calls[0][0]).toMatchSnapshot();
     });
 
     it('setPreloadedState', () => {
       res.setPreloadedState({auth: false, user: 'john'});
-      res.sendCoren('index');
+      res.sendCoren('/');
       expect(mockSend.mock.calls[0][0]).toMatchSnapshot();
     });
 
@@ -55,7 +55,7 @@ describe('coren-middleware', () => {
         $head.append('<script>hihihihi</script>');
       });
       res.setPreloadedState({auth: false, user: 'john'});
-      res.sendCoren('index');
+      res.sendCoren('/');
       expect(mockSend.mock.calls[0][0]).toMatchSnapshot();
     });
   });
