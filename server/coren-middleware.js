@@ -45,10 +45,6 @@ module.exports = function(rootPath) {
         setHead(api);
       }
       res.send($.html());
-
-      // init head & preloadedState
-      setHead = null;
-      preloadedState = null;
     };
 
     res.setHead = function(cb) {

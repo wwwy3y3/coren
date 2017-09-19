@@ -41,7 +41,6 @@ module.exports = {
         // return `/dist/${rel}`;
       case 'production':
       case 'development':
-      case 'pre-production':
         return `http://localhost:5556/dist/${rel}`;
       default:
         return false;

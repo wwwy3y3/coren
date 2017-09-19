@@ -96,10 +96,10 @@ class MultiRoutesRenderer {
           this.triggerPluginsLifecycle('cssDidAppend', {link, $head, $body});
         });
 
-        const markup = renderToString(appElement);
+        const markup = this.skipssr ? '' : renderToString(appElement);
 
         // insert rendered html
-        $('#root').html(this.skipssr ? '' : markup);
+        $('#root').html(markup);
         results.push({route: routes[i].path, html: $.html()});
       }
     }

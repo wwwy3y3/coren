@@ -5,18 +5,19 @@ import App from './app';
 import MultiRoutesRenderer from './ssr-renderers/multi-routes';
 import loadCorenConfig from './load-coren-config';
 import loadAssetsJSON from './load-assets';
-import {getCommonJSDir, preserveEntry, getSsrDir} from './coren-working-space';
+import {getCommonJSDir, getSsrDir} from './coren-working-space';
+import {preserveEntry} from './config';
+
 const fs = Promise.promisifyAll(require("fs"));
 
 class Entry {
-  constructor({entryName, assets, dir, path, config, skipssr = false, env}) {
-    this.entryName = entryName;
+  constructor({assets, dir, path, config, skipssr = false, env}) {
     this.assets = assets;
     this.dir = dir;
     this.skipssr = skipssr;
     this.config = config;
     this.env = env;
-    this.getSsrDir = getSsrDir(dir);
+    this.ssrDir = getSsrDir(dir);
     this.app = new App({path});
   }
 
@@ -35,18 +36,16 @@ class Entry {
     return assets;
   }
 
-  genOutputPath(route) {
-    let outputPath = '';
-    if (route === '/') {
-      outputPath = 'index.html';
-    } else {
-      outputPath = `${route}/index.html`;
-    }
-    return join(this.getSsrDir, outputPath);
-  }
-
   assetRelative(absolutePath) {
     return this.config.assetsHost(this.env, absolutePath);
+  }
+
+  genOutputPath(route) {
+    let outputPath = `${route}/index.html`;
+    if (route === '/') {
+      outputPath = 'index.html';
+    }
+    return join(this.ssrDir, outputPath);
   }
 
   render(context) {
@@ -86,7 +85,6 @@ export default class ssr {
     for (let key in entry) {
       if (!preserveEntry.includes(key)) {
         this.entries.push(new Entry({
-          entryName: key,
           assets: this.generateEntryAssets(assets, key),
           path: resolve(getCommonJSDir(dir), `${key}.commonjs2.js`),
           config: this.config,
@@ -101,6 +99,7 @@ export default class ssr {
   // merge the preserve assets key with app's assets
   generateEntryAssets(assets, entry) {
     const entryAsset = assets[entry];
+    // vendor file need to put before other assets.
     if (assets.$vendor) {
       ['.js', '.css'].forEach(ext => {
         if (assets.$vendor[ext]) {
