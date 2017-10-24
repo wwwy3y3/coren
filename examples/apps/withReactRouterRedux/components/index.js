@@ -30,18 +30,18 @@ if (process.env.isBrowser) {
 export default class Root extends Component {
   render() {
     return (
-        <div>
-          <ul>
-            <li><Link to="/">Home</Link></li>
-            <li><Link to="/users">All Users</Link></li>
-            <li><a href="/about">About</a></li>
-          </ul>
+      <div>
+        <ul>
+          <li><Link to="/">Home</Link></li>
+          <li><Link to="/users">All Users</Link></li>
+          <li><a href="/about">About</a></li>
+        </ul>
 
-          <hr/>
-          <Route exact path="/" component={Home}/>
-          <Route exact path="/users" component={UserList}/>
-          <Route exact path="/users/:id" component={User}/>
-        </div>
+        <hr/>
+        <Route exact path="/" component={Home}/>
+        <Route exact path="/users" component={UserList}/>
+        <Route exact path="/users/:id" component={User}/>
+      </div>
     );
   }
 }

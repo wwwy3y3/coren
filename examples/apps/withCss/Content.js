@@ -6,10 +6,6 @@ import './style.css';
 @route('/')
 @ssr
 export default class Root extends Component {
-  handleClick() {
-    console.log('hihi');
-  }
-
   render() {
     return (
       <div>

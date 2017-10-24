@@ -8,7 +8,6 @@ import Photo from './Photo';
 import {BrowserRouter as Router} from 'react-router-dom';
 import {Provider} from 'react-redux';
 import configureStore from '../configureStore';
-import reducer from '../reducer';
 import localeData from '../locales/data.json';
 
 let store;
