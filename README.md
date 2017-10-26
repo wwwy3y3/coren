@@ -437,6 +437,128 @@ app.get('/', function(req, res) {
 ...
 ```
 
+
+
+## Coren decorator lifecycle
+
+Coren's decorator lifecycle has four steps:
+
+```
++------------+     +---------+   +--------------+    +--------------+
+|            |     |         |   |              |    |              |
+| setOptions +-----> wrapSSR +---> appendToHead +----> appendToBody |
+|            |     |         |   |              |    |              |
++------------+     +---------+   +--------------+    +--------------+
+```
+
+With these four steps, the customized decorator can manipulate the ssr result & append head / meta information on html output.
+
+
+
+### setOptions
+
+At setOptions step, you can prepare the needed data at this step.
+
+So you can get the data from [prepareContext](#preparecontext) and do some manipulation to make it can use at the later steps.
+
+Take [reduxStore.js]() for example
+
+**reduxStore.js**
+
+```js
+const cycle = {
+  name,
+  setOptions: (props, options) => {
+    let store;
+    if (options.preloadedState) {
+      const {preloadedState} = options;
+      store = createStore(reducer, preloadedState);
+    } else {
+      store = createStore(reducer);
+    }
+    return {reduxStore: store};
+  }
+};
+```
+
+Because when use redux, redux decorator need the reduxStore data. Thus, we prepare reduxStore at this setOptions step.
+
+
+
+### wrapSSR
+
+wrapSSR means you can wrap a wrapper at your component.
+
+Like react-router, you need to wrap `StaticRouter` in your component. So that is what wrapSSR do.
+
+Take [reactRouterRedux.js] for example
+
+**reactRouterRedux.js**
+
+```js
+import React from 'react';
+import {StaticRouter} from 'react-router-dom';
+import {Provider} from 'react-redux';
+import {createStore} from 'redux';
+
+export default ({reducer}) => {
+  const wrapSSR = (appElement, options) => {
+    const {route} = options;
+    let store;
+    if (options.preloadedState) {
+      const {preloadedState} = options;
+      const mergeState = Object.assign({}, options.initialState, preloadedState);
+      store = createStore(reducer, mergeState);
+    } else {
+      store = createStore(reducer);
+    }
+    return (
+      <Provider store={store}>
+        <StaticRouter location={route.path}>
+          {appElement}
+        </StaticRouter>
+      </Provider>
+    );
+  };
+};
+```
+
+When do react-router and redux ssr, we need to wrap `<Provider/>` and `<StaticRouter/>` components.
+
+So that is what this decorator at `wrapSSR` stage.
+
+### appendToHead
+
+appendToHead is the stage helps you append anything within `<head/>` before output html result.
+
+You can  use `cheerio` api to append `<title/>` `<meta/>` `<script/>` …etc.
+
+Take [head.js]() for eaxmple:
+
+**head.js**
+
+```js
+const cycle = {
+  name,
+  appendToHead: $head => {
+    $head.append(`<title>${title}</title>`);
+    $head.append(`<meta name="description" content="${description}">`);
+  }
+};
+```
+
+This decorator take `title` and `description` parameter, then append them to head.
+
+### appendToBody
+
+appendToBody is similar to appendToHead. The only different is appendToBody appends something to body.
+
+
+
+Thus, with these four steps, coren can do ssr as you want.
+
+
+
 ## Integrate with current project
 
 Though coren is unstable now, in our concept, it's very easy to integrate coren to your current project.
@@ -445,7 +567,7 @@ Just follow these steps:
 
 1. write `coren.config.js`
 2. Use `new CorenWebpack` to extend webpack config
-3. add `defineXXXXX` method at your component
+3. add `coren decorator` at your component
 4. add `coren middleware` at express server
 5. start webpack server
 6. after webpack is built, `npm run coren-dev` ( or `coren dev`)
