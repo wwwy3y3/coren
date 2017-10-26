@@ -1,9 +1,18 @@
 {
+  "scripts": {
+    "coren-dev": "coren dev",
+    "coren-production": "NODE_ENV=production coren build --webpack webpack.config.prod.js",
+    "webpack-server": "webpack-dev-server --config webpack.config.dev.js --hot --inline --port 5556"
+  },
   "dependencies": {
-    "babel-loader": "^6.2.3",
-    "coren": "^1.1.0",
-    "mkdirp": "^0.5.1",
-    "react": "^15.6.1",
-    "react-dom": "^15.6.1"
+    "babel-loader": "^7.1.1",
+    "babel-preset-es2015": "^6.24.1",
+    "coren": "latest",
+    "css-loader": "^0.28.4",
+    "extract-text-webpack-plugin": "^3.0.0",
+    "webpack": "^3.0.0",
+    "webpack-dev-middleware": "^1.10.0",
+    "webpack-dev-server": "^2.4.1",
+    "webpack-hot-middleware": "^2.0.0"
   }
 }

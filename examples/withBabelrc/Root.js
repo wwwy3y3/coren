@@ -1,15 +1,9 @@
 import React, {Component} from 'react';
-import collector from 'coren/lib/client/collectorHoc';
+import {ssr, route} from 'coren';
 
-@collector()
+@route('/')
+@ssr
 export default class Root extends Component {
-  static defineHead() {
-    return {
-      title: "home",
-      description: "home description"
-    };
-  }
-
   render() {
     return (
       <div>root test</div>
