@@ -32,7 +32,7 @@ gulp.task('build', ['index'], () => {
   gulp.src('bin/*')
     .pipe(babel())
     .pipe(gulp.dest('lib/bin'));
-  gulp.src(['client/*', 'client/**/*'])
+  gulp.src(['client/*.js', 'client/**/*.js'])
     .pipe(babel())
     .pipe(gulp.dest('lib/client'));
   gulp.src('shared/*')
@@ -51,8 +51,8 @@ gulp.task('build:watch', ['index'], () => {
     .pipe(babel())
     .on('error', console.error.bind(console))
     .pipe(gulp.dest('lib/bin'));
-  gulp.src(['client/*', 'client/**/*'])
-    .pipe(watch(['client/*', 'client/**/*']))
+  gulp.src(['client/*.js', 'client/**/*.js'])
+    .pipe(watch(['client/*.js', 'client/**/*.js']))
     .pipe(babel())
     .on('error', console.error.bind(console))
     .pipe(gulp.dest('lib/client'));
