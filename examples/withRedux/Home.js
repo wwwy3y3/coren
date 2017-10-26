@@ -59,10 +59,10 @@ export default class Index extends Component {
       <div>
         {auth ?
           <span>
-            you've log in.
+            you've logged in.
           </span>
         : <span>
-            you've log out.
+            you've logged out.
           </span>
         }
         <button onClick={this.toggleAuth}>
