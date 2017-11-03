@@ -1,24 +1,37 @@
 # withReactRouterRedux
 
-This example shows how to use coren with react-router / redux.
+This example demostrate how to use `coren` with `react-router` and `react-redux`.
 
-<hr/>
+The server-side render procress of `coren` is heavily rely on the lifecycles, defined by decorators.
 
-At the readme, we will tell you how coren work with react-router/redux.
+At first, please take a look at `client/containers/index.js` file.
 
-coren use lots of decorator to make server-side render work.
+**container/index.js**
+``` js
+@reactRouterRedux({reducer})
+@wrapDOM(({children}) => {
+  return (
+    <Provider store={store}>
+      <Router>
+        {children}
+      </Router>
+    </Provider>
+  );
+})
+@ssr
+export default class Root extends Component {
+  //...
+}
+```
 
-And because the concep of decorator is wrap function, we read the decorator from the bottom up.
+you'll notice that we're using three decorators here: `@reactRouterRedux`, `@wrapDOM` and `@ssr`
 
-First, look at `containers/index.js` file.
+* ssr: ssr decorator is the decorator you must use, in order to tell `coren` to render this component
+* wrapDOM: this decorator is just a helper function help you wrap component with required providers (e.g, react-redux Provider)
+* reactRouterRedux: This decorator tell `coren` to wrap your component with `<StaticRouter>` and `<Provider>`
 
-At this file, we wrap it with three decorators: `@reactRouterRedux`, `@wrapDOM`, `@ssr`
-
-* ssr: ssr decorator is the necessary decorator in every coren page.
-* wrapDOM: This decorator wrap client side needed component, to make react-router & redux can work correctly.
-* reactRouterRedux: This decorator will wrap `StaticRouter` at your component in server-side render stage.
-
-And then follow the react-router path, take a look at `Home` component.
+## Home Component
+Now we take a look at the component Home component, which we render in Index component with React-router `<route>` 
 
 **components/Home.js**
 
@@ -40,15 +53,13 @@ export default class Root extends Component {
 
 ```
 
-* ssr: coren needed
-* head: tell coren, this page's title & description
-* route: this page as `index`(/) route
-* reactRouterRedux: This decorator will wrap `StaticRouter` at your component in server-side render stage.
+We're going to explain what these decorators do
+* head: tell coren to append title and description to head element in HTML
+* route: tell coren to render this component with `index`(/) route
 
-So after ssr, this page will become a `index.html` file & with custom `<head/> & meta description.
+So after ssr, coren will generate an `index.html` file with head & meta description.
 
-So far, it's the simple usage of coren.
-Next, we want to introduce more powerful application of coren.
+## User Component
 
 Now, take a look at `components/User.js` file.
 
@@ -84,15 +95,53 @@ Now, take a look at `components/User.js` file.
   });
 })
 @ssr
+export default class UserList extends Component {
+  //...
+}
 ```
 
-In real world case, we will have more than one user. It means we need to generate different content for different users.
+Now, allow me explain purpose of these decorators
 
-decorators:
+* preloadedState: when we server-side render this
+ component, we want to insert preloadedState here, so we don't have to call api request at front-end. `coren` will append initial state in your html with whatever you return in preloadedState
+* headParams: headParams is just like `head` decorator, but provided with more parameters you can use
+* routeParams: routeParams can tell `coren` generate multiple server-side render routes.
 
-* preloadedState: because this is redux application, when you define preloadedState, coren will append initial state in your html. Thus, it doesn't need to load the initial data from server.
-* headParams: headParams is a `<head/>` decorator that can let you pass variable. So you can render custom head based on different user data.
-* routeParams: routeParams can generate multiple server-side render page based on different url defined.
+## Development
+### Step 1. Start devServer
+```
+$ npm run webpack-server
+```
 
+After webpack-server finish build process, you'll see a message from terminal telling you to run `coren dev`
 
-So with these decorators, you can generate any server-side render page you want.
+### Step 2. coren dev
+```
+$ npm run coren-dev
+```
+
+So after running this command, you might notice there's no server-side rendered elements in your body element.
+
+### Step 3. Start Server
+Now start your webserver, and enjoy your development.
+
+```
+$ npm start
+```
+
+then open `http://localhost:9393`
+
+## Production deploy
+Simply run `coren production --webpack  <your webpack link>`, coren will run webpack for you, and build HTML pages with server-side rendered react elements under `.coren/html`, which you should deploy to production server.
+
+```
+$ npm run coren-production
+```
+
+### Start webserver
+```
+$ npm start
+```
+Now, start your server, see what we build for you!
+
+Easy, huh?

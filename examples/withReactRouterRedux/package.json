@@ -1,7 +1,8 @@
 {
   "scripts": {
+    "start": "node server/app",
     "coren-dev": "coren dev",
-    "coren-production": "NODE_ENV=production coren build --webpack webpack.config.prod.js",
+    "coren-production": "NODE_ENV=production coren production --webpack webpack.config.prod.js",
     "webpack-server": "NODE_ENV=development webpack-dev-server --config webpack.config.dev.js --hot --inline --port 5556"
   },
   "dependencies": {

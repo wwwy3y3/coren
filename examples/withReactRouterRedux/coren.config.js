@@ -5,8 +5,8 @@ const path = require('path');
 
 module.exports = {
   entry: {
-    index: './components/index.js',
-    about: './components/about.js'
+    index: './client/components/index.js',
+    about: './client/components/about.js'
   },
   ssrWebpack: {
     // issue: https://github.com/matthew-andrews/isomorphic-fetch/issues/98
@@ -36,10 +36,10 @@ module.exports = {
     });
   },
   assetsHost: (env, absolutePath = '') => {
-    const rel = path.relative(`${__dirname}/dist/`, absolutePath);
+    const rel = path.relative(`${__dirname}/public/dist/`, absolutePath);
     switch (env) {
-        // return `/dist/${rel}`;
       case 'production':
+        return `/dist/${rel}`;
       case 'development':
         return `http://localhost:5556/dist/${rel}`;
       default:

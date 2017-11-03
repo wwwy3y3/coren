@@ -12,15 +12,15 @@ const config = new CorenWebpack(__dirname, {
   entry: {
     index: [
       'babel-polyfill',
-      './containers/index.js'
+      './client/containers/index.js'
     ],
     about: [
       'babel-polyfill',
-      './containers/about.js'
+      './client/containers/about.js'
     ]
   },
   output: {
-    path: path.join(__dirname, 'dist'),
+    path: path.join(__dirname, 'public/dist'),
     filename: '[name].js'
   },
   module: {
