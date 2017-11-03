@@ -9,7 +9,7 @@ const extractCSS = new ExtractTextPlugin({
 
 module.exports = {
   entry: {
-    index: './Content.js'
+    index: './client/Content.js'
   },
   ssrWebpack: {
     plugins: [
@@ -29,7 +29,7 @@ module.exports = {
     }
   },
   assetsHost: (env, absolutePath = '') => {
-    const rel = path.relative(`${__dirname}/dist/`, absolutePath);
+    const rel = path.relative(`${__dirname}/public/dist/`, absolutePath);
     switch (env) {
       case 'production':
         return `/dist/${rel}`;
