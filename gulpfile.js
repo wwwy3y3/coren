@@ -13,7 +13,6 @@ exports.reactRouterReduxIntl = require('./client/ssr/reactRouterReduxIntl');
 exports.reactRedux = require('./client/ssr/reactRedux');
 exports.route = require('./client/ssr/route');
 exports.routeParams = require('./client/ssr/routeParams');
-exports.reduxStore = require('./client/ssr/reduxStore');
 exports.preloadedState = require('./client/ssr/preloadedState');
 exports.wrapDOM = require('./client/ssr/wrapDOM');
 exports.wrapSSR = require('./client/ssr/wrapSSR');

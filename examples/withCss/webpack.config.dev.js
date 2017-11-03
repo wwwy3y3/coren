@@ -9,7 +9,6 @@ const extractCSS = new ExtractTextPlugin({
 });
 
 const config = new CorenWebpack(__dirname, {
-  // entry is defined in `coren.config.js`
   devServer: {
     headers: {"Access-Control-Allow-Origin": "http://localhost:9393"}
   },
@@ -17,7 +16,7 @@ const config = new CorenWebpack(__dirname, {
     index: [
       'webpack-dev-server/client?http://localhost:5556',
       'babel-polyfill',
-      './index.js'
+      './client/index.js'
     ]
   },
   output: {
