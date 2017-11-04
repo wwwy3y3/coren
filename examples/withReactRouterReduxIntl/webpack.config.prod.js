@@ -10,10 +10,10 @@ const extractCSS = new ExtractTextPlugin({
 
 const config = new CorenWebpack(__dirname, {
   entry: {
-    index: './containers/index'
+    index: './client/containers/index'
   },
   output: {
-    path: path.join(__dirname, 'dist'),
+    path: path.join(__dirname, 'public/dist'),
     filename: '[name].js'
   },
   module: {

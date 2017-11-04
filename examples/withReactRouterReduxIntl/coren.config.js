@@ -1,7 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const localeData = require('./locales/data.json');
+const localeData = require('./client/locales/data.json');
 require('isomorphic-fetch');
 
 const extractCSS = new ExtractTextPlugin({
@@ -11,7 +11,7 @@ const extractCSS = new ExtractTextPlugin({
 
 module.exports = {
   entry: {
-    index: './components/index.js'
+    index: './client/components/index.js'
   },
   ssrWebpack: {
     plugins: [
@@ -28,10 +28,10 @@ module.exports = {
     }
   },
   assetsHost: (env, absolutePath = '') => {
-    const rel = path.relative(`${__dirname}/dist/`, absolutePath);
+    const rel = path.relative(`${__dirname}/public/dist/`, absolutePath);
     switch (env) {
-        // return `/dist/${rel}`;
       case 'production':
+        return `/dist/${rel}`;
       case 'development':
         return `http://localhost:5556/dist/${rel}`;
       default:
