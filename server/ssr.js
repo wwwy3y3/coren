@@ -5,18 +5,19 @@ import App from './app';
 import MultiRoutesRenderer from './ssr-renderers/multi-routes';
 import loadCorenConfig from './load-coren-config';
 import loadAssetsJSON from './load-assets';
-import {getCommonJSDir, preserveEntry, getSsrDir} from './coren-working-space';
+import {getCommonJSDir, getSsrDir} from './coren-working-space';
+import {preserveEntry} from './config';
+
 const fs = Promise.promisifyAll(require("fs"));
 
 class Entry {
-  constructor({entryName, assets, dir, path, config, skipssr = false, env}) {
-    this.entryName = entryName;
+  constructor({assets, dir, path, config, skipssr = false, env}) {
     this.assets = assets;
     this.dir = dir;
     this.skipssr = skipssr;
     this.config = config;
     this.env = env;
-    this.getSsrDir = getSsrDir(dir);
+    this.ssrDir = getSsrDir(dir);
     this.app = new App({path});
   }
 
@@ -39,19 +40,21 @@ class Entry {
     return this.config.assetsHost(this.env, absolutePath);
   }
 
-  registerCollector(context) {
-    if (this.config.registerCollector) {
-      this.config.registerCollector(this.app, {context});
+  genOutputPath(route) {
+    let outputPath = `${route}/index.html`;
+    if (route === '/') {
+      outputPath = 'index.html';
     }
+    return join(this.ssrDir, outputPath);
   }
 
   render(context) {
-    this.registerCollector(context);
     const {js, css} = this.genAssets();
     const options = {
       app: this.app,
       plugins: this.config.plugins,
       skipssr: this.skipssr,
+      context,
       js,
       css
     };
@@ -59,10 +62,10 @@ class Entry {
     const ssr = new MultiRoutesRenderer(options);
 
     // get the array of html result
-    ssr.renderToString().then(results => {
+    return ssr.renderToString().then(results => {
       // output file
       return Promise.all(results.map(result => {
-        const filepath = join(this.getSsrDir, `${result.route}/${this.entryName}.html`);
+        const filepath = this.genOutputPath(result.route);
         mkdirp.sync(resolve(filepath, "../"));
         // write to filesystem
         return fs.writeFileAsync(filepath, result.html);
@@ -82,7 +85,6 @@ export default class ssr {
     for (let key in entry) {
       if (!preserveEntry.includes(key)) {
         this.entries.push(new Entry({
-          entryName: key,
           assets: this.generateEntryAssets(assets, key),
           path: resolve(getCommonJSDir(dir), `${key}.commonjs2.js`),
           config: this.config,
@@ -97,6 +99,7 @@ export default class ssr {
   // merge the preserve assets key with app's assets
   generateEntryAssets(assets, entry) {
     const entryAsset = assets[entry];
+    // vendor file need to put before other assets.
     if (assets.$vendor) {
       ['.js', '.css'].forEach(ext => {
         if (assets.$vendor[ext]) {
@@ -124,10 +127,8 @@ export default class ssr {
   }
 
   render() {
-    this.prepareContext().then(() => {
-      this.entries.forEach(entry => {
-        entry.render(this.context);
-      });
+    return this.prepareContext().then(() => {
+      return Promise.all(this.entries.map(entry => entry.render(this.context)));
     });
   }
 }

@@ -10,7 +10,6 @@ export default function(dir) {
   } else {
     returnBabelrc.babelrc = false;
   }
-
   if (!returnBabelrc.babelrc) {
     returnBabelrc.presets = defaultBabelrc.presets;
     returnBabelrc.plugins = defaultBabelrc.plugins;

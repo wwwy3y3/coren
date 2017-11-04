@@ -1,0 +1,33 @@
+{
+  "scripts": {
+    "start": "node server/app",
+    "coren-dev": "NODE_ENV=development coren dev",
+    "coren-production": "NODE_ENV=production coren production --webpack webpack.config.prod.js",
+    "webpack-server": "NODE_ENV=development webpack-dev-server --config webpack.config.dev.js --hot --inline --port 5556"
+  },
+  "dependencies": {
+    "babel-loader": "^7.1.1",
+    "babel-preset-es2015": "^6.24.1",
+    "bluebird": "^3.5.0",
+    "coren": "latest",
+    "css-loader": "^0.28.4",
+    "extract-text-webpack-plugin": "^3.0.0",
+    "isomorphic-fetch": "^2.2.1",
+    "react-intl": "^2.4.0",
+    "redux-thunk": "^2.2.0",
+    "webpack": "^3.0.0",
+    "webpack-dev-middleware": "^1.10.0",
+    "webpack-dev-server": "^2.4.1",
+    "webpack-hot-middleware": "^2.0.0"
+  },
+  "devDependencies": {
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-plugin-react-intl": "^2.3.1",
+    "babel-plugin-transform-class-properties": "^6.16.0",
+    "babel-plugin-transform-decorators-legacy": "^1.3.4",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "redux-logger": "^3.0.6"
+  }
+}

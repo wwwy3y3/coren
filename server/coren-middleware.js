@@ -1,54 +1,53 @@
 import cheerio from 'cheerio';
 import {existsSync, readFileSync, lstatSync} from 'fs';
 import path from 'path';
-import {has} from 'lodash';
+import {has, isEmpty} from 'lodash';
 import {getSsrDir} from './coren-working-space';
 
-const getEntryHtml = (entry, rootPath) => {
-  let filePath = path.join(getSsrDir(rootPath), entry);
+const getEntryHtml = (reqPath, rootPath) => {
+  let filePath = path.join(getSsrDir(rootPath), reqPath);
   if (existsSync(filePath) && lstatSync(filePath).isDirectory()) {
     filePath = `${filePath}/index.html`;
-  } else {
-    filePath = `${filePath}.html`;
   }
 
   return readFileSync(filePath, 'utf8');
 };
 
-const updatePreloadedState = ($, newState) => {
+const findCorenScript = $ => {
+  let scriptTag;
   $('script').get().forEach(function(script) {
-    // find script with `data-coren` attr
     if (has(script.attribs, 'data-coren')) {
-      const preloadStateTxt = script.children[0].data;
-      const preloadState = JSON.parse(preloadStateTxt.replace('window.__PRELOADED_STATE__ =', ''));
-      const mergeState = Object.assign({}, preloadState, newState);
-      script.children[0].data = 'window.__PRELOADED_STATE__ = ' + JSON.stringify(mergeState);
+      scriptTag = script;
     }
   });
+  return scriptTag;
+};
+
+const updatePreloadedState = ($, newState) => {
+  if (isEmpty(newState)) {
+    return $;
+  }
+
+  const script = findCorenScript($);
+  if (script) {
+    const preloadStateTxt = script.children[0].data;
+    const preloadState = JSON.parse(preloadStateTxt.replace('window.__PRELOADED_STATE__ =', ''));
+    const mergeState = Object.assign({}, preloadState, newState);
+    script.children[0].data = 'window.__PRELOADED_STATE__ = ' + JSON.stringify(mergeState);
+  } else {
+    // insert one
+    $('head').append(`<script data-coren="">window.__PRELOADED_STATE__ = ${JSON.stringify(newState)}</script>`);
+  }
   return $;
 };
 
 module.exports = function(rootPath) {
   return function corenMiddleware(req, res, next) {
-    var setHead = null;
-    var preloadedState = null;
+    let setHead;
+    let preloadedState;
 
-    res.sendCoren = function(entry) {
-      // multi routes render
-      // from index/users/1 => users/index/1
-      if (entry.indexOf('/') >= 0) {
-        const entries = entry.split('/').filter(val => val);
-
-        // multi routes render
-        if (entries.length > 1) {
-          const firstEntry = entries[0];
-          const newEntries = entries.slice(1);
-          newEntries.push(firstEntry);
-          entry = newEntries.join('/');
-        }
-      }
-
-      let $ = cheerio.load(getEntryHtml(entry, rootPath));
+    res.sendCoren = function(reqPath) {
+      let $ = cheerio.load(getEntryHtml(reqPath, rootPath));
       if (preloadedState) {
         $ = updatePreloadedState($, preloadedState);
       }
@@ -61,18 +60,16 @@ module.exports = function(rootPath) {
         setHead(api);
       }
       res.send($.html());
-
-      // init head & preloadedState
-      setHead = null;
-      preloadedState = null;
     };
 
     res.setHead = function(cb) {
       setHead = cb;
+      return res;
     };
 
     res.setPreloadedState = function(obj) {
       preloadedState = obj;
+      return res;
     };
     next();
   };

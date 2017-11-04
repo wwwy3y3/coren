@@ -5,7 +5,7 @@ import {color} from './utils';
 const {error} = color;
 
 export const defaultConfig = {
-  webpack: null,
+  ssrWebpack: null,
   config: [],
   assetsHost: noop
 };
@@ -24,7 +24,7 @@ export default function loadCorenConfig(dir) {
     throw new Error(error('Please provide coren.config.js'));
   }
   // check assetsHost provide all enviroment case
-  ['development', 'pre-production', 'production'].forEach(env => {
+  ['development', 'production'].forEach(env => {
     if (!config.assetsHost(env)) {
       throw new Error(error(`Error: coren.config[assetsHost] doesn't provide '${env}' environment return value `));
     }

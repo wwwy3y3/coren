@@ -1,31 +1,32 @@
 #!/usr/bin/env node
-
 const path = require('path');
 const Ssr = require('../server/ssr');
 const build = require('../server/build');
 const program = require('commander');
-const {initialize, getEnv} = require('../server/coren-working-space');
+const {initialize} = require('../server/coren-working-space');
 const pkg = require('../../package.json');
 const {color} = require('../server/utils');
 
-const env = getEnv();
+const env = process.env.NODE_ENV;
 
 program
   .version(pkg.version);
 
+// dev
 program
   .command('dev [dir]')
-  .option('--watch', 'watch the change')
+  .option('--bodySsr', 'run with body ssr')
   .action(function(dir, options) {
-    // const {watch} = options;
     dir = dir || process.cwd();
+    const {bodySsr} = options;
     console.log(`Start building ${dir}`);
     initialize(dir);
-    build({dir, env: 'development'})
+    build({dir, env})
     .then(() => {
-      const ssr = new Ssr({dir, skipssr: true, env: 'development'});
-      ssr.render();
-      console.log(color.success('Success build coren server side render'));
+      const ssr = new Ssr({dir, skipssr: !bodySsr, env: env || 'development'});
+      ssr.render().then(() => {
+        console.log(color.success('Success build coren server side render'));
+      });
     })
     .catch(err => {
       console.log(err);
@@ -33,9 +34,9 @@ program
     });
   });
 
-// build
+// production
 program
-  .command('build [dir]')
+  .command('production [dir]')
   .option('--webpack [webpackPath]', 'webpack path')
   .action(function(dir, options) {
     dir = dir || process.cwd();
@@ -44,7 +45,7 @@ program
     initialize(dir);
     build({dir, env: 'production', clientWebpackPath: path.resolve(webpack)})
     .then(() => {
-      const ssr = new Ssr({dir, skipssr: false, env: 'production'});
+      const ssr = new Ssr({dir, skipssr: false, env: env || 'production'});
       ssr.render();
       console.log(color.success('Success build coren server side render'));
     });

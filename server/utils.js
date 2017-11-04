@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-// import fs from 'fs';
 const fs = require('fs');
 
 exports.color = {

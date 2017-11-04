@@ -1,0 +1,10 @@
+{
+  "en": {
+    "app.album.title": "Album List",
+    "app.photo.title": "Photo List"
+  },
+  "zh": {
+    "app.album.title": "相簿列表",
+    "app.photo.title": "照片列表"
+  }
+}
