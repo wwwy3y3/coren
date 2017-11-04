@@ -11,13 +11,12 @@ const extractCSS = new ExtractTextPlugin({
 const config = new CorenWebpack(__dirname, {
   entry: {
     index: [
-      './index.js'
+      './client/index.js'
     ]
   },
   output: {
-    path: path.join(__dirname, 'dist'),
-    filename: '[name].js',
-    publicPath: 'http://localhost:5556/dist/'
+    path: path.join(__dirname, 'public/dist'),
+    filename: '[name].js'
   },
   module: {
     rules: [
