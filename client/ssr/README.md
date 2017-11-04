@@ -140,7 +140,6 @@ export default class ... {
 ### reactRouterRedux
 
 When your project is used `react-router` and `redux`, use `reactRouterRedux` decorator to wrap your component.
-When your project is used `react-router` and `redux`, use `reactRouterRedux` decorator to wrap your component.
 
 This decorator will wrap `<Provider/>` and `<StaticRouter/>` at your component is ssr stage.
 
