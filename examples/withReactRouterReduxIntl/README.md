@@ -116,12 +116,39 @@ We're going to explain the purpose of these decorators:
 * routeParams: `routeParams` decorator let you pass parameters to other decorators while generating routes. In this example, we pass a `locale` paramter.
 * reactRouterReduxIntl: This decorator will wrap your component with `IntlProvider` during server-side render process, and capable of getting `localeData` parameter we passed from `prepareContext`.
 
+## Development
+### Step 1. Start devServer
+```
+$ npm run webpack-server
+```
 
+After webpack-server finish build process, you'll see a message from terminal telling you to run `coren dev`
 
+### Step 2. coren dev
+```
+$ npm run coren-dev
+```
 
+So after running this command, you might notice there's no server-side rendered elements in your body element.
 
+### Step 3. Start Server
+Now start your webserver, and enjoy your development.
 
+```
+$ npm start
+```
 
+then open `http://localhost:9393`
 
+## Production deploy
+Simply run `coren production --webpack  <your webpack link>`, coren will run webpack for you, and build HTML pages with server-side rendered react elements under `.coren/html`, which you should deploy to production server.
 
+```
+$ npm run coren-production
+```
 
+### Start webserver
+```
+$ npm start
+```
+Now, start your server, see what we build for you!
