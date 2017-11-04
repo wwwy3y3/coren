@@ -1365,9 +1365,9 @@ core-util-is@1.0.2, core-util-is@~1.0.0:
   version "1.0.2"
   resolved "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
 
-coren@latest:
-  version "1.5.2"
-  resolved "https://registry.npmjs.org/coren/-/coren-1.5.2.tgz#f435b0fdbb10ef24d89ef922348f6c6a24ecd227"
+coren@2:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/coren/-/coren-2.0.0.tgz#efc8a24566ac01afdc081314719c3c65d7ea9701"
   dependencies:
     babel-core "^6.14.0"
     babel-load-config "^1.0.0"
@@ -1390,6 +1390,7 @@ coren@latest:
     path-to-regexp "^1.7.0"
     react "^15.5.4"
     react-dom "^15.5.4"
+    react-intl "^2.4.0"
     react-redux "^5.0.5"
     react-router-dom "^4.1.1"
     redux "^3.6.0"

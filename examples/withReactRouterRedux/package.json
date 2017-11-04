@@ -8,7 +8,7 @@
   "dependencies": {
     "babel-loader": "^7.1.1",
     "bluebird": "^3.5.0",
-    "coren": "latest",
+    "coren": "2",
     "css-loader": "^0.28.4",
     "express": "^4.15.4",
     "immutable": "^3.8.1",
