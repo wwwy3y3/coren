@@ -1,14 +1,12 @@
 # withReactRouterReduxIntl
+This example demostrate how to use `coren` with react-router, redux and react-intl
 
-> coren example use react-router, redux, react-intl
+In addtion, This example only shows how `react-intl` is used with `coren`, so if you want know more about redux and react router, please take a look at this example instead  => [withReactRouterRedux](https://github.com/Canner/coren/blob/master/examples/apps/withReactRouterRedux/README.md)
 
-This example extends from [withReactRouterRedux](https://github.com/Canner/coren/blob/master/examples/apps/withReactRouterRedux/README.md), so you will be clear after you read [withReactRouterRedux](https://github.com/Canner/coren/blob/master/examples/apps/withReactRouterRedux/README.md) tutorial.
+## react-intl
+To make intl work, first we need to prepare locale data.
 
-<hr/>
-
-To make intl work, first, we need to prepare locale data.
-
-This is our example locale data:
+This is our locale data:
 
 **locales/data.json**:
 
@@ -27,7 +25,7 @@ This is our example locale data:
 
 So we need to import this locale data to coren at `coren.config.js`.
 
-take a look at `coren.config.js`
+Now, take a look at `coren.config.js`
 
 **coren.config.js**
 ```js
@@ -54,11 +52,11 @@ module.exports = {
 }
 ```
 
-We use `prepareContext` function to pass some needed data to coren. So we pass `localeData` to coren before server-side render.
+We use `prepareContext` function to pass some required data to coren, which will be passed as `localeData` parameter to `coren` decorators during server-side render.
 
-Now, after we prepare our locale data, it's time to write coren decorator!
+After we prepare our locale data, it's time to write coren decorator!
 
-First look at `components/Photo.js`:
+Next, please take a look at `components/Photo.js`:
 
 **components/Photo.js**
 ```js
@@ -113,14 +111,11 @@ export default class ... {
 }
 ```
 
-decorator:
+We're going to explain the purpose of these decorators:
 
-* routeParams: The different part of routeParams is we pass a `locale` paramter.
-* reactRouterReduxIntl: This decorator will wrap `IntlProvider` in server side render stage, and get the `localeData` from context.
+* routeParams: `routeParams` decorator let you pass parameters to other decorators while generating routes. In this example, we pass a `locale` paramter.
+* reactRouterReduxIntl: This decorator will wrap your component with `IntlProvider` during server-side render process, and capable of getting `localeData` parameter we passed from `prepareContext`.
 
-And then coren with intl is done.
-
-Wrap `reactRouterReduxIntl` at each page you want to support intl.
 
 
 
