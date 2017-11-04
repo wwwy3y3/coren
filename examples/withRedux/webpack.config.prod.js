@@ -10,12 +10,11 @@ const extractCSS = new ExtractTextPlugin({
 
 const config = new CorenWebpack(__dirname, {
   entry: {
-    index: './index.js'
+    index: ['babel-polyfill', './client/index.js']
   },
   output: {
-    path: path.join(__dirname, 'dist'),
-    filename: '[name].js',
-    publicPath: '/dist'
+    path: path.join(__dirname, 'public/dist'),
+    filename: '[name].js'
   },
   resolve: {
     extensions: ['.js']

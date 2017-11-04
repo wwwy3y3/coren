@@ -1,7 +1,7 @@
 import cheerio from 'cheerio';
 import {existsSync, readFileSync, lstatSync} from 'fs';
 import path from 'path';
-import {has} from 'lodash';
+import {has, isEmpty} from 'lodash';
 import {getSsrDir} from './coren-working-space';
 
 const getEntryHtml = (reqPath, rootPath) => {
@@ -13,16 +13,31 @@ const getEntryHtml = (reqPath, rootPath) => {
   return readFileSync(filePath, 'utf8');
 };
 
-const updatePreloadedState = ($, newState) => {
+const findCorenScript = $ => {
+  let scriptTag;
   $('script').get().forEach(function(script) {
-    // find script with `data-coren` attr
     if (has(script.attribs, 'data-coren')) {
-      const preloadStateTxt = script.children[0].data;
-      const preloadState = JSON.parse(preloadStateTxt.replace('window.__PRELOADED_STATE__ =', ''));
-      const mergeState = Object.assign({}, preloadState, newState);
-      script.children[0].data = 'window.__PRELOADED_STATE__ = ' + JSON.stringify(mergeState);
+      scriptTag = script;
     }
   });
+  return scriptTag;
+};
+
+const updatePreloadedState = ($, newState) => {
+  if (isEmpty(newState)) {
+    return $;
+  }
+
+  const script = findCorenScript($);
+  if (script) {
+    const preloadStateTxt = script.children[0].data;
+    const preloadState = JSON.parse(preloadStateTxt.replace('window.__PRELOADED_STATE__ =', ''));
+    const mergeState = Object.assign({}, preloadState, newState);
+    script.children[0].data = 'window.__PRELOADED_STATE__ = ' + JSON.stringify(mergeState);
+  } else {
+    // insert one
+    $('head').append(`<script data-coren="">window.__PRELOADED_STATE__ = ${JSON.stringify(newState)}</script>`);
+  }
   return $;
 };
 
@@ -49,10 +64,12 @@ module.exports = function(rootPath) {
 
     res.setHead = function(cb) {
       setHead = cb;
+      return res;
     };
 
     res.setPreloadedState = function(obj) {
       preloadedState = obj;
+      return res;
     };
     next();
   };

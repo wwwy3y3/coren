@@ -1,9 +1,7 @@
 const webpack = require('webpack');
-const reducer = require('./reducer');
 const Promise = require('bluebird');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const path = require('path');
-const PreloadJsPlugin = require('./preloadJsPlugin');
 
 const extractCSS = new ExtractTextPlugin({
   filename: 'css/[name].css',
@@ -12,7 +10,7 @@ const extractCSS = new ExtractTextPlugin({
 
 module.exports = {
   entry: {
-    index: './Home.js'
+    index: './client/Home.js'
   },
   ssrWebpack: {
     plugins: [
@@ -29,9 +27,10 @@ module.exports = {
     }
   },
   assetsHost: (env, absolutePath = '') => {
-    const rel = path.relative(`${__dirname}/dist/`, absolutePath);
+    const rel = path.relative(`${__dirname}/public/dist/`, absolutePath);
     switch (env) {
       case 'production':
+        return `/dist/${rel}`;
       case 'development':
         return `http://localhost:5556/dist/${rel}`;
       default:
@@ -40,8 +39,5 @@ module.exports = {
   },
   prepareContext: function() {
     return Promise.resolve({db: {auth: true}});
-  },
-  plugins: [
-    new PreloadJsPlugin()
-  ]
+  }
 };

@@ -31,18 +31,6 @@ export default class Index extends Component {
     super(props);
     this.toggleAuth = this.toggleAuth.bind(this);
   }
-  static defineHead() {
-    return {
-      title: "redux",
-      description: "redux content"
-    };
-  }
-
-  static definePreloadedState() {
-    return Promise.resolve({
-      auth: false
-    });
-  }
 
   toggleAuth() {
     const {auth, login, logout} = this.props;
