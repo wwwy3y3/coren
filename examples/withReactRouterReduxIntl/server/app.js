@@ -10,7 +10,7 @@ const catchCoren = (corenResponse, res) => {
     return corenResponse();
   } catch (err) {
     if (err.code === "ENOENT") {
-      return res.status(404).send("not found user");
+      return res.status(404).send("not found");
     }
     throw err;
   }
