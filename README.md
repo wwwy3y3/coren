@@ -34,7 +34,7 @@ export default class Root extends Component {
 ## No limit on modules
 There's no limit on what modules or plugins you can use, `react-router`, `reactCssModule`, `scss-loader`, `react-intl` etc...
 
-## Interate well with commonly used modules
+## Integrate well with commonly used modules
 ``` js
 // react-redux
 @reactRedux({reducer})
