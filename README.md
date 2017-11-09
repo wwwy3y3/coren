@@ -5,6 +5,10 @@
 [![npm Version](https://img.shields.io/npm/v/coren.svg?style=flat-square)](https://www.npmjs.org/package/coren)[](https://travis-ci.org/Canner/coren)
 ![Build Status](https://travis-ci.org/Canner/coren.svg?branch=master)
 
+## Presentation
+
+JSDC 2017: [React server-side render nightmare gone](https://speakerdeck.com/wwwy3y3/react-server-side-render-nightmare-gone)
+
 ## Concept
 **React SSR is super HARD!!!!!**
 
