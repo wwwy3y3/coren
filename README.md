@@ -1,5 +1,7 @@
 # Coren
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/Canner/coren.svg)](https://greenkeeper.io/)
+
 > React Pluggable server-rendered framework
 
 [![npm Version](https://img.shields.io/npm/v/coren.svg?style=flat-square)](https://www.npmjs.org/package/coren)[](https://travis-ci.org/Canner/coren)
